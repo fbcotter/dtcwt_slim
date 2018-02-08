@@ -7,7 +7,7 @@ import tests.datasets as datasets
 
 import tensorflow as tf
 import py3nvml
-PRECISION_DECIMAL = 5
+PRECISION_DECIMAL = 3
 
 
 def setup():
@@ -287,12 +287,11 @@ def test_4d_input_ph():
     (datasets.mandrill()[100:375,30:322],'near_sym_b','qshift_d'),
     (datasets.mandrill(),'near_sym_b_bp', 'qshift_b_bp')
 ])
-def test_results_match(test_input, biort, qshift):
+def test_results_match_2d(test_input, biort, qshift):
     """
     Compare forward transform with numpy forward transform for barbara image
     """
     im = test_input
-    print(im.shape)
     f_np = Transform2d_np(biort=biort,qshift=qshift)
     p_np = f_np.forward(im, include_scale=True)
 
@@ -312,6 +311,71 @@ def test_results_match(test_input, biort, qshift):
     [np.testing.assert_array_almost_equal(
         s_np, s_tf, decimal=3) for s_np, s_tf in
         zip(p_np.scales, Yscale)]
+
+
+@pytest.mark.parametrize("test_input,biort,qshift", [
+    (datasets.barbara(),'antonini','qshift_a'),
+    (datasets.barbara()[100:400,40:460,:],'legall','qshift_a'),
+    (datasets.barbara(),'near_sym_a','qshift_c'),
+    (datasets.barbara()[100:375,30:322,:],'near_sym_b','qshift_d'),
+    (datasets.barbara(),'near_sym_b_bp', 'qshift_b_bp')
+])
+def test_results_match_3d(test_input, biort, qshift):
+    """
+    Compare forward transform with numpy forward transform for barbara image
+    """
+    im = test_input.transpose([2,0,1])
+    f_tf = Transform2d(biort=biort,qshift=qshift)
+    Yl, Yh, Yscale = f_tf.forward(im, include_scale=True)
+    with tf.Session(config=config) as sess:
+        sess.run(tf.global_variables_initializer())
+        Yl, Yh, Yscale = sess.run([Yl, Yh, Yscale])
+
+    f_np = Transform2d_np(biort=biort,qshift=qshift)
+    for i, ch in enumerate(im):
+        p_np = f_np.forward(ch, include_scale=True)
+
+        np.testing.assert_array_almost_equal(
+            p_np.lowpass, Yl[i], decimal=3)
+        [np.testing.assert_array_almost_equal(
+            reshape_hp(h_np), h_tf[i], decimal=3) for h_np, h_tf in
+            zip(p_np.highpasses, Yh)]
+        [np.testing.assert_array_almost_equal(
+            s_np, s_tf[i], decimal=3) for s_np, s_tf in
+            zip(p_np.scales, Yscale)]
+
+
+@pytest.mark.parametrize("biort,qshift", [
+    ('antonini','qshift_a'),
+    ('legall','qshift_a'),
+    ('near_sym_a','qshift_c'),
+    ('near_sym_b','qshift_d'),
+    ('near_sym_b_bp', 'qshift_b_bp')
+])
+def test_results_match_4d(biort, qshift):
+    """
+    Compare forward transform with numpy forward transform for barbara image
+    """
+    im = np.random.randn(5,6,128,128)
+    f_tf = Transform2d(biort=biort,qshift=qshift)
+    Yl, Yh, Yscale = f_tf.forward(im, include_scale=True)
+    with tf.Session(config=config) as sess:
+        sess.run(tf.global_variables_initializer())
+        Yl, Yh, Yscale = sess.run([Yl, Yh, Yscale])
+
+    f_np = Transform2d_np(biort=biort,qshift=qshift)
+    for i, n in enumerate(im):
+        for j, ch in enumerate(n):
+            p_np = f_np.forward(ch, include_scale=True)
+
+            np.testing.assert_array_almost_equal(
+                p_np.lowpass, Yl[i,j], decimal=3)
+            [np.testing.assert_array_almost_equal(
+                reshape_hp(h_np), h_tf[i,j], decimal=3) for h_np, h_tf in
+                zip(p_np.highpasses, Yh)]
+            [np.testing.assert_array_almost_equal(
+                s_np, s_tf[i,j], decimal=3) for s_np, s_tf in
+                zip(p_np.scales, Yscale)]
 
 
 @pytest.mark.parametrize("test_input,biort,qshift", [
@@ -343,39 +407,37 @@ def test_results_match_inverse(test_input,biort,qshift):
         X_np, X_tf, decimal=PRECISION_DECIMAL)
 
 
-#  def test_forward_channels():
-    #  batch = 5
-    #  c = 3
-    #  nlevels = 3
-    #  sess = tf.Session()
+def test_forward_channels():
+    batch = 5
+    c = 3
+    nlevels = 3
+    sess = tf.Session()
 
-    #  ims = np.random.randn(batch, c, 100, 100)
-    #  in_p = tf.placeholder(tf.float32, [None, c, 100, 100])
+    ims = np.random.randn(batch, c, 100, 100)
+    in_p = tf.placeholder(tf.float32, [None, c, 100, 100])
 
-    #  # Transform a set of images with forward_channels
-    #  f_tf = Transform2d(biort='near_sym_b_bp', qshift='qshift_b_bp')
-    #  Yl, Yh, Yscale = f_tf.forward(
-        #  in_p, nlevels=nlevels, include_scale=True)
+    # Transform a set of images with forward_channels
+    f_tf = Transform2d(biort='near_sym_b_bp', qshift='qshift_b_bp')
+    Yl, Yh, Yscale = f_tf.forward(
+        in_p, nlevels=nlevels, include_scale=True)
 
-    #  Yl, Yh, Yscale = sess.run([Yl, Yh, Yscale], {in_p: ims})
+    Yl, Yh, Yscale = sess.run([Yl, Yh, Yscale], {in_p: ims})
 
-    #  # Now do it channel by channel
-    #  in_p2 = tf.placeholder(tf.float32, [None, 100, 100])
-    #  p_tf = f_tf.forward_channels(in_p2, data_format="nhw", nlevels=nlevels,
-                                 #  include_scale=True)
-    #  for i in range(c):
-        #  Yl1, Yh1, Yscale1 = sess.run([p_tf.lowpass_op,
-                                      #  p_tf.highpasses_ops,
-                                      #  p_tf.scales_ops],
-                                     #  {in_p2: ims[:,i]})
-        #  np.testing.assert_array_almost_equal(
-            #  Yl[:,i], Yl1, decimal=PRECISION_DECIMAL)
-        #  for j in range(nlevels):
-            #  np.testing.assert_array_almost_equal(
-                #  Yh[j][:,i], Yh1[j], decimal=PRECISION_DECIMAL)
-            #  np.testing.assert_array_almost_equal(
-                #  Yscale[j][:,i], Yscale1[j], decimal=PRECISION_DECIMAL)
-    #  sess.close()
+    # Now do it channel by channel
+    in_p2 = tf.placeholder(tf.float32, [batch, 100, 100])
+    Yl1, Yh1, Yscale1 = f_tf.forward(in_p2, nlevels=nlevels,
+                                     include_scale=True)
+    for i in range(c):
+        Yl2, Yh2, Yscale2 = sess.run([Yl1, Yh1, Yscale1],
+                                     {in_p2: ims[:,i]})
+        np.testing.assert_array_almost_equal(
+            Yl[:,i], Yl2, decimal=PRECISION_DECIMAL)
+        for j in range(nlevels):
+            np.testing.assert_array_almost_equal(
+                Yh[j][:,i], Yh2[j], decimal=PRECISION_DECIMAL)
+            np.testing.assert_array_almost_equal(
+                Yscale[j][:,i], Yscale2[j], decimal=PRECISION_DECIMAL)
+    sess.close()
 
 
 #  def test_inverse_channels():
