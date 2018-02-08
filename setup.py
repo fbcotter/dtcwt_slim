@@ -28,7 +28,6 @@ setup(
     classifiers=[
         "Development Status :: 3 - Alpha",
         "License :: Free To Use But Restricted",
-        "Programming Language :: Python :: 2",
         "Programming Language :: Python :: 3",
     ],
     package_data={
@@ -42,7 +41,7 @@ setup(
         'opencl': [ 'pyopencl', ],
     },
 
-    tests_require=[ 'coverage', ],
+    tests_require=[ 'coverage', 'py3nvml', 'dtcwt'],
 )
 
 # vim:sw=4:sts=4:et
