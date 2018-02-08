@@ -1,0 +1,465 @@
+{
+    "traceEvents": [
+        {
+            "pid": 0,
+            "args": {
+                "name": "Allocators"
+            },
+            "ph": "M",
+            "name": "process_name"
+        },
+        {
+            "pid": 1,
+            "args": {
+                "name": "/job:localhost/replica:0/task:0/device:CPU:0 Compute"
+            },
+            "ph": "M",
+            "name": "process_name"
+        },
+        {
+            "pid": 2,
+            "args": {
+                "name": "/job:localhost/replica:0/task:0/device:CPU:0 Tensors"
+            },
+            "ph": "M",
+            "name": "process_name"
+        },
+        {
+            "pid": 3,
+            "args": {
+                "name": "/job:localhost/replica:0/task:0/device:GPU:0 Compute"
+            },
+            "ph": "M",
+            "name": "process_name"
+        },
+        {
+            "pid": 4,
+            "args": {
+                "name": "/job:localhost/replica:0/task:0/device:GPU:0 Tensors"
+            },
+            "ph": "M",
+            "name": "process_name"
+        },
+        {
+            "pid": 5,
+            "args": {
+                "name": "/device:GPU:0/stream:all Compute"
+            },
+            "ph": "M",
+            "name": "process_name"
+        },
+        {
+            "pid": 6,
+            "args": {
+                "name": "/device:GPU:0/stream:all Tensors"
+            },
+            "ph": "M",
+            "name": "process_name"
+        },
+        {
+            "pid": 7,
+            "args": {
+                "name": "/device:GPU:0/stream:13 Compute"
+            },
+            "ph": "M",
+            "name": "process_name"
+        },
+        {
+            "pid": 8,
+            "args": {
+                "name": "/device:GPU:0/stream:13 Tensors"
+            },
+            "ph": "M",
+            "name": "process_name"
+        },
+        {
+            "pid": 9,
+            "args": {
+                "name": "/device:GPU:0/memcpy Compute"
+            },
+            "ph": "M",
+            "name": "process_name"
+        },
+        {
+            "pid": 10,
+            "args": {
+                "name": "/device:GPU:0/memcpy Tensors"
+            },
+            "ph": "M",
+            "name": "process_name"
+        },
+        {
+            "pid": 11,
+            "args": {
+                "name": "/device:GPU:0/stream:14 Compute"
+            },
+            "ph": "M",
+            "name": "process_name"
+        },
+        {
+            "pid": 12,
+            "args": {
+                "name": "/device:GPU:0/stream:14 Tensors"
+            },
+            "ph": "M",
+            "name": "process_name"
+        },
+        {
+            "pid": 13,
+            "args": {
+                "name": "/device:GPU:0/stream:15 Compute"
+            },
+            "ph": "M",
+            "name": "process_name"
+        },
+        {
+            "pid": 14,
+            "args": {
+                "name": "/device:GPU:0/stream:15 Tensors"
+            },
+            "ph": "M",
+            "name": "process_name"
+        },
+        {
+            "tid": 0,
+            "dur": 22,
+            "ph": "X",
+            "name": "NoOp",
+            "cat": "Op",
+            "pid": 1,
+            "ts": 1512498027724339,
+            "args": {
+                "op": "NoOp",
+                "name": "_SOURCE"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 30,
+            "ph": "X",
+            "name": "_Arg",
+            "cat": "Op",
+            "pid": 1,
+            "ts": 1512498027724381,
+            "args": {
+                "op": "_Arg",
+                "name": "_arg_Placeholder_0_0"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 11,
+            "ph": "X",
+            "name": "_Retval",
+            "cat": "Op",
+            "pid": 1,
+            "ts": 1512498027925389,
+            "args": {
+                "op": "_Retval",
+                "input0": "Conv2D_1/_13",
+                "name": "_retval_Conv2D_1_0_0"
+            }
+        },
+        {
+            "id": 0,
+            "tid": 0,
+            "ph": "s",
+            "name": "Conv2D_1",
+            "cat": "DataFlow",
+            "pid": 3,
+            "ts": 1512498027744772
+        },
+        {
+            "id": 0,
+            "tid": 0,
+            "ph": "t",
+            "name": "Conv2D_1",
+            "cat": "DataFlow",
+            "pid": 1,
+            "ts": 1512498027925389
+        },
+        {
+            "tid": 0,
+            "dur": 47,
+            "ph": "X",
+            "name": "NoOp",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512498027724373,
+            "args": {
+                "op": "NoOp",
+                "name": "_SOURCE"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 27,
+            "ph": "X",
+            "name": "Const",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512498027724439,
+            "args": {
+                "op": "Const",
+                "name": "ExpandDims_1/dim"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 33,
+            "ph": "X",
+            "name": "VariableV2",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512498027724470,
+            "args": {
+                "op": "VariableV2",
+                "name": "Variable_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 21,
+            "ph": "X",
+            "name": "Identity",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512498027724506,
+            "args": {
+                "op": "Identity",
+                "input0": "Variable_1",
+                "name": "Variable_1/read"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 33,
+            "ph": "X",
+            "name": "ExpandDims",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512498027744282,
+            "args": {
+                "op": "ExpandDims",
+                "input1": "ExpandDims_1/dim",
+                "input0": "_arg_Placeholder_0_0/_11",
+                "name": "ExpandDims_1"
+            }
+        },
+        {
+            "id": 1,
+            "tid": 0,
+            "ph": "s",
+            "name": "_arg_Placeholder_0_0",
+            "cat": "DataFlow",
+            "pid": 1,
+            "ts": 1512498027724411
+        },
+        {
+            "id": 1,
+            "tid": 0,
+            "ph": "t",
+            "name": "_arg_Placeholder_0_0",
+            "cat": "DataFlow",
+            "pid": 3,
+            "ts": 1512498027744282
+        },
+        {
+            "tid": 0,
+            "dur": 447,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512498027744325,
+            "args": {
+                "op": "Conv2D",
+                "input1": "Variable_1/read",
+                "input0": "ExpandDims_1",
+                "name": "Conv2D_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 1432,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512498027744442,
+            "args": {
+                "op": "Conv2D",
+                "name": "Conv2D_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 4,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512498027745876,
+            "args": {
+                "op": "Conv2D",
+                "name": "Conv2D_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 8,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512498027745882,
+            "args": {
+                "op": "Conv2D",
+                "name": "Conv2D_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 46885,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512498027745894,
+            "args": {
+                "op": "Conv2D",
+                "name": "Conv2D_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 50422,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512498027792781,
+            "args": {
+                "op": "Conv2D",
+                "name": "Conv2D_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 1432,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512498027744442,
+            "args": {
+                "op": "Conv2D",
+                "name": "Conv2D_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 4,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512498027745876,
+            "args": {
+                "op": "Conv2D",
+                "name": "Conv2D_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 8,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512498027745882,
+            "args": {
+                "op": "Conv2D",
+                "name": "Conv2D_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 46885,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512498027745894,
+            "args": {
+                "op": "Conv2D",
+                "name": "Conv2D_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 50422,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512498027792781,
+            "args": {
+                "op": "Conv2D",
+                "name": "Conv2D_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 19351,
+            "ph": "X",
+            "name": "MEMCPYHtoD",
+            "cat": "Op",
+            "pid": 9,
+            "ts": 1512498027724768,
+            "args": {
+                "op": "MEMCPYHtoD",
+                "name": "edge_10__arg_Placeholder_0_0"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 82009,
+            "ph": "X",
+            "name": "MEMCPYDtoH",
+            "cat": "Op",
+            "pid": 9,
+            "ts": 1512498027843208,
+            "args": {
+                "op": "MEMCPYDtoH",
+                "name": "edge_11_Conv2D_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 19351,
+            "ph": "X",
+            "name": "MEMCPYHtoD",
+            "cat": "Op",
+            "pid": 11,
+            "ts": 1512498027724768,
+            "args": {
+                "op": "MEMCPYHtoD",
+                "name": "edge_10__arg_Placeholder_0_0"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 82009,
+            "ph": "X",
+            "name": "MEMCPYDtoH",
+            "cat": "Op",
+            "pid": 13,
+            "ts": 1512498027843208,
+            "args": {
+                "op": "MEMCPYDtoH",
+                "name": "edge_11_Conv2D_1"
+            }
+        }
+    ]
+}

@@ -1,0 +1,2180 @@
+{
+    "traceEvents": [
+        {
+            "args": {
+                "name": "Allocators"
+            },
+            "name": "process_name",
+            "ph": "M",
+            "pid": 0
+        },
+        {
+            "args": {
+                "name": "/job:localhost/replica:0/task:0/device:GPU:0 Compute"
+            },
+            "name": "process_name",
+            "ph": "M",
+            "pid": 1
+        },
+        {
+            "args": {
+                "name": "/job:localhost/replica:0/task:0/device:GPU:0 Tensors"
+            },
+            "name": "process_name",
+            "ph": "M",
+            "pid": 2
+        },
+        {
+            "args": {
+                "name": "/job:localhost/replica:0/task:0/device:CPU:0 Compute"
+            },
+            "name": "process_name",
+            "ph": "M",
+            "pid": 3
+        },
+        {
+            "args": {
+                "name": "/job:localhost/replica:0/task:0/device:CPU:0 Tensors"
+            },
+            "name": "process_name",
+            "ph": "M",
+            "pid": 4
+        },
+        {
+            "args": {
+                "name": "/device:GPU:0/stream:all Compute"
+            },
+            "name": "process_name",
+            "ph": "M",
+            "pid": 5
+        },
+        {
+            "args": {
+                "name": "/device:GPU:0/stream:all Tensors"
+            },
+            "name": "process_name",
+            "ph": "M",
+            "pid": 6
+        },
+        {
+            "args": {
+                "name": "/device:GPU:0/stream:13 Compute"
+            },
+            "name": "process_name",
+            "ph": "M",
+            "pid": 7
+        },
+        {
+            "args": {
+                "name": "/device:GPU:0/stream:13 Tensors"
+            },
+            "name": "process_name",
+            "ph": "M",
+            "pid": 8
+        },
+        {
+            "args": {
+                "name": "/device:GPU:0/memcpy Compute"
+            },
+            "name": "process_name",
+            "ph": "M",
+            "pid": 9
+        },
+        {
+            "args": {
+                "name": "/device:GPU:0/memcpy Tensors"
+            },
+            "name": "process_name",
+            "ph": "M",
+            "pid": 10
+        },
+        {
+            "args": {
+                "name": "/device:GPU:0/stream:14 Compute"
+            },
+            "name": "process_name",
+            "ph": "M",
+            "pid": 11
+        },
+        {
+            "args": {
+                "name": "/device:GPU:0/stream:14 Tensors"
+            },
+            "name": "process_name",
+            "ph": "M",
+            "pid": 12
+        },
+        {
+            "args": {
+                "name": "_SOURCE",
+                "op": "NoOp"
+            },
+            "name": "NoOp",
+            "ts": 1512478152286605,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 24
+        },
+        {
+            "args": {
+                "name": "GradientDescent/learning_rate",
+                "op": "Const"
+            },
+            "name": "Const",
+            "ts": 1512478152286642,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 10
+        },
+        {
+            "args": {
+                "name": "gradients/SoftmaxCrossEntropyWithLogits_grad/ExpandDims",
+                "op": "Const"
+            },
+            "name": "Const",
+            "ts": 1512478152286654,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 5
+        },
+        {
+            "args": {
+                "name": "concat",
+                "op": "Const"
+            },
+            "name": "Const",
+            "ts": 1512478152286672,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 5
+        },
+        {
+            "args": {
+                "name": "gradients/Reshape_grad/Shape",
+                "op": "Const"
+            },
+            "name": "Const",
+            "ts": 1512478152286679,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 12
+        },
+        {
+            "args": {
+                "name": "layer_1/fully_connected/weights",
+                "op": "VariableV2"
+            },
+            "name": "VariableV2",
+            "ts": 1512478152286693,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 11
+        },
+        {
+            "args": {
+                "name": "layer_1/fully_connected/biases",
+                "op": "VariableV2"
+            },
+            "name": "VariableV2",
+            "ts": 1512478152286705,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 6
+        },
+        {
+            "args": {
+                "name": "layer_2/fully_connected/weights",
+                "op": "VariableV2"
+            },
+            "name": "VariableV2",
+            "ts": 1512478152286714,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 5
+        },
+        {
+            "args": {
+                "name": "layer_2/fully_connected/biases",
+                "op": "VariableV2"
+            },
+            "name": "VariableV2",
+            "ts": 1512478152286720,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 4
+        },
+        {
+            "args": {
+                "name": "layer_3/fully_connected/weights",
+                "op": "VariableV2"
+            },
+            "name": "VariableV2",
+            "ts": 1512478152286725,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 5
+        },
+        {
+            "args": {
+                "name": "layer_3/fully_connected/biases",
+                "op": "VariableV2"
+            },
+            "name": "VariableV2",
+            "ts": 1512478152286731,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 8
+        },
+        {
+            "args": {
+                "input0": "layer_1/fully_connected/weights",
+                "name": "layer_1/fully_connected/weights/read",
+                "op": "Identity"
+            },
+            "name": "Identity",
+            "ts": 1512478152286740,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 4
+        },
+        {
+            "args": {
+                "input0": "layer_1/fully_connected/biases",
+                "name": "layer_1/fully_connected/biases/read",
+                "op": "Identity"
+            },
+            "name": "Identity",
+            "ts": 1512478152286746,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 3
+        },
+        {
+            "args": {
+                "input0": "layer_2/fully_connected/weights",
+                "name": "layer_2/fully_connected/weights/read",
+                "op": "Identity"
+            },
+            "name": "Identity",
+            "ts": 1512478152286750,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 3
+        },
+        {
+            "args": {
+                "input0": "layer_2/fully_connected/biases",
+                "name": "layer_2/fully_connected/biases/read",
+                "op": "Identity"
+            },
+            "name": "Identity",
+            "ts": 1512478152286755,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 5
+        },
+        {
+            "args": {
+                "input0": "layer_3/fully_connected/weights",
+                "name": "layer_3/fully_connected/weights/read",
+                "op": "Identity"
+            },
+            "name": "Identity",
+            "ts": 1512478152286761,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 3
+        },
+        {
+            "args": {
+                "input0": "layer_3/fully_connected/biases",
+                "name": "layer_3/fully_connected/biases/read",
+                "op": "Identity"
+            },
+            "name": "Identity",
+            "ts": 1512478152286765,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 3
+        },
+        {
+            "args": {
+                "input0": "_arg_Placeholder_1_0_1/_3",
+                "name": "Reshape_1",
+                "input1": "concat",
+                "op": "Reshape"
+            },
+            "name": "Reshape",
+            "ts": 1512478152286937,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 21
+        },
+        {
+            "name": "_arg_Placeholder_1_0_1",
+            "ts": 1512478152286671,
+            "tid": 0,
+            "id": 0,
+            "pid": 3,
+            "ph": "s",
+            "cat": "DataFlow"
+        },
+        {
+            "name": "_arg_Placeholder_1_0_1",
+            "ts": 1512478152286937,
+            "tid": 0,
+            "id": 0,
+            "pid": 1,
+            "ph": "t",
+            "cat": "DataFlow"
+        },
+        {
+            "args": {
+                "input0": "_arg_Placeholder_0_0/_1",
+                "name": "layer_1/fully_connected/MatMul",
+                "input1": "layer_1/fully_connected/weights/read",
+                "op": "MatMul"
+            },
+            "name": "MatMul",
+            "ts": 1512478152286958,
+            "tid": 1,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 88
+        },
+        {
+            "name": "_arg_Placeholder_0_0",
+            "ts": 1512478152286658,
+            "tid": 0,
+            "id": 1,
+            "pid": 3,
+            "ph": "s",
+            "cat": "DataFlow"
+        },
+        {
+            "name": "_arg_Placeholder_0_0",
+            "ts": 1512478152286958,
+            "tid": 1,
+            "id": 1,
+            "pid": 1,
+            "ph": "t",
+            "cat": "DataFlow"
+        },
+        {
+            "name": "layer_1/fully_connected/weights/read",
+            "ts": 1512478152286744,
+            "tid": 0,
+            "id": 2,
+            "pid": 1,
+            "ph": "s",
+            "cat": "DataFlow"
+        },
+        {
+            "name": "layer_1/fully_connected/weights/read",
+            "ts": 1512478152286958,
+            "tid": 1,
+            "id": 2,
+            "pid": 1,
+            "ph": "t",
+            "cat": "DataFlow"
+        },
+        {
+            "args": {
+                "input0": "layer_1/fully_connected/MatMul",
+                "name": "layer_1/fully_connected/BiasAdd",
+                "input1": "layer_1/fully_connected/biases/read",
+                "op": "BiasAdd"
+            },
+            "name": "BiasAdd",
+            "ts": 1512478152287055,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 37
+        },
+        {
+            "name": "layer_1/fully_connected/MatMul",
+            "ts": 1512478152287046,
+            "tid": 1,
+            "id": 3,
+            "pid": 1,
+            "ph": "s",
+            "cat": "DataFlow"
+        },
+        {
+            "name": "layer_1/fully_connected/MatMul",
+            "ts": 1512478152287055,
+            "tid": 0,
+            "id": 3,
+            "pid": 1,
+            "ph": "t",
+            "cat": "DataFlow"
+        },
+        {
+            "args": {
+                "input0": "layer_1/fully_connected/BiasAdd",
+                "name": "layer_1/fully_connected/Sigmoid",
+                "op": "Sigmoid"
+            },
+            "name": "Sigmoid",
+            "ts": 1512478152287095,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 26
+        },
+        {
+            "args": {
+                "input0": "layer_1/fully_connected/Sigmoid",
+                "name": "layer_2/fully_connected/MatMul",
+                "input1": "layer_2/fully_connected/weights/read",
+                "op": "MatMul"
+            },
+            "name": "MatMul",
+            "ts": 1512478152287123,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 33
+        },
+        {
+            "args": {
+                "input0": "layer_2/fully_connected/MatMul",
+                "name": "layer_2/fully_connected/BiasAdd",
+                "input1": "layer_2/fully_connected/biases/read",
+                "op": "BiasAdd"
+            },
+            "name": "BiasAdd",
+            "ts": 1512478152287162,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 21
+        },
+        {
+            "args": {
+                "input0": "layer_2/fully_connected/BiasAdd",
+                "name": "layer_2/fully_connected/Sigmoid",
+                "op": "Sigmoid"
+            },
+            "name": "Sigmoid",
+            "ts": 1512478152287185,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 21
+        },
+        {
+            "args": {
+                "input0": "layer_2/fully_connected/Sigmoid",
+                "name": "layer_3/fully_connected/MatMul",
+                "input1": "layer_3/fully_connected/weights/read",
+                "op": "MatMul"
+            },
+            "name": "MatMul",
+            "ts": 1512478152287208,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 41
+        },
+        {
+            "args": {
+                "input0": "layer_3/fully_connected/MatMul",
+                "name": "layer_3/fully_connected/BiasAdd",
+                "input1": "layer_3/fully_connected/biases/read",
+                "op": "BiasAdd"
+            },
+            "name": "BiasAdd",
+            "ts": 1512478152287252,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 20
+        },
+        {
+            "args": {
+                "input0": "layer_3/fully_connected/BiasAdd",
+                "name": "layer_3/fully_connected/Relu",
+                "op": "Relu"
+            },
+            "name": "Relu",
+            "ts": 1512478152287274,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 22
+        },
+        {
+            "args": {
+                "input0": "layer_3/fully_connected/Relu",
+                "name": "Reshape",
+                "input1": "concat",
+                "op": "Reshape"
+            },
+            "name": "Reshape",
+            "ts": 1512478152287298,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 5
+        },
+        {
+            "args": {
+                "input0": "Reshape",
+                "name": "SoftmaxCrossEntropyWithLogits",
+                "input1": "Reshape_1",
+                "op": "SoftmaxCrossEntropyWithLogits"
+            },
+            "name": "SoftmaxCrossEntropyWithLogits",
+            "ts": 1512478152287304,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 142
+        },
+        {
+            "args": {
+                "input0": "gradients/SoftmaxCrossEntropyWithLogits_grad/ExpandDims",
+                "name": "gradients/SoftmaxCrossEntropyWithLogits_grad/mul",
+                "input1": "SoftmaxCrossEntropyWithLogits:1",
+                "op": "Mul"
+            },
+            "name": "Mul",
+            "ts": 1512478152287449,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 36
+        },
+        {
+            "args": {
+                "input0": "gradients/SoftmaxCrossEntropyWithLogits_grad/mul",
+                "name": "gradients/Reshape_grad/Reshape",
+                "input1": "gradients/Reshape_grad/Shape",
+                "op": "Reshape"
+            },
+            "name": "Reshape",
+            "ts": 1512478152287487,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 8
+        },
+        {
+            "args": {
+                "input0": "gradients/Reshape_grad/Reshape",
+                "name": "gradients/layer_3/fully_connected/Relu_grad/ReluGrad",
+                "input1": "layer_3/fully_connected/Relu",
+                "op": "ReluGrad"
+            },
+            "name": "ReluGrad",
+            "ts": 1512478152287496,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 23
+        },
+        {
+            "args": {
+                "input0": "gradients/layer_3/fully_connected/Relu_grad/ReluGrad",
+                "name": "gradients/layer_3/fully_connected/BiasAdd_grad/BiasAddGrad",
+                "op": "BiasAddGrad"
+            },
+            "name": "BiasAddGrad",
+            "ts": 1512478152287521,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 37
+        },
+        {
+            "args": {
+                "input0": "^gradients/layer_3/fully_connected/Relu_grad/ReluGrad",
+                "name": "gradients/layer_3/fully_connected/BiasAdd_grad/tuple/group_deps",
+                "input1": "^gradients/layer_3/fully_connected/BiasAdd_grad/BiasAddGrad",
+                "op": "NoOp"
+            },
+            "name": "NoOp",
+            "ts": 1512478152287561,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 3
+        },
+        {
+            "args": {
+                "input0": "gradients/layer_3/fully_connected/BiasAdd_grad/BiasAddGrad",
+                "name": "gradients/layer_3/fully_connected/BiasAdd_grad/tuple/control_dependency_1",
+                "input1": "^gradients/layer_3/fully_connected/BiasAdd_grad/tuple/group_deps",
+                "op": "Identity"
+            },
+            "name": "Identity",
+            "ts": 1512478152287566,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 6
+        },
+        {
+            "args": {
+                "input0": "gradients/layer_3/fully_connected/Relu_grad/ReluGrad",
+                "name": "gradients/layer_3/fully_connected/BiasAdd_grad/tuple/control_dependency",
+                "input1": "^gradients/layer_3/fully_connected/BiasAdd_grad/tuple/group_deps",
+                "op": "Identity"
+            },
+            "name": "Identity",
+            "ts": 1512478152287574,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 3
+        },
+        {
+            "args": {
+                "input0": "layer_3/fully_connected/biases",
+                "name": "GradientDescent/update_layer_3/fully_connected/biases/ApplyGradientDescent",
+                "input1": "GradientDescent/learning_rate",
+                "input2": "gradients/layer_3/fully_connected/BiasAdd_grad/tuple/control_dependency_1",
+                "op": "ApplyGradientDescent"
+            },
+            "name": "ApplyGradientDescent",
+            "ts": 1512478152287579,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 23
+        },
+        {
+            "args": {
+                "input0": "layer_2/fully_connected/Sigmoid",
+                "name": "gradients/layer_3/fully_connected/MatMul_grad/MatMul_1",
+                "input1": "gradients/layer_3/fully_connected/BiasAdd_grad/tuple/control_dependency",
+                "op": "MatMul"
+            },
+            "name": "MatMul",
+            "ts": 1512478152287605,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 45
+        },
+        {
+            "args": {
+                "input0": "gradients/layer_3/fully_connected/BiasAdd_grad/tuple/control_dependency",
+                "name": "gradients/layer_3/fully_connected/MatMul_grad/MatMul",
+                "input1": "layer_3/fully_connected/weights/read",
+                "op": "MatMul"
+            },
+            "name": "MatMul",
+            "ts": 1512478152287653,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 34
+        },
+        {
+            "args": {
+                "input0": "^gradients/layer_3/fully_connected/MatMul_grad/MatMul",
+                "name": "gradients/layer_3/fully_connected/MatMul_grad/tuple/group_deps",
+                "input1": "^gradients/layer_3/fully_connected/MatMul_grad/MatMul_1",
+                "op": "NoOp"
+            },
+            "name": "NoOp",
+            "ts": 1512478152287693,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 7
+        },
+        {
+            "args": {
+                "input0": "gradients/layer_3/fully_connected/MatMul_grad/MatMul_1",
+                "name": "gradients/layer_3/fully_connected/MatMul_grad/tuple/control_dependency_1",
+                "input1": "^gradients/layer_3/fully_connected/MatMul_grad/tuple/group_deps",
+                "op": "Identity"
+            },
+            "name": "Identity",
+            "ts": 1512478152287702,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 4
+        },
+        {
+            "args": {
+                "input0": "gradients/layer_3/fully_connected/MatMul_grad/MatMul",
+                "name": "gradients/layer_3/fully_connected/MatMul_grad/tuple/control_dependency",
+                "input1": "^gradients/layer_3/fully_connected/MatMul_grad/tuple/group_deps",
+                "op": "Identity"
+            },
+            "name": "Identity",
+            "ts": 1512478152287710,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 3
+        },
+        {
+            "args": {
+                "input0": "layer_3/fully_connected/weights",
+                "name": "GradientDescent/update_layer_3/fully_connected/weights/ApplyGradientDescent",
+                "input1": "GradientDescent/learning_rate",
+                "input2": "gradients/layer_3/fully_connected/MatMul_grad/tuple/control_dependency_1",
+                "op": "ApplyGradientDescent"
+            },
+            "name": "ApplyGradientDescent",
+            "ts": 1512478152287715,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 24
+        },
+        {
+            "args": {
+                "input0": "layer_2/fully_connected/Sigmoid",
+                "name": "gradients/layer_2/fully_connected/Sigmoid_grad/SigmoidGrad",
+                "input1": "gradients/layer_3/fully_connected/MatMul_grad/tuple/control_dependency",
+                "op": "SigmoidGrad"
+            },
+            "name": "SigmoidGrad",
+            "ts": 1512478152287742,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 21
+        },
+        {
+            "args": {
+                "input0": "gradients/layer_2/fully_connected/Sigmoid_grad/SigmoidGrad",
+                "name": "gradients/layer_2/fully_connected/BiasAdd_grad/BiasAddGrad",
+                "op": "BiasAddGrad"
+            },
+            "name": "BiasAddGrad",
+            "ts": 1512478152287770,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 30
+        },
+        {
+            "args": {
+                "input0": "^gradients/layer_2/fully_connected/Sigmoid_grad/SigmoidGrad",
+                "name": "gradients/layer_2/fully_connected/BiasAdd_grad/tuple/group_deps",
+                "input1": "^gradients/layer_2/fully_connected/BiasAdd_grad/BiasAddGrad",
+                "op": "NoOp"
+            },
+            "name": "NoOp",
+            "ts": 1512478152287802,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 2
+        },
+        {
+            "args": {
+                "input0": "gradients/layer_2/fully_connected/BiasAdd_grad/BiasAddGrad",
+                "name": "gradients/layer_2/fully_connected/BiasAdd_grad/tuple/control_dependency_1",
+                "input1": "^gradients/layer_2/fully_connected/BiasAdd_grad/tuple/group_deps",
+                "op": "Identity"
+            },
+            "name": "Identity",
+            "ts": 1512478152287806,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 4
+        },
+        {
+            "args": {
+                "input0": "gradients/layer_2/fully_connected/Sigmoid_grad/SigmoidGrad",
+                "name": "gradients/layer_2/fully_connected/BiasAdd_grad/tuple/control_dependency",
+                "input1": "^gradients/layer_2/fully_connected/BiasAdd_grad/tuple/group_deps",
+                "op": "Identity"
+            },
+            "name": "Identity",
+            "ts": 1512478152287811,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 6
+        },
+        {
+            "args": {
+                "input0": "layer_2/fully_connected/biases",
+                "name": "GradientDescent/update_layer_2/fully_connected/biases/ApplyGradientDescent",
+                "input1": "GradientDescent/learning_rate",
+                "input2": "gradients/layer_2/fully_connected/BiasAdd_grad/tuple/control_dependency_1",
+                "op": "ApplyGradientDescent"
+            },
+            "name": "ApplyGradientDescent",
+            "ts": 1512478152287819,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 20
+        },
+        {
+            "args": {
+                "input0": "layer_1/fully_connected/Sigmoid",
+                "name": "gradients/layer_2/fully_connected/MatMul_grad/MatMul_1",
+                "input1": "gradients/layer_2/fully_connected/BiasAdd_grad/tuple/control_dependency",
+                "op": "MatMul"
+            },
+            "name": "MatMul",
+            "ts": 1512478152287842,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 31
+        },
+        {
+            "args": {
+                "input0": "gradients/layer_2/fully_connected/BiasAdd_grad/tuple/control_dependency",
+                "name": "gradients/layer_2/fully_connected/MatMul_grad/MatMul",
+                "input1": "layer_2/fully_connected/weights/read",
+                "op": "MatMul"
+            },
+            "name": "MatMul",
+            "ts": 1512478152287879,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 49
+        },
+        {
+            "args": {
+                "input0": "^gradients/layer_2/fully_connected/MatMul_grad/MatMul",
+                "name": "gradients/layer_2/fully_connected/MatMul_grad/tuple/group_deps",
+                "input1": "^gradients/layer_2/fully_connected/MatMul_grad/MatMul_1",
+                "op": "NoOp"
+            },
+            "name": "NoOp",
+            "ts": 1512478152287934,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 3
+        },
+        {
+            "args": {
+                "input0": "gradients/layer_2/fully_connected/MatMul_grad/MatMul_1",
+                "name": "gradients/layer_2/fully_connected/MatMul_grad/tuple/control_dependency_1",
+                "input1": "^gradients/layer_2/fully_connected/MatMul_grad/tuple/group_deps",
+                "op": "Identity"
+            },
+            "name": "Identity",
+            "ts": 1512478152287939,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 4
+        },
+        {
+            "args": {
+                "input0": "gradients/layer_2/fully_connected/MatMul_grad/MatMul",
+                "name": "gradients/layer_2/fully_connected/MatMul_grad/tuple/control_dependency",
+                "input1": "^gradients/layer_2/fully_connected/MatMul_grad/tuple/group_deps",
+                "op": "Identity"
+            },
+            "name": "Identity",
+            "ts": 1512478152287944,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 4
+        },
+        {
+            "args": {
+                "input0": "layer_2/fully_connected/weights",
+                "name": "GradientDescent/update_layer_2/fully_connected/weights/ApplyGradientDescent",
+                "input1": "GradientDescent/learning_rate",
+                "input2": "gradients/layer_2/fully_connected/MatMul_grad/tuple/control_dependency_1",
+                "op": "ApplyGradientDescent"
+            },
+            "name": "ApplyGradientDescent",
+            "ts": 1512478152287956,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 34
+        },
+        {
+            "args": {
+                "input0": "layer_1/fully_connected/Sigmoid",
+                "name": "gradients/layer_1/fully_connected/Sigmoid_grad/SigmoidGrad",
+                "input1": "gradients/layer_2/fully_connected/MatMul_grad/tuple/control_dependency",
+                "op": "SigmoidGrad"
+            },
+            "name": "SigmoidGrad",
+            "ts": 1512478152287992,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 25
+        },
+        {
+            "args": {
+                "input0": "gradients/layer_1/fully_connected/Sigmoid_grad/SigmoidGrad",
+                "name": "gradients/layer_1/fully_connected/BiasAdd_grad/BiasAddGrad",
+                "op": "BiasAddGrad"
+            },
+            "name": "BiasAddGrad",
+            "ts": 1512478152288019,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 27
+        },
+        {
+            "args": {
+                "input0": "^gradients/layer_1/fully_connected/Sigmoid_grad/SigmoidGrad",
+                "name": "gradients/layer_1/fully_connected/BiasAdd_grad/tuple/group_deps",
+                "input1": "^gradients/layer_1/fully_connected/BiasAdd_grad/BiasAddGrad",
+                "op": "NoOp"
+            },
+            "name": "NoOp",
+            "ts": 1512478152288048,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 5
+        },
+        {
+            "args": {
+                "input0": "gradients/layer_1/fully_connected/BiasAdd_grad/BiasAddGrad",
+                "name": "gradients/layer_1/fully_connected/BiasAdd_grad/tuple/control_dependency_1",
+                "input1": "^gradients/layer_1/fully_connected/BiasAdd_grad/tuple/group_deps",
+                "op": "Identity"
+            },
+            "name": "Identity",
+            "ts": 1512478152288054,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 4
+        },
+        {
+            "args": {
+                "input0": "gradients/layer_1/fully_connected/Sigmoid_grad/SigmoidGrad",
+                "name": "gradients/layer_1/fully_connected/BiasAdd_grad/tuple/control_dependency",
+                "input1": "^gradients/layer_1/fully_connected/BiasAdd_grad/tuple/group_deps",
+                "op": "Identity"
+            },
+            "name": "Identity",
+            "ts": 1512478152288059,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 4
+        },
+        {
+            "args": {
+                "input0": "layer_1/fully_connected/biases",
+                "name": "GradientDescent/update_layer_1/fully_connected/biases/ApplyGradientDescent",
+                "input1": "GradientDescent/learning_rate",
+                "input2": "gradients/layer_1/fully_connected/BiasAdd_grad/tuple/control_dependency_1",
+                "op": "ApplyGradientDescent"
+            },
+            "name": "ApplyGradientDescent",
+            "ts": 1512478152288064,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 20
+        },
+        {
+            "args": {
+                "input0": "_arg_Placeholder_0_0/_1",
+                "name": "gradients/layer_1/fully_connected/MatMul_grad/MatMul_1",
+                "input1": "gradients/layer_1/fully_connected/BiasAdd_grad/tuple/control_dependency",
+                "op": "MatMul"
+            },
+            "name": "MatMul",
+            "ts": 1512478152288089,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 31
+        },
+        {
+            "name": "_arg_Placeholder_0_0",
+            "ts": 1512478152286658,
+            "tid": 0,
+            "id": 4,
+            "pid": 3,
+            "ph": "s",
+            "cat": "DataFlow"
+        },
+        {
+            "name": "_arg_Placeholder_0_0",
+            "ts": 1512478152288089,
+            "tid": 0,
+            "id": 4,
+            "pid": 1,
+            "ph": "t",
+            "cat": "DataFlow"
+        },
+        {
+            "args": {
+                "input0": "gradients/layer_1/fully_connected/BiasAdd_grad/tuple/control_dependency",
+                "name": "gradients/layer_1/fully_connected/MatMul_grad/MatMul",
+                "input1": "layer_1/fully_connected/weights/read",
+                "op": "MatMul"
+            },
+            "name": "MatMul",
+            "ts": 1512478152288126,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 29
+        },
+        {
+            "args": {
+                "input0": "^gradients/layer_1/fully_connected/MatMul_grad/MatMul",
+                "name": "gradients/layer_1/fully_connected/MatMul_grad/tuple/group_deps",
+                "input1": "^gradients/layer_1/fully_connected/MatMul_grad/MatMul_1",
+                "op": "NoOp"
+            },
+            "name": "NoOp",
+            "ts": 1512478152288160,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 3
+        },
+        {
+            "args": {
+                "input0": "gradients/layer_1/fully_connected/MatMul_grad/MatMul_1",
+                "name": "gradients/layer_1/fully_connected/MatMul_grad/tuple/control_dependency_1",
+                "input1": "^gradients/layer_1/fully_connected/MatMul_grad/tuple/group_deps",
+                "op": "Identity"
+            },
+            "name": "Identity",
+            "ts": 1512478152288165,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 6
+        },
+        {
+            "args": {
+                "input0": "layer_1/fully_connected/weights",
+                "name": "GradientDescent/update_layer_1/fully_connected/weights/ApplyGradientDescent",
+                "input1": "GradientDescent/learning_rate",
+                "input2": "gradients/layer_1/fully_connected/MatMul_grad/tuple/control_dependency_1",
+                "op": "ApplyGradientDescent"
+            },
+            "name": "ApplyGradientDescent",
+            "ts": 1512478152288173,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 24
+        },
+        {
+            "args": {
+                "input0": "^GradientDescent/update_layer_1/fully_connected/weights/ApplyGradientDescent",
+                "name": "GradientDescent",
+                "input1": "^GradientDescent/update_layer_1/fully_connected/biases/ApplyGradientDescent",
+                "input4": "^GradientDescent/update_layer_3/fully_connected/weights/ApplyGradientDescent",
+                "op": "NoOp",
+                "input3": "^GradientDescent/update_layer_2/fully_connected/biases/ApplyGradientDescent",
+                "input2": "^GradientDescent/update_layer_2/fully_connected/weights/ApplyGradientDescent",
+                "input5": "^GradientDescent/update_layer_3/fully_connected/biases/ApplyGradientDescent"
+            },
+            "name": "NoOp",
+            "ts": 1512478152288199,
+            "tid": 0,
+            "pid": 1,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 5
+        },
+        {
+            "args": {
+                "name": "_SOURCE",
+                "op": "NoOp"
+            },
+            "name": "NoOp",
+            "ts": 1512478152286604,
+            "tid": 0,
+            "pid": 3,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 26
+        },
+        {
+            "args": {
+                "name": "_arg_Placeholder_0_0",
+                "op": "_Arg"
+            },
+            "name": "_Arg",
+            "ts": 1512478152286646,
+            "tid": 0,
+            "pid": 3,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 12
+        },
+        {
+            "args": {
+                "name": "_arg_Placeholder_1_0_1",
+                "op": "_Arg"
+            },
+            "name": "_Arg",
+            "ts": 1512478152286660,
+            "tid": 0,
+            "pid": 3,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 11
+        },
+        {
+            "args": {
+                "name": "layer_1/fully_connected/MatMul",
+                "op": "MatMul"
+            },
+            "name": "MatMul",
+            "ts": 1512478152287036,
+            "tid": 0,
+            "pid": 5,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 52
+        },
+        {
+            "args": {
+                "name": "layer_1/fully_connected/BiasAdd",
+                "op": "BiasAdd"
+            },
+            "name": "BiasAdd",
+            "ts": 1512478152287090,
+            "tid": 0,
+            "pid": 5,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 4
+        },
+        {
+            "args": {
+                "name": "layer_1/fully_connected/Sigmoid",
+                "op": "Sigmoid"
+            },
+            "name": "Sigmoid",
+            "ts": 1512478152287119,
+            "tid": 0,
+            "pid": 5,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 4
+        },
+        {
+            "args": {
+                "name": "layer_2/fully_connected/MatMul",
+                "op": "MatMul"
+            },
+            "name": "MatMul",
+            "ts": 1512478152287154,
+            "tid": 0,
+            "pid": 5,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 50
+        },
+        {
+            "args": {
+                "name": "layer_2/fully_connected/BiasAdd",
+                "op": "BiasAdd"
+            },
+            "name": "BiasAdd",
+            "ts": 1512478152287206,
+            "tid": 0,
+            "pid": 5,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 4
+        },
+        {
+            "args": {
+                "name": "layer_2/fully_connected/Sigmoid",
+                "op": "Sigmoid"
+            },
+            "name": "Sigmoid",
+            "ts": 1512478152287212,
+            "tid": 0,
+            "pid": 5,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 3
+        },
+        {
+            "args": {
+                "name": "layer_3/fully_connected/MatMul",
+                "op": "MatMul"
+            },
+            "name": "MatMul",
+            "ts": 1512478152287245,
+            "tid": 0,
+            "pid": 5,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 57
+        },
+        {
+            "args": {
+                "name": "layer_3/fully_connected/BiasAdd",
+                "op": "BiasAdd"
+            },
+            "name": "BiasAdd",
+            "ts": 1512478152287304,
+            "tid": 0,
+            "pid": 5,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 3
+        },
+        {
+            "args": {
+                "name": "layer_3/fully_connected/Relu",
+                "op": "Relu"
+            },
+            "name": "Relu",
+            "ts": 1512478152287309,
+            "tid": 0,
+            "pid": 5,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 2
+        },
+        {
+            "args": {
+                "name": "SoftmaxCrossEntropyWithLogits",
+                "op": "SoftmaxCrossEntropyWithLogits"
+            },
+            "name": "SoftmaxCrossEntropyWithLogits",
+            "ts": 1512478152287329,
+            "tid": 0,
+            "pid": 5,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 4
+        },
+        {
+            "args": {
+                "name": "SoftmaxCrossEntropyWithLogits",
+                "op": "SoftmaxCrossEntropyWithLogits"
+            },
+            "name": "SoftmaxCrossEntropyWithLogits",
+            "ts": 1512478152287341,
+            "tid": 0,
+            "pid": 5,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 7
+        },
+        {
+            "args": {
+                "name": "SoftmaxCrossEntropyWithLogits",
+                "op": "SoftmaxCrossEntropyWithLogits"
+            },
+            "name": "SoftmaxCrossEntropyWithLogits",
+            "ts": 1512478152287352,
+            "tid": 0,
+            "pid": 5,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 4
+        },
+        {
+            "args": {
+                "name": "SoftmaxCrossEntropyWithLogits",
+                "op": "SoftmaxCrossEntropyWithLogits"
+            },
+            "name": "SoftmaxCrossEntropyWithLogits",
+            "ts": 1512478152287365,
+            "tid": 0,
+            "pid": 5,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 3
+        },
+        {
+            "args": {
+                "name": "SoftmaxCrossEntropyWithLogits",
+                "op": "SoftmaxCrossEntropyWithLogits"
+            },
+            "name": "SoftmaxCrossEntropyWithLogits",
+            "ts": 1512478152287376,
+            "tid": 0,
+            "pid": 5,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 7
+        },
+        {
+            "args": {
+                "name": "SoftmaxCrossEntropyWithLogits",
+                "op": "SoftmaxCrossEntropyWithLogits"
+            },
+            "name": "SoftmaxCrossEntropyWithLogits",
+            "ts": 1512478152287512,
+            "tid": 0,
+            "pid": 5,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 5
+        },
+        {
+            "args": {
+                "name": "SoftmaxCrossEntropyWithLogits",
+                "op": "SoftmaxCrossEntropyWithLogits"
+            },
+            "name": "SoftmaxCrossEntropyWithLogits",
+            "ts": 1512478152287541,
+            "tid": 0,
+            "pid": 5,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 9
+        },
+        {
+            "args": {
+                "name": "gradients/SoftmaxCrossEntropyWithLogits_grad/mul",
+                "op": "Mul"
+            },
+            "name": "Mul",
+            "ts": 1512478152287552,
+            "tid": 0,
+            "pid": 5,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 9
+        },
+        {
+            "args": {
+                "name": "gradients/layer_3/fully_connected/Relu_grad/ReluGrad",
+                "op": "ReluGrad"
+            },
+            "name": "ReluGrad",
+            "ts": 1512478152287563,
+            "tid": 0,
+            "pid": 5,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 3
+        },
+        {
+            "args": {
+                "name": "gradients/layer_3/fully_connected/BiasAdd_grad/BiasAddGrad",
+                "op": "BiasAddGrad"
+            },
+            "name": "BiasAddGrad",
+            "ts": 1512478152287577,
+            "tid": 0,
+            "pid": 5,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 8
+        },
+        {
+            "args": {
+                "name": "GradientDescent/update_layer_3/fully_connected/biases/ApplyGradientDescent",
+                "op": "ApplyGradientDescent"
+            },
+            "name": "ApplyGradientDescent",
+            "ts": 1512478152287599,
+            "tid": 0,
+            "pid": 5,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 2
+        },
+        {
+            "args": {
+                "name": "gradients/layer_3/fully_connected/MatMul_grad/MatMul_1",
+                "op": "MatMul"
+            },
+            "name": "MatMul",
+            "ts": 1512478152287634,
+            "tid": 0,
+            "pid": 5,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 12
+        },
+        {
+            "args": {
+                "name": "gradients/layer_3/fully_connected/MatMul_grad/MatMul",
+                "op": "MatMul"
+            },
+            "name": "MatMul",
+            "ts": 1512478152287682,
+            "tid": 0,
+            "pid": 5,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 14
+        },
+        {
+            "args": {
+                "name": "GradientDescent/update_layer_3/fully_connected/weights/ApplyGradientDescent",
+                "op": "ApplyGradientDescent"
+            },
+            "name": "ApplyGradientDescent",
+            "ts": 1512478152287736,
+            "tid": 0,
+            "pid": 5,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 2
+        },
+        {
+            "args": {
+                "name": "gradients/layer_2/fully_connected/Sigmoid_grad/SigmoidGrad",
+                "op": "SigmoidGrad"
+            },
+            "name": "SigmoidGrad",
+            "ts": 1512478152287760,
+            "tid": 0,
+            "pid": 5,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 3
+        },
+        {
+            "args": {
+                "name": "gradients/layer_2/fully_connected/BiasAdd_grad/BiasAddGrad",
+                "op": "BiasAddGrad"
+            },
+            "name": "BiasAddGrad",
+            "ts": 1512478152287798,
+            "tid": 0,
+            "pid": 5,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 5
+        },
+        {
+            "args": {
+                "name": "GradientDescent/update_layer_2/fully_connected/biases/ApplyGradientDescent",
+                "op": "ApplyGradientDescent"
+            },
+            "name": "ApplyGradientDescent",
+            "ts": 1512478152287837,
+            "tid": 0,
+            "pid": 5,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 2
+        },
+        {
+            "args": {
+                "name": "gradients/layer_2/fully_connected/MatMul_grad/MatMul_1",
+                "op": "MatMul"
+            },
+            "name": "MatMul",
+            "ts": 1512478152287870,
+            "tid": 0,
+            "pid": 5,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 26
+        },
+        {
+            "args": {
+                "name": "gradients/layer_2/fully_connected/MatMul_grad/MatMul",
+                "op": "MatMul"
+            },
+            "name": "MatMul",
+            "ts": 1512478152287920,
+            "tid": 0,
+            "pid": 5,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 71
+        },
+        {
+            "args": {
+                "name": "GradientDescent/update_layer_2/fully_connected/weights/ApplyGradientDescent",
+                "op": "ApplyGradientDescent"
+            },
+            "name": "ApplyGradientDescent",
+            "ts": 1512478152287993,
+            "tid": 0,
+            "pid": 5,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 16
+        },
+        {
+            "args": {
+                "name": "gradients/layer_1/fully_connected/Sigmoid_grad/SigmoidGrad",
+                "op": "SigmoidGrad"
+            },
+            "name": "SigmoidGrad",
+            "ts": 1512478152288015,
+            "tid": 0,
+            "pid": 5,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 5
+        },
+        {
+            "args": {
+                "name": "gradients/layer_1/fully_connected/BiasAdd_grad/BiasAddGrad",
+                "op": "BiasAddGrad"
+            },
+            "name": "BiasAddGrad",
+            "ts": 1512478152288046,
+            "tid": 0,
+            "pid": 5,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 4
+        },
+        {
+            "args": {
+                "name": "GradientDescent/update_layer_1/fully_connected/biases/ApplyGradientDescent",
+                "op": "ApplyGradientDescent"
+            },
+            "name": "ApplyGradientDescent",
+            "ts": 1512478152288082,
+            "tid": 0,
+            "pid": 5,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 2
+        },
+        {
+            "args": {
+                "name": "gradients/layer_1/fully_connected/MatMul_grad/MatMul_1",
+                "op": "MatMul"
+            },
+            "name": "MatMul",
+            "ts": 1512478152288117,
+            "tid": 0,
+            "pid": 5,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 26
+        },
+        {
+            "args": {
+                "name": "gradients/layer_1/fully_connected/MatMul_grad/MatMul",
+                "op": "MatMul"
+            },
+            "name": "MatMul",
+            "ts": 1512478152288152,
+            "tid": 0,
+            "pid": 5,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 70
+        },
+        {
+            "args": {
+                "name": "GradientDescent/update_layer_1/fully_connected/weights/ApplyGradientDescent",
+                "op": "ApplyGradientDescent"
+            },
+            "name": "ApplyGradientDescent",
+            "ts": 1512478152288225,
+            "tid": 0,
+            "pid": 5,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 17
+        },
+        {
+            "args": {
+                "name": "layer_1/fully_connected/MatMul",
+                "op": "MatMul"
+            },
+            "name": "MatMul",
+            "ts": 1512478152287036,
+            "tid": 0,
+            "pid": 7,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 52
+        },
+        {
+            "args": {
+                "name": "layer_1/fully_connected/BiasAdd",
+                "op": "BiasAdd"
+            },
+            "name": "BiasAdd",
+            "ts": 1512478152287090,
+            "tid": 0,
+            "pid": 7,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 4
+        },
+        {
+            "args": {
+                "name": "layer_1/fully_connected/Sigmoid",
+                "op": "Sigmoid"
+            },
+            "name": "Sigmoid",
+            "ts": 1512478152287119,
+            "tid": 0,
+            "pid": 7,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 4
+        },
+        {
+            "args": {
+                "name": "layer_2/fully_connected/MatMul",
+                "op": "MatMul"
+            },
+            "name": "MatMul",
+            "ts": 1512478152287154,
+            "tid": 0,
+            "pid": 7,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 50
+        },
+        {
+            "args": {
+                "name": "layer_2/fully_connected/BiasAdd",
+                "op": "BiasAdd"
+            },
+            "name": "BiasAdd",
+            "ts": 1512478152287206,
+            "tid": 0,
+            "pid": 7,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 4
+        },
+        {
+            "args": {
+                "name": "layer_2/fully_connected/Sigmoid",
+                "op": "Sigmoid"
+            },
+            "name": "Sigmoid",
+            "ts": 1512478152287212,
+            "tid": 0,
+            "pid": 7,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 3
+        },
+        {
+            "args": {
+                "name": "layer_3/fully_connected/MatMul",
+                "op": "MatMul"
+            },
+            "name": "MatMul",
+            "ts": 1512478152287245,
+            "tid": 0,
+            "pid": 7,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 57
+        },
+        {
+            "args": {
+                "name": "layer_3/fully_connected/BiasAdd",
+                "op": "BiasAdd"
+            },
+            "name": "BiasAdd",
+            "ts": 1512478152287304,
+            "tid": 0,
+            "pid": 7,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 3
+        },
+        {
+            "args": {
+                "name": "layer_3/fully_connected/Relu",
+                "op": "Relu"
+            },
+            "name": "Relu",
+            "ts": 1512478152287309,
+            "tid": 0,
+            "pid": 7,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 2
+        },
+        {
+            "args": {
+                "name": "SoftmaxCrossEntropyWithLogits",
+                "op": "SoftmaxCrossEntropyWithLogits"
+            },
+            "name": "SoftmaxCrossEntropyWithLogits",
+            "ts": 1512478152287329,
+            "tid": 0,
+            "pid": 7,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 4
+        },
+        {
+            "args": {
+                "name": "SoftmaxCrossEntropyWithLogits",
+                "op": "SoftmaxCrossEntropyWithLogits"
+            },
+            "name": "SoftmaxCrossEntropyWithLogits",
+            "ts": 1512478152287341,
+            "tid": 0,
+            "pid": 7,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 7
+        },
+        {
+            "args": {
+                "name": "SoftmaxCrossEntropyWithLogits",
+                "op": "SoftmaxCrossEntropyWithLogits"
+            },
+            "name": "SoftmaxCrossEntropyWithLogits",
+            "ts": 1512478152287352,
+            "tid": 0,
+            "pid": 7,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 4
+        },
+        {
+            "args": {
+                "name": "SoftmaxCrossEntropyWithLogits",
+                "op": "SoftmaxCrossEntropyWithLogits"
+            },
+            "name": "SoftmaxCrossEntropyWithLogits",
+            "ts": 1512478152287365,
+            "tid": 0,
+            "pid": 7,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 3
+        },
+        {
+            "args": {
+                "name": "SoftmaxCrossEntropyWithLogits",
+                "op": "SoftmaxCrossEntropyWithLogits"
+            },
+            "name": "SoftmaxCrossEntropyWithLogits",
+            "ts": 1512478152287376,
+            "tid": 0,
+            "pid": 7,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 7
+        },
+        {
+            "args": {
+                "name": "SoftmaxCrossEntropyWithLogits",
+                "op": "SoftmaxCrossEntropyWithLogits"
+            },
+            "name": "SoftmaxCrossEntropyWithLogits",
+            "ts": 1512478152287512,
+            "tid": 0,
+            "pid": 7,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 5
+        },
+        {
+            "args": {
+                "name": "SoftmaxCrossEntropyWithLogits",
+                "op": "SoftmaxCrossEntropyWithLogits"
+            },
+            "name": "SoftmaxCrossEntropyWithLogits",
+            "ts": 1512478152287541,
+            "tid": 0,
+            "pid": 7,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 9
+        },
+        {
+            "args": {
+                "name": "gradients/SoftmaxCrossEntropyWithLogits_grad/mul",
+                "op": "Mul"
+            },
+            "name": "Mul",
+            "ts": 1512478152287552,
+            "tid": 0,
+            "pid": 7,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 9
+        },
+        {
+            "args": {
+                "name": "gradients/layer_3/fully_connected/Relu_grad/ReluGrad",
+                "op": "ReluGrad"
+            },
+            "name": "ReluGrad",
+            "ts": 1512478152287563,
+            "tid": 0,
+            "pid": 7,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 3
+        },
+        {
+            "args": {
+                "name": "gradients/layer_3/fully_connected/BiasAdd_grad/BiasAddGrad",
+                "op": "BiasAddGrad"
+            },
+            "name": "BiasAddGrad",
+            "ts": 1512478152287577,
+            "tid": 0,
+            "pid": 7,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 8
+        },
+        {
+            "args": {
+                "name": "GradientDescent/update_layer_3/fully_connected/biases/ApplyGradientDescent",
+                "op": "ApplyGradientDescent"
+            },
+            "name": "ApplyGradientDescent",
+            "ts": 1512478152287599,
+            "tid": 0,
+            "pid": 7,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 2
+        },
+        {
+            "args": {
+                "name": "gradients/layer_3/fully_connected/MatMul_grad/MatMul_1",
+                "op": "MatMul"
+            },
+            "name": "MatMul",
+            "ts": 1512478152287634,
+            "tid": 0,
+            "pid": 7,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 12
+        },
+        {
+            "args": {
+                "name": "gradients/layer_3/fully_connected/MatMul_grad/MatMul",
+                "op": "MatMul"
+            },
+            "name": "MatMul",
+            "ts": 1512478152287682,
+            "tid": 0,
+            "pid": 7,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 14
+        },
+        {
+            "args": {
+                "name": "GradientDescent/update_layer_3/fully_connected/weights/ApplyGradientDescent",
+                "op": "ApplyGradientDescent"
+            },
+            "name": "ApplyGradientDescent",
+            "ts": 1512478152287736,
+            "tid": 0,
+            "pid": 7,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 2
+        },
+        {
+            "args": {
+                "name": "gradients/layer_2/fully_connected/Sigmoid_grad/SigmoidGrad",
+                "op": "SigmoidGrad"
+            },
+            "name": "SigmoidGrad",
+            "ts": 1512478152287760,
+            "tid": 0,
+            "pid": 7,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 3
+        },
+        {
+            "args": {
+                "name": "gradients/layer_2/fully_connected/BiasAdd_grad/BiasAddGrad",
+                "op": "BiasAddGrad"
+            },
+            "name": "BiasAddGrad",
+            "ts": 1512478152287798,
+            "tid": 0,
+            "pid": 7,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 5
+        },
+        {
+            "args": {
+                "name": "GradientDescent/update_layer_2/fully_connected/biases/ApplyGradientDescent",
+                "op": "ApplyGradientDescent"
+            },
+            "name": "ApplyGradientDescent",
+            "ts": 1512478152287837,
+            "tid": 0,
+            "pid": 7,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 2
+        },
+        {
+            "args": {
+                "name": "gradients/layer_2/fully_connected/MatMul_grad/MatMul_1",
+                "op": "MatMul"
+            },
+            "name": "MatMul",
+            "ts": 1512478152287870,
+            "tid": 0,
+            "pid": 7,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 26
+        },
+        {
+            "args": {
+                "name": "gradients/layer_2/fully_connected/MatMul_grad/MatMul",
+                "op": "MatMul"
+            },
+            "name": "MatMul",
+            "ts": 1512478152287920,
+            "tid": 0,
+            "pid": 7,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 71
+        },
+        {
+            "args": {
+                "name": "GradientDescent/update_layer_2/fully_connected/weights/ApplyGradientDescent",
+                "op": "ApplyGradientDescent"
+            },
+            "name": "ApplyGradientDescent",
+            "ts": 1512478152287993,
+            "tid": 0,
+            "pid": 7,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 16
+        },
+        {
+            "args": {
+                "name": "gradients/layer_1/fully_connected/Sigmoid_grad/SigmoidGrad",
+                "op": "SigmoidGrad"
+            },
+            "name": "SigmoidGrad",
+            "ts": 1512478152288015,
+            "tid": 0,
+            "pid": 7,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 5
+        },
+        {
+            "args": {
+                "name": "gradients/layer_1/fully_connected/BiasAdd_grad/BiasAddGrad",
+                "op": "BiasAddGrad"
+            },
+            "name": "BiasAddGrad",
+            "ts": 1512478152288046,
+            "tid": 0,
+            "pid": 7,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 4
+        },
+        {
+            "args": {
+                "name": "GradientDescent/update_layer_1/fully_connected/biases/ApplyGradientDescent",
+                "op": "ApplyGradientDescent"
+            },
+            "name": "ApplyGradientDescent",
+            "ts": 1512478152288082,
+            "tid": 0,
+            "pid": 7,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 2
+        },
+        {
+            "args": {
+                "name": "gradients/layer_1/fully_connected/MatMul_grad/MatMul_1",
+                "op": "MatMul"
+            },
+            "name": "MatMul",
+            "ts": 1512478152288117,
+            "tid": 0,
+            "pid": 7,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 26
+        },
+        {
+            "args": {
+                "name": "gradients/layer_1/fully_connected/MatMul_grad/MatMul",
+                "op": "MatMul"
+            },
+            "name": "MatMul",
+            "ts": 1512478152288152,
+            "tid": 0,
+            "pid": 7,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 70
+        },
+        {
+            "args": {
+                "name": "GradientDescent/update_layer_1/fully_connected/weights/ApplyGradientDescent",
+                "op": "ApplyGradientDescent"
+            },
+            "name": "ApplyGradientDescent",
+            "ts": 1512478152288225,
+            "tid": 0,
+            "pid": 7,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 17
+        },
+        {
+            "args": {
+                "name": "edge_121__arg_Placeholder_0_0",
+                "op": "MEMCPYHtoD"
+            },
+            "name": "MEMCPYHtoD",
+            "ts": 1512478152286795,
+            "tid": 0,
+            "pid": 9,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 28
+        },
+        {
+            "args": {
+                "name": "edge_124__arg_Placeholder_1_0_1",
+                "op": "MEMCPYHtoD"
+            },
+            "name": "MEMCPYHtoD",
+            "ts": 1512478152286843,
+            "tid": 0,
+            "pid": 9,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 1
+        },
+        {
+            "args": {
+                "name": "edge_121__arg_Placeholder_0_0",
+                "op": "MEMCPYHtoD"
+            },
+            "name": "MEMCPYHtoD",
+            "ts": 1512478152286795,
+            "tid": 0,
+            "pid": 11,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 28
+        },
+        {
+            "args": {
+                "name": "edge_124__arg_Placeholder_1_0_1",
+                "op": "MEMCPYHtoD"
+            },
+            "name": "MEMCPYHtoD",
+            "ts": 1512478152286843,
+            "tid": 0,
+            "pid": 11,
+            "ph": "X",
+            "cat": "Op",
+            "dur": 1
+        }
+    ]
+}

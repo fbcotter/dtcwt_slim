@@ -1,0 +1,3181 @@
+{
+    "traceEvents": [
+        {
+            "pid": 0,
+            "args": {
+                "name": "Allocators"
+            },
+            "ph": "M",
+            "name": "process_name"
+        },
+        {
+            "pid": 1,
+            "args": {
+                "name": "/job:localhost/replica:0/task:0/device:CPU:0 Compute"
+            },
+            "ph": "M",
+            "name": "process_name"
+        },
+        {
+            "pid": 2,
+            "args": {
+                "name": "/job:localhost/replica:0/task:0/device:CPU:0 Tensors"
+            },
+            "ph": "M",
+            "name": "process_name"
+        },
+        {
+            "pid": 3,
+            "args": {
+                "name": "/job:localhost/replica:0/task:0/device:GPU:0 Compute"
+            },
+            "ph": "M",
+            "name": "process_name"
+        },
+        {
+            "pid": 4,
+            "args": {
+                "name": "/job:localhost/replica:0/task:0/device:GPU:0 Tensors"
+            },
+            "ph": "M",
+            "name": "process_name"
+        },
+        {
+            "pid": 5,
+            "args": {
+                "name": "/device:GPU:0/stream:all Compute"
+            },
+            "ph": "M",
+            "name": "process_name"
+        },
+        {
+            "pid": 6,
+            "args": {
+                "name": "/device:GPU:0/stream:all Tensors"
+            },
+            "ph": "M",
+            "name": "process_name"
+        },
+        {
+            "pid": 7,
+            "args": {
+                "name": "/device:GPU:0/stream:13 Compute"
+            },
+            "ph": "M",
+            "name": "process_name"
+        },
+        {
+            "pid": 8,
+            "args": {
+                "name": "/device:GPU:0/stream:13 Tensors"
+            },
+            "ph": "M",
+            "name": "process_name"
+        },
+        {
+            "pid": 9,
+            "args": {
+                "name": "/device:GPU:0/memcpy Compute"
+            },
+            "ph": "M",
+            "name": "process_name"
+        },
+        {
+            "pid": 10,
+            "args": {
+                "name": "/device:GPU:0/memcpy Tensors"
+            },
+            "ph": "M",
+            "name": "process_name"
+        },
+        {
+            "pid": 11,
+            "args": {
+                "name": "/device:GPU:0/stream:14 Compute"
+            },
+            "ph": "M",
+            "name": "process_name"
+        },
+        {
+            "pid": 12,
+            "args": {
+                "name": "/device:GPU:0/stream:14 Tensors"
+            },
+            "ph": "M",
+            "name": "process_name"
+        },
+        {
+            "pid": 13,
+            "args": {
+                "name": "/device:GPU:0/stream:15 Compute"
+            },
+            "ph": "M",
+            "name": "process_name"
+        },
+        {
+            "pid": 14,
+            "args": {
+                "name": "/device:GPU:0/stream:15 Tensors"
+            },
+            "ph": "M",
+            "name": "process_name"
+        },
+        {
+            "tid": 0,
+            "dur": 18,
+            "ph": "X",
+            "name": "NoOp",
+            "cat": "Op",
+            "pid": 1,
+            "ts": 1512496829258850,
+            "args": {
+                "op": "NoOp",
+                "name": "_SOURCE"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 25,
+            "ph": "X",
+            "name": "_Arg",
+            "cat": "Op",
+            "pid": 1,
+            "ts": 1512496829258885,
+            "args": {
+                "op": "_Arg",
+                "name": "_arg_Placeholder_0_0"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 9,
+            "ph": "X",
+            "name": "_Retval",
+            "cat": "Op",
+            "pid": 1,
+            "ts": 1512496829322897,
+            "args": {
+                "op": "_Retval",
+                "input0": "dtcwt_fwd_512x512/Reshape_8/_5",
+                "name": "_retval_dtcwt_fwd_512x512/Reshape_8_0_0"
+            }
+        },
+        {
+            "id": 0,
+            "tid": 0,
+            "ph": "s",
+            "name": "dtcwt_fwd_512x512/Reshape_8",
+            "cat": "DataFlow",
+            "pid": 3,
+            "ts": 1512496829284281
+        },
+        {
+            "id": 0,
+            "tid": 0,
+            "ph": "t",
+            "name": "dtcwt_fwd_512x512/Reshape_8",
+            "cat": "DataFlow",
+            "pid": 1,
+            "ts": 1512496829322897
+        },
+        {
+            "tid": 0,
+            "dur": 34,
+            "ph": "X",
+            "name": "NoOp",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829258857,
+            "args": {
+                "op": "NoOp",
+                "name": "_SOURCE"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 28,
+            "ph": "X",
+            "name": "Const",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829258923,
+            "args": {
+                "op": "Const",
+                "name": "dtcwt_fwd_512x512/strided_slice_40/stack"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 6,
+            "ph": "X",
+            "name": "Const",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829258954,
+            "args": {
+                "op": "Const",
+                "name": "dtcwt_fwd_512x512/strided_slice_40/stack_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 6,
+            "ph": "X",
+            "name": "Const",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829258962,
+            "args": {
+                "op": "Const",
+                "name": "dtcwt_fwd_512x512/strided_slice_40/stack_2"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 5,
+            "ph": "X",
+            "name": "Const",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829258970,
+            "args": {
+                "op": "Const",
+                "name": "dtcwt_fwd_512x512/ExpandDims_66/dim"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 6,
+            "ph": "X",
+            "name": "Const",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829258977,
+            "args": {
+                "op": "Const",
+                "name": "dtcwt_fwd_512x512/ReverseV2_22"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 5,
+            "ph": "X",
+            "name": "Const",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829258985,
+            "args": {
+                "op": "Const",
+                "name": "dtcwt_fwd_512x512/strided_slice_36/stack"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 16,
+            "ph": "X",
+            "name": "Const",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829259026,
+            "args": {
+                "op": "Const",
+                "name": "dtcwt_fwd_512x512/strided_slice_36/stack_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 5,
+            "ph": "X",
+            "name": "Const",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829259044,
+            "args": {
+                "op": "Const",
+                "name": "dtcwt_fwd_512x512/strided_slice_36/stack_2"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 5,
+            "ph": "X",
+            "name": "Const",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829259051,
+            "args": {
+                "op": "Const",
+                "name": "dtcwt_fwd_512x512/ReverseV2_18"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 14,
+            "ph": "X",
+            "name": "Const",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829259058,
+            "args": {
+                "op": "Const",
+                "name": "dtcwt_fwd_512x512/strided_slice_16/stack_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 5,
+            "ph": "X",
+            "name": "Const",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829259074,
+            "args": {
+                "op": "Const",
+                "name": "dtcwt_fwd_512x512/Reshape_2/shape"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 5,
+            "ph": "X",
+            "name": "Const",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829259080,
+            "args": {
+                "op": "Const",
+                "name": "dtcwt_fwd_512x512/strided_slice_12/stack_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 5,
+            "ph": "X",
+            "name": "Const",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829259086,
+            "args": {
+                "op": "Const",
+                "name": "dtcwt_fwd_512x512/Reshape_8/shape"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 14,
+            "ph": "X",
+            "name": "Const",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829259093,
+            "args": {
+                "op": "Const",
+                "name": "dtcwt_fwd_512x512/MirrorPad/paddings"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 6,
+            "ph": "X",
+            "name": "Const",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829259109,
+            "args": {
+                "op": "Const",
+                "name": "dtcwt_fwd_512x512/ReverseV2"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 16,
+            "ph": "X",
+            "name": "Const",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829259116,
+            "args": {
+                "op": "Const",
+                "name": "dtcwt_fwd_512x512/MirrorPad_2/paddings"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 5,
+            "ph": "X",
+            "name": "Const",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829259134,
+            "args": {
+                "op": "Const",
+                "name": "dtcwt_fwd_512x512/ReverseV2_2"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 14,
+            "ph": "X",
+            "name": "Const",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829259141,
+            "args": {
+                "op": "Const",
+                "name": "dtcwt_fwd_512x512/MirrorPad_6/paddings"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 5,
+            "ph": "X",
+            "name": "Const",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829259156,
+            "args": {
+                "op": "Const",
+                "name": "dtcwt_fwd_512x512/strided_slice_13/stack"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 5,
+            "ph": "X",
+            "name": "Const",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829259163,
+            "args": {
+                "op": "Const",
+                "name": "dtcwt_fwd_512x512/ReverseV2_7"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 5,
+            "ph": "X",
+            "name": "Const",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829259170,
+            "args": {
+                "op": "Const",
+                "name": "dtcwt_fwd_512x512/Greater"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 14,
+            "ph": "X",
+            "name": "Const",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829259177,
+            "args": {
+                "op": "Const",
+                "name": "dtcwt_fwd_512x512/Reshape/shape"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 5,
+            "ph": "X",
+            "name": "Const",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829259193,
+            "args": {
+                "op": "Const",
+                "name": "dtcwt_fwd_512x512/MirrorPad_8/paddings"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 5,
+            "ph": "X",
+            "name": "Const",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829259199,
+            "args": {
+                "op": "Const",
+                "name": "dtcwt_fwd_512x512/strided_slice_17/stack"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 5,
+            "ph": "X",
+            "name": "Const",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829259205,
+            "args": {
+                "op": "Const",
+                "name": "dtcwt_fwd_512x512/Reshape_6/shape"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 14,
+            "ph": "X",
+            "name": "Const",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829259212,
+            "args": {
+                "op": "Const",
+                "name": "dtcwt_fwd_512x512/ReverseV2_11"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 174,
+            "ph": "X",
+            "name": "MirrorPad",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829280152,
+            "args": {
+                "op": "MirrorPad",
+                "input1": "dtcwt_fwd_512x512/MirrorPad/paddings",
+                "input0": "_arg_Placeholder_0_0/_1",
+                "name": "dtcwt_fwd_512x512/MirrorPad"
+            }
+        },
+        {
+            "id": 1,
+            "tid": 0,
+            "ph": "s",
+            "name": "_arg_Placeholder_0_0",
+            "cat": "DataFlow",
+            "pid": 1,
+            "ts": 1512496829258910
+        },
+        {
+            "id": 1,
+            "tid": 0,
+            "ph": "t",
+            "name": "_arg_Placeholder_0_0",
+            "cat": "DataFlow",
+            "pid": 3,
+            "ts": 1512496829280152
+        },
+        {
+            "tid": 0,
+            "dur": 17,
+            "ph": "X",
+            "name": "ExpandDims",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829280350,
+            "args": {
+                "op": "ExpandDims",
+                "input1": "dtcwt_fwd_512x512/ExpandDims_66/dim",
+                "input0": "dtcwt_fwd_512x512/MirrorPad",
+                "name": "dtcwt_fwd_512x512/ExpandDims"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 523,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829280371,
+            "args": {
+                "op": "Conv2D",
+                "input1": "dtcwt_fwd_512x512/ReverseV2",
+                "input0": "dtcwt_fwd_512x512/ExpandDims",
+                "name": "dtcwt_fwd_512x512/l0_col_low"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 16,
+            "ph": "X",
+            "name": "Squeeze",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829280908,
+            "args": {
+                "op": "Squeeze",
+                "input0": "dtcwt_fwd_512x512/l0_col_low",
+                "name": "dtcwt_fwd_512x512/Squeeze"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 54,
+            "ph": "X",
+            "name": "MirrorPad",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829280928,
+            "args": {
+                "op": "MirrorPad",
+                "input1": "dtcwt_fwd_512x512/MirrorPad_2/paddings",
+                "input0": "dtcwt_fwd_512x512/Squeeze",
+                "name": "dtcwt_fwd_512x512/MirrorPad_2"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 12,
+            "ph": "X",
+            "name": "ExpandDims",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829280991,
+            "args": {
+                "op": "ExpandDims",
+                "input1": "dtcwt_fwd_512x512/ExpandDims_66/dim",
+                "input0": "dtcwt_fwd_512x512/MirrorPad_2",
+                "name": "dtcwt_fwd_512x512/ExpandDims_6"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 300,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829281011,
+            "args": {
+                "op": "Conv2D",
+                "input1": "dtcwt_fwd_512x512/ReverseV2_2",
+                "input0": "dtcwt_fwd_512x512/ExpandDims_6",
+                "name": "dtcwt_fwd_512x512/l0_LoLo"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 15,
+            "ph": "X",
+            "name": "Squeeze",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829281323,
+            "args": {
+                "op": "Squeeze",
+                "input0": "dtcwt_fwd_512x512/l0_LoLo",
+                "name": "dtcwt_fwd_512x512/Squeeze_2"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 60,
+            "ph": "X",
+            "name": "MirrorPad",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829281341,
+            "args": {
+                "op": "MirrorPad",
+                "input1": "dtcwt_fwd_512x512/MirrorPad_6/paddings",
+                "input0": "dtcwt_fwd_512x512/Squeeze_2",
+                "name": "dtcwt_fwd_512x512/MirrorPad_6"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 77,
+            "ph": "X",
+            "name": "StridedSlice",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829281411,
+            "args": {
+                "op": "StridedSlice",
+                "input1": "dtcwt_fwd_512x512/strided_slice_36/stack",
+                "name": "dtcwt_fwd_512x512/strided_slice_12",
+                "input3": "dtcwt_fwd_512x512/strided_slice_36/stack_2",
+                "input0": "dtcwt_fwd_512x512/MirrorPad_6",
+                "input2": "dtcwt_fwd_512x512/strided_slice_12/stack_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 45,
+            "ph": "X",
+            "name": "StridedSlice",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829281499,
+            "args": {
+                "op": "StridedSlice",
+                "input1": "dtcwt_fwd_512x512/strided_slice_13/stack",
+                "name": "dtcwt_fwd_512x512/strided_slice_13",
+                "input3": "dtcwt_fwd_512x512/strided_slice_36/stack_2",
+                "input0": "dtcwt_fwd_512x512/MirrorPad_6",
+                "input2": "dtcwt_fwd_512x512/strided_slice_12/stack_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 11,
+            "ph": "X",
+            "name": "ExpandDims",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829281563,
+            "args": {
+                "op": "ExpandDims",
+                "input1": "dtcwt_fwd_512x512/ExpandDims_66/dim",
+                "input0": "dtcwt_fwd_512x512/strided_slice_12",
+                "name": "dtcwt_fwd_512x512/ExpandDims_18"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 7,
+            "ph": "X",
+            "name": "ExpandDims",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829281578,
+            "args": {
+                "op": "ExpandDims",
+                "input1": "dtcwt_fwd_512x512/ExpandDims_66/dim",
+                "input0": "dtcwt_fwd_512x512/strided_slice_13",
+                "name": "dtcwt_fwd_512x512/ExpandDims_21"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 228,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829281589,
+            "args": {
+                "op": "Conv2D",
+                "input1": "dtcwt_fwd_512x512/ReverseV2_18",
+                "input0": "dtcwt_fwd_512x512/ExpandDims_18",
+                "name": "dtcwt_fwd_512x512/l1_col_low"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 149,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829281830,
+            "args": {
+                "op": "Conv2D",
+                "input1": "dtcwt_fwd_512x512/ReverseV2_7",
+                "input0": "dtcwt_fwd_512x512/ExpandDims_21",
+                "name": "dtcwt_fwd_512x512/l1_col_low_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 14,
+            "ph": "X",
+            "name": "Squeeze",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829281989,
+            "args": {
+                "op": "Squeeze",
+                "input0": "dtcwt_fwd_512x512/l1_col_low",
+                "name": "dtcwt_fwd_512x512/Squeeze_6"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 9,
+            "ph": "X",
+            "name": "Squeeze",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829282006,
+            "args": {
+                "op": "Squeeze",
+                "input0": "dtcwt_fwd_512x512/l1_col_low_1",
+                "name": "dtcwt_fwd_512x512/Squeeze_7"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 8,
+            "ph": "X",
+            "name": "Switch",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829282017,
+            "args": {
+                "op": "Switch",
+                "input1": "dtcwt_fwd_512x512/Greater/_3",
+                "input0": "dtcwt_fwd_512x512/Squeeze_6",
+                "name": "dtcwt_fwd_512x512/cond/stack_1/Switch_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 6,
+            "ph": "X",
+            "name": "Switch",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829282028,
+            "args": {
+                "op": "Switch",
+                "input1": "dtcwt_fwd_512x512/Greater/_3",
+                "input0": "dtcwt_fwd_512x512/Squeeze_7",
+                "name": "dtcwt_fwd_512x512/cond/stack_1/Switch"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 88,
+            "ph": "X",
+            "name": "Pack",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829282038,
+            "args": {
+                "op": "Pack",
+                "input1": "dtcwt_fwd_512x512/cond/stack_1/Switch:1",
+                "input0": "dtcwt_fwd_512x512/cond/stack_1/Switch_1:1",
+                "name": "dtcwt_fwd_512x512/cond/stack"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 19,
+            "ph": "X",
+            "name": "Merge",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829282136,
+            "args": {
+                "op": "Merge",
+                "input1": "dtcwt_fwd_512x512/cond/stack",
+                "input0": "dtcwt_fwd_512x512/cond/stack_1",
+                "name": "dtcwt_fwd_512x512/cond/Merge"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 10,
+            "ph": "X",
+            "name": "Reshape",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829282160,
+            "args": {
+                "op": "Reshape",
+                "input1": "dtcwt_fwd_512x512/Reshape/shape",
+                "input0": "dtcwt_fwd_512x512/cond/Merge",
+                "name": "dtcwt_fwd_512x512/Reshape"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 41,
+            "ph": "X",
+            "name": "MirrorPad",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829282174,
+            "args": {
+                "op": "MirrorPad",
+                "input1": "dtcwt_fwd_512x512/MirrorPad_8/paddings",
+                "input0": "dtcwt_fwd_512x512/Reshape",
+                "name": "dtcwt_fwd_512x512/MirrorPad_8"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 44,
+            "ph": "X",
+            "name": "StridedSlice",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829282225,
+            "args": {
+                "op": "StridedSlice",
+                "input1": "dtcwt_fwd_512x512/strided_slice_40/stack",
+                "name": "dtcwt_fwd_512x512/strided_slice_16",
+                "input3": "dtcwt_fwd_512x512/strided_slice_40/stack_2",
+                "input0": "dtcwt_fwd_512x512/MirrorPad_8",
+                "input2": "dtcwt_fwd_512x512/strided_slice_16/stack_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 39,
+            "ph": "X",
+            "name": "StridedSlice",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829282279,
+            "args": {
+                "op": "StridedSlice",
+                "input1": "dtcwt_fwd_512x512/strided_slice_17/stack",
+                "name": "dtcwt_fwd_512x512/strided_slice_17",
+                "input3": "dtcwt_fwd_512x512/strided_slice_40/stack_2",
+                "input0": "dtcwt_fwd_512x512/MirrorPad_8",
+                "input2": "dtcwt_fwd_512x512/strided_slice_16/stack_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 12,
+            "ph": "X",
+            "name": "ExpandDims",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829282328,
+            "args": {
+                "op": "ExpandDims",
+                "input1": "dtcwt_fwd_512x512/ExpandDims_66/dim",
+                "input0": "dtcwt_fwd_512x512/strided_slice_16",
+                "name": "dtcwt_fwd_512x512/ExpandDims_30"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 7,
+            "ph": "X",
+            "name": "ExpandDims",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829282344,
+            "args": {
+                "op": "ExpandDims",
+                "input1": "dtcwt_fwd_512x512/ExpandDims_66/dim",
+                "input0": "dtcwt_fwd_512x512/strided_slice_17",
+                "name": "dtcwt_fwd_512x512/ExpandDims_33"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 201,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829282354,
+            "args": {
+                "op": "Conv2D",
+                "input1": "dtcwt_fwd_512x512/ReverseV2_22",
+                "input0": "dtcwt_fwd_512x512/ExpandDims_30",
+                "name": "dtcwt_fwd_512x512/l1_LoLo"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 166,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829282567,
+            "args": {
+                "op": "Conv2D",
+                "input1": "dtcwt_fwd_512x512/ReverseV2_11",
+                "input0": "dtcwt_fwd_512x512/ExpandDims_33",
+                "name": "dtcwt_fwd_512x512/l1_LoLo_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 13,
+            "ph": "X",
+            "name": "Squeeze",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829282744,
+            "args": {
+                "op": "Squeeze",
+                "input0": "dtcwt_fwd_512x512/l1_LoLo",
+                "name": "dtcwt_fwd_512x512/Squeeze_10"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 9,
+            "ph": "X",
+            "name": "Squeeze",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829282761,
+            "args": {
+                "op": "Squeeze",
+                "input0": "dtcwt_fwd_512x512/l1_LoLo_1",
+                "name": "dtcwt_fwd_512x512/Squeeze_11"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 10,
+            "ph": "X",
+            "name": "Switch",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829282773,
+            "args": {
+                "op": "Switch",
+                "input1": "dtcwt_fwd_512x512/Greater/_3",
+                "input0": "dtcwt_fwd_512x512/Squeeze_10",
+                "name": "dtcwt_fwd_512x512/cond_2/stack_1/Switch_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 6,
+            "ph": "X",
+            "name": "Switch",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829282786,
+            "args": {
+                "op": "Switch",
+                "input1": "dtcwt_fwd_512x512/Greater/_3",
+                "input0": "dtcwt_fwd_512x512/Squeeze_11",
+                "name": "dtcwt_fwd_512x512/cond_2/stack_1/Switch"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 65,
+            "ph": "X",
+            "name": "Pack",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829282796,
+            "args": {
+                "op": "Pack",
+                "input1": "dtcwt_fwd_512x512/cond_2/stack_1/Switch:1",
+                "input0": "dtcwt_fwd_512x512/cond_2/stack_1/Switch_1:1",
+                "name": "dtcwt_fwd_512x512/cond_2/stack"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 17,
+            "ph": "X",
+            "name": "Merge",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829282870,
+            "args": {
+                "op": "Merge",
+                "input1": "dtcwt_fwd_512x512/cond_2/stack",
+                "input0": "dtcwt_fwd_512x512/cond_2/stack_1",
+                "name": "dtcwt_fwd_512x512/cond_2/Merge"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 8,
+            "ph": "X",
+            "name": "Reshape",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829282891,
+            "args": {
+                "op": "Reshape",
+                "input1": "dtcwt_fwd_512x512/Reshape_2/shape",
+                "input0": "dtcwt_fwd_512x512/cond_2/Merge",
+                "name": "dtcwt_fwd_512x512/Reshape_2"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 40,
+            "ph": "X",
+            "name": "MirrorPad",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829282903,
+            "args": {
+                "op": "MirrorPad",
+                "input1": "dtcwt_fwd_512x512/MirrorPad_6/paddings",
+                "input0": "dtcwt_fwd_512x512/Reshape_2",
+                "name": "dtcwt_fwd_512x512/MirrorPad_12"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 57,
+            "ph": "X",
+            "name": "StridedSlice",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829282952,
+            "args": {
+                "op": "StridedSlice",
+                "input1": "dtcwt_fwd_512x512/strided_slice_13/stack",
+                "name": "dtcwt_fwd_512x512/strided_slice_37",
+                "input3": "dtcwt_fwd_512x512/strided_slice_36/stack_2",
+                "input0": "dtcwt_fwd_512x512/MirrorPad_12",
+                "input2": "dtcwt_fwd_512x512/strided_slice_36/stack_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 53,
+            "ph": "X",
+            "name": "StridedSlice",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829283021,
+            "args": {
+                "op": "StridedSlice",
+                "input1": "dtcwt_fwd_512x512/strided_slice_36/stack",
+                "name": "dtcwt_fwd_512x512/strided_slice_36",
+                "input3": "dtcwt_fwd_512x512/strided_slice_36/stack_2",
+                "input0": "dtcwt_fwd_512x512/MirrorPad_12",
+                "input2": "dtcwt_fwd_512x512/strided_slice_36/stack_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 11,
+            "ph": "X",
+            "name": "ExpandDims",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829283084,
+            "args": {
+                "op": "ExpandDims",
+                "input1": "dtcwt_fwd_512x512/ExpandDims_66/dim",
+                "input0": "dtcwt_fwd_512x512/strided_slice_37",
+                "name": "dtcwt_fwd_512x512/ExpandDims_57"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 7,
+            "ph": "X",
+            "name": "ExpandDims",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829283102,
+            "args": {
+                "op": "ExpandDims",
+                "input1": "dtcwt_fwd_512x512/ExpandDims_66/dim",
+                "input0": "dtcwt_fwd_512x512/strided_slice_36",
+                "name": "dtcwt_fwd_512x512/ExpandDims_54"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 162,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829283113,
+            "args": {
+                "op": "Conv2D",
+                "input1": "dtcwt_fwd_512x512/ReverseV2_7",
+                "input0": "dtcwt_fwd_512x512/ExpandDims_57",
+                "name": "dtcwt_fwd_512x512/l2_col_low_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 153,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829283286,
+            "args": {
+                "op": "Conv2D",
+                "input1": "dtcwt_fwd_512x512/ReverseV2_18",
+                "input0": "dtcwt_fwd_512x512/ExpandDims_54",
+                "name": "dtcwt_fwd_512x512/l2_col_low"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 13,
+            "ph": "X",
+            "name": "Squeeze",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829283449,
+            "args": {
+                "op": "Squeeze",
+                "input0": "dtcwt_fwd_512x512/l2_col_low_1",
+                "name": "dtcwt_fwd_512x512/Squeeze_19"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 9,
+            "ph": "X",
+            "name": "Squeeze",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829283465,
+            "args": {
+                "op": "Squeeze",
+                "input0": "dtcwt_fwd_512x512/l2_col_low",
+                "name": "dtcwt_fwd_512x512/Squeeze_18"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 10,
+            "ph": "X",
+            "name": "Switch",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829283477,
+            "args": {
+                "op": "Switch",
+                "input1": "dtcwt_fwd_512x512/Greater/_3",
+                "input0": "dtcwt_fwd_512x512/Squeeze_19",
+                "name": "dtcwt_fwd_512x512/cond_6/stack_1/Switch"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 6,
+            "ph": "X",
+            "name": "Switch",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829283490,
+            "args": {
+                "op": "Switch",
+                "input1": "dtcwt_fwd_512x512/Greater/_3",
+                "input0": "dtcwt_fwd_512x512/Squeeze_18",
+                "name": "dtcwt_fwd_512x512/cond_6/stack_1/Switch_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 71,
+            "ph": "X",
+            "name": "Pack",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829283499,
+            "args": {
+                "op": "Pack",
+                "input1": "dtcwt_fwd_512x512/cond_6/stack_1/Switch:1",
+                "input0": "dtcwt_fwd_512x512/cond_6/stack_1/Switch_1:1",
+                "name": "dtcwt_fwd_512x512/cond_6/stack"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 26,
+            "ph": "X",
+            "name": "Merge",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829283579,
+            "args": {
+                "op": "Merge",
+                "input1": "dtcwt_fwd_512x512/cond_6/stack",
+                "input0": "dtcwt_fwd_512x512/cond_6/stack_1",
+                "name": "dtcwt_fwd_512x512/cond_6/Merge"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 8,
+            "ph": "X",
+            "name": "Reshape",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829283609,
+            "args": {
+                "op": "Reshape",
+                "input1": "dtcwt_fwd_512x512/Reshape_6/shape",
+                "input0": "dtcwt_fwd_512x512/cond_6/Merge",
+                "name": "dtcwt_fwd_512x512/Reshape_6"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 42,
+            "ph": "X",
+            "name": "MirrorPad",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829283621,
+            "args": {
+                "op": "MirrorPad",
+                "input1": "dtcwt_fwd_512x512/MirrorPad_8/paddings",
+                "input0": "dtcwt_fwd_512x512/Reshape_6",
+                "name": "dtcwt_fwd_512x512/MirrorPad_14"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 44,
+            "ph": "X",
+            "name": "StridedSlice",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829283672,
+            "args": {
+                "op": "StridedSlice",
+                "input1": "dtcwt_fwd_512x512/strided_slice_17/stack",
+                "name": "dtcwt_fwd_512x512/strided_slice_41",
+                "input3": "dtcwt_fwd_512x512/strided_slice_40/stack_2",
+                "input0": "dtcwt_fwd_512x512/MirrorPad_14",
+                "input2": "dtcwt_fwd_512x512/strided_slice_40/stack_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 41,
+            "ph": "X",
+            "name": "StridedSlice",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829283725,
+            "args": {
+                "op": "StridedSlice",
+                "input1": "dtcwt_fwd_512x512/strided_slice_40/stack",
+                "name": "dtcwt_fwd_512x512/strided_slice_40",
+                "input3": "dtcwt_fwd_512x512/strided_slice_40/stack_2",
+                "input0": "dtcwt_fwd_512x512/MirrorPad_14",
+                "input2": "dtcwt_fwd_512x512/strided_slice_40/stack_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 10,
+            "ph": "X",
+            "name": "ExpandDims",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829283774,
+            "args": {
+                "op": "ExpandDims",
+                "input1": "dtcwt_fwd_512x512/ExpandDims_66/dim",
+                "input0": "dtcwt_fwd_512x512/strided_slice_41",
+                "name": "dtcwt_fwd_512x512/ExpandDims_69"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 10,
+            "ph": "X",
+            "name": "ExpandDims",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829283787,
+            "args": {
+                "op": "ExpandDims",
+                "input1": "dtcwt_fwd_512x512/ExpandDims_66/dim",
+                "input0": "dtcwt_fwd_512x512/strided_slice_40",
+                "name": "dtcwt_fwd_512x512/ExpandDims_66"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 157,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829283801,
+            "args": {
+                "op": "Conv2D",
+                "input1": "dtcwt_fwd_512x512/ReverseV2_11",
+                "input0": "dtcwt_fwd_512x512/ExpandDims_69",
+                "name": "dtcwt_fwd_512x512/l2_LoLo_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 139,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829283968,
+            "args": {
+                "op": "Conv2D",
+                "input1": "dtcwt_fwd_512x512/ReverseV2_22",
+                "input0": "dtcwt_fwd_512x512/ExpandDims_66",
+                "name": "dtcwt_fwd_512x512/l2_LoLo"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 12,
+            "ph": "X",
+            "name": "Squeeze",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829284116,
+            "args": {
+                "op": "Squeeze",
+                "input0": "dtcwt_fwd_512x512/l2_LoLo_1",
+                "name": "dtcwt_fwd_512x512/Squeeze_23"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 9,
+            "ph": "X",
+            "name": "Squeeze",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829284131,
+            "args": {
+                "op": "Squeeze",
+                "input0": "dtcwt_fwd_512x512/l2_LoLo",
+                "name": "dtcwt_fwd_512x512/Squeeze_22"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 6,
+            "ph": "X",
+            "name": "Switch",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829284143,
+            "args": {
+                "op": "Switch",
+                "input1": "dtcwt_fwd_512x512/Greater/_3",
+                "input0": "dtcwt_fwd_512x512/Squeeze_23",
+                "name": "dtcwt_fwd_512x512/cond_8/stack_1/Switch"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 17,
+            "ph": "X",
+            "name": "Switch",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829284152,
+            "args": {
+                "op": "Switch",
+                "input1": "dtcwt_fwd_512x512/Greater/_3",
+                "input0": "dtcwt_fwd_512x512/Squeeze_22",
+                "name": "dtcwt_fwd_512x512/cond_8/stack_1/Switch_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 72,
+            "ph": "X",
+            "name": "Pack",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829284172,
+            "args": {
+                "op": "Pack",
+                "input1": "dtcwt_fwd_512x512/cond_8/stack_1/Switch:1",
+                "input0": "dtcwt_fwd_512x512/cond_8/stack_1/Switch_1:1",
+                "name": "dtcwt_fwd_512x512/cond_8/stack"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 13,
+            "ph": "X",
+            "name": "Merge",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829284252,
+            "args": {
+                "op": "Merge",
+                "input1": "dtcwt_fwd_512x512/cond_8/stack",
+                "input0": "dtcwt_fwd_512x512/cond_8/stack_1",
+                "name": "dtcwt_fwd_512x512/cond_8/Merge"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 8,
+            "ph": "X",
+            "name": "Reshape",
+            "cat": "Op",
+            "pid": 3,
+            "ts": 1512496829284273,
+            "args": {
+                "op": "Reshape",
+                "input1": "dtcwt_fwd_512x512/Reshape_8/shape",
+                "input0": "dtcwt_fwd_512x512/cond_8/Merge",
+                "name": "dtcwt_fwd_512x512/Reshape_8"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 1031,
+            "ph": "X",
+            "name": "MirrorPad",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829280318,
+            "args": {
+                "op": "MirrorPad",
+                "name": "dtcwt_fwd_512x512/MirrorPad"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 5,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829281354,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l0_col_low"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 9956,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829281362,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l0_col_low"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 1218,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829291320,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l0_col_low"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 1063,
+            "ph": "X",
+            "name": "MirrorPad",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829292540,
+            "args": {
+                "op": "MirrorPad",
+                "name": "dtcwt_fwd_512x512/MirrorPad_2"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 4,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829293606,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l0_LoLo"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 2617,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829293613,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l0_LoLo"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 7580,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829296232,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l0_LoLo"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 1213,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829303814,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l0_LoLo"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 1047,
+            "ph": "X",
+            "name": "MirrorPad",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829305036,
+            "args": {
+                "op": "MirrorPad",
+                "name": "dtcwt_fwd_512x512/MirrorPad_6"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 455,
+            "ph": "X",
+            "name": "StridedSlice",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829306086,
+            "args": {
+                "op": "StridedSlice",
+                "name": "dtcwt_fwd_512x512/strided_slice_12"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 458,
+            "ph": "X",
+            "name": "StridedSlice",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829306543,
+            "args": {
+                "op": "StridedSlice",
+                "name": "dtcwt_fwd_512x512/strided_slice_13"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 5,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829307004,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l1_col_low"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 4,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829307011,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l1_col_low"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 2842,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829307017,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l1_col_low"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 307,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829309862,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l1_col_low"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 4,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829310171,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l1_col_low_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 5,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829310178,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l1_col_low_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 2842,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829310185,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l1_col_low_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 307,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829313029,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l1_col_low_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 216,
+            "ph": "X",
+            "name": "Pack",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829313339,
+            "args": {
+                "op": "Pack",
+                "name": "dtcwt_fwd_512x512/cond/stack"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 215,
+            "ph": "X",
+            "name": "Pack",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829313557,
+            "args": {
+                "op": "Pack",
+                "name": "dtcwt_fwd_512x512/cond/stack"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 522,
+            "ph": "X",
+            "name": "MirrorPad",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829313777,
+            "args": {
+                "op": "MirrorPad",
+                "name": "dtcwt_fwd_512x512/MirrorPad_8"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 340,
+            "ph": "X",
+            "name": "StridedSlice",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829314301,
+            "args": {
+                "op": "StridedSlice",
+                "name": "dtcwt_fwd_512x512/strided_slice_16"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 338,
+            "ph": "X",
+            "name": "StridedSlice",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829314644,
+            "args": {
+                "op": "StridedSlice",
+                "name": "dtcwt_fwd_512x512/strided_slice_17"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 3,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829314986,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l1_LoLo"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 3,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829314992,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l1_LoLo"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 1415,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829314997,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l1_LoLo"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 154,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829316415,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l1_LoLo"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 4,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829316571,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l1_LoLo_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 4,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829316577,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l1_LoLo_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 1413,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829316584,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l1_LoLo_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 154,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829317999,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l1_LoLo_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 290,
+            "ph": "X",
+            "name": "Pack",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829318155,
+            "args": {
+                "op": "Pack",
+                "name": "dtcwt_fwd_512x512/cond_2/stack"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 297,
+            "ph": "X",
+            "name": "Pack",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829318448,
+            "args": {
+                "op": "Pack",
+                "name": "dtcwt_fwd_512x512/cond_2/stack"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 249,
+            "ph": "X",
+            "name": "MirrorPad",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829318748,
+            "args": {
+                "op": "MirrorPad",
+                "name": "dtcwt_fwd_512x512/MirrorPad_12"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 116,
+            "ph": "X",
+            "name": "StridedSlice",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829319000,
+            "args": {
+                "op": "StridedSlice",
+                "name": "dtcwt_fwd_512x512/strided_slice_37"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 115,
+            "ph": "X",
+            "name": "StridedSlice",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829319119,
+            "args": {
+                "op": "StridedSlice",
+                "name": "dtcwt_fwd_512x512/strided_slice_36"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 4,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829319237,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l2_col_low_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 3,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829319243,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l2_col_low_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 715,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829319248,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l2_col_low_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 78,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829319966,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l2_col_low_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 4,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829320047,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l2_col_low"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 3,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829320053,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l2_col_low"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 713,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829320059,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l2_col_low"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 79,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829320775,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l2_col_low"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 56,
+            "ph": "X",
+            "name": "Pack",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829320857,
+            "args": {
+                "op": "Pack",
+                "name": "dtcwt_fwd_512x512/cond_6/stack"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 54,
+            "ph": "X",
+            "name": "Pack",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829320915,
+            "args": {
+                "op": "Pack",
+                "name": "dtcwt_fwd_512x512/cond_6/stack"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 133,
+            "ph": "X",
+            "name": "MirrorPad",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829320971,
+            "args": {
+                "op": "MirrorPad",
+                "name": "dtcwt_fwd_512x512/MirrorPad_14"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 90,
+            "ph": "X",
+            "name": "StridedSlice",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829321108,
+            "args": {
+                "op": "StridedSlice",
+                "name": "dtcwt_fwd_512x512/strided_slice_41"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 90,
+            "ph": "X",
+            "name": "StridedSlice",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829321200,
+            "args": {
+                "op": "StridedSlice",
+                "name": "dtcwt_fwd_512x512/strided_slice_40"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 4,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829321292,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l2_LoLo_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 3,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829321298,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l2_LoLo_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 360,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829321303,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l2_LoLo_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 41,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829321666,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l2_LoLo_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 4,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829321710,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l2_LoLo"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 3,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829321716,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l2_LoLo"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 359,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829321722,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l2_LoLo"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 43,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829322083,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l2_LoLo"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 67,
+            "ph": "X",
+            "name": "Pack",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829322128,
+            "args": {
+                "op": "Pack",
+                "name": "dtcwt_fwd_512x512/cond_8/stack"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 72,
+            "ph": "X",
+            "name": "Pack",
+            "cat": "Op",
+            "pid": 5,
+            "ts": 1512496829322198,
+            "args": {
+                "op": "Pack",
+                "name": "dtcwt_fwd_512x512/cond_8/stack"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 1031,
+            "ph": "X",
+            "name": "MirrorPad",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829280318,
+            "args": {
+                "op": "MirrorPad",
+                "name": "dtcwt_fwd_512x512/MirrorPad"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 5,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829281354,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l0_col_low"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 9956,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829281362,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l0_col_low"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 1218,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829291320,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l0_col_low"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 1063,
+            "ph": "X",
+            "name": "MirrorPad",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829292540,
+            "args": {
+                "op": "MirrorPad",
+                "name": "dtcwt_fwd_512x512/MirrorPad_2"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 4,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829293606,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l0_LoLo"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 2617,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829293613,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l0_LoLo"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 7580,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829296232,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l0_LoLo"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 1213,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829303814,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l0_LoLo"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 1047,
+            "ph": "X",
+            "name": "MirrorPad",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829305036,
+            "args": {
+                "op": "MirrorPad",
+                "name": "dtcwt_fwd_512x512/MirrorPad_6"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 455,
+            "ph": "X",
+            "name": "StridedSlice",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829306086,
+            "args": {
+                "op": "StridedSlice",
+                "name": "dtcwt_fwd_512x512/strided_slice_12"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 458,
+            "ph": "X",
+            "name": "StridedSlice",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829306543,
+            "args": {
+                "op": "StridedSlice",
+                "name": "dtcwt_fwd_512x512/strided_slice_13"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 5,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829307004,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l1_col_low"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 4,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829307011,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l1_col_low"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 2842,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829307017,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l1_col_low"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 307,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829309862,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l1_col_low"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 4,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829310171,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l1_col_low_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 5,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829310178,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l1_col_low_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 2842,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829310185,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l1_col_low_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 307,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829313029,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l1_col_low_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 216,
+            "ph": "X",
+            "name": "Pack",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829313339,
+            "args": {
+                "op": "Pack",
+                "name": "dtcwt_fwd_512x512/cond/stack"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 215,
+            "ph": "X",
+            "name": "Pack",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829313557,
+            "args": {
+                "op": "Pack",
+                "name": "dtcwt_fwd_512x512/cond/stack"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 522,
+            "ph": "X",
+            "name": "MirrorPad",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829313777,
+            "args": {
+                "op": "MirrorPad",
+                "name": "dtcwt_fwd_512x512/MirrorPad_8"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 340,
+            "ph": "X",
+            "name": "StridedSlice",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829314301,
+            "args": {
+                "op": "StridedSlice",
+                "name": "dtcwt_fwd_512x512/strided_slice_16"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 338,
+            "ph": "X",
+            "name": "StridedSlice",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829314644,
+            "args": {
+                "op": "StridedSlice",
+                "name": "dtcwt_fwd_512x512/strided_slice_17"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 3,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829314986,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l1_LoLo"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 3,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829314992,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l1_LoLo"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 1415,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829314997,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l1_LoLo"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 154,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829316415,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l1_LoLo"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 4,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829316571,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l1_LoLo_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 4,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829316577,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l1_LoLo_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 1413,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829316584,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l1_LoLo_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 154,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829317999,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l1_LoLo_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 290,
+            "ph": "X",
+            "name": "Pack",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829318155,
+            "args": {
+                "op": "Pack",
+                "name": "dtcwt_fwd_512x512/cond_2/stack"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 297,
+            "ph": "X",
+            "name": "Pack",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829318448,
+            "args": {
+                "op": "Pack",
+                "name": "dtcwt_fwd_512x512/cond_2/stack"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 249,
+            "ph": "X",
+            "name": "MirrorPad",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829318748,
+            "args": {
+                "op": "MirrorPad",
+                "name": "dtcwt_fwd_512x512/MirrorPad_12"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 116,
+            "ph": "X",
+            "name": "StridedSlice",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829319000,
+            "args": {
+                "op": "StridedSlice",
+                "name": "dtcwt_fwd_512x512/strided_slice_37"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 115,
+            "ph": "X",
+            "name": "StridedSlice",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829319119,
+            "args": {
+                "op": "StridedSlice",
+                "name": "dtcwt_fwd_512x512/strided_slice_36"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 4,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829319237,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l2_col_low_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 3,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829319243,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l2_col_low_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 715,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829319248,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l2_col_low_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 78,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829319966,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l2_col_low_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 4,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829320047,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l2_col_low"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 3,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829320053,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l2_col_low"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 713,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829320059,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l2_col_low"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 79,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829320775,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l2_col_low"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 56,
+            "ph": "X",
+            "name": "Pack",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829320857,
+            "args": {
+                "op": "Pack",
+                "name": "dtcwt_fwd_512x512/cond_6/stack"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 54,
+            "ph": "X",
+            "name": "Pack",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829320915,
+            "args": {
+                "op": "Pack",
+                "name": "dtcwt_fwd_512x512/cond_6/stack"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 133,
+            "ph": "X",
+            "name": "MirrorPad",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829320971,
+            "args": {
+                "op": "MirrorPad",
+                "name": "dtcwt_fwd_512x512/MirrorPad_14"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 90,
+            "ph": "X",
+            "name": "StridedSlice",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829321108,
+            "args": {
+                "op": "StridedSlice",
+                "name": "dtcwt_fwd_512x512/strided_slice_41"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 90,
+            "ph": "X",
+            "name": "StridedSlice",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829321200,
+            "args": {
+                "op": "StridedSlice",
+                "name": "dtcwt_fwd_512x512/strided_slice_40"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 4,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829321292,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l2_LoLo_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 3,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829321298,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l2_LoLo_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 360,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829321303,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l2_LoLo_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 41,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829321666,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l2_LoLo_1"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 4,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829321710,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l2_LoLo"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 3,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829321716,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l2_LoLo"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 359,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829321722,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l2_LoLo"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 43,
+            "ph": "X",
+            "name": "Conv2D",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829322083,
+            "args": {
+                "op": "Conv2D",
+                "name": "dtcwt_fwd_512x512/l2_LoLo"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 67,
+            "ph": "X",
+            "name": "Pack",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829322128,
+            "args": {
+                "op": "Pack",
+                "name": "dtcwt_fwd_512x512/cond_8/stack"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 72,
+            "ph": "X",
+            "name": "Pack",
+            "cat": "Op",
+            "pid": 7,
+            "ts": 1512496829322198,
+            "args": {
+                "op": "Pack",
+                "name": "dtcwt_fwd_512x512/cond_8/stack"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 20595,
+            "ph": "X",
+            "name": "MEMCPYHtoD",
+            "cat": "Op",
+            "pid": 9,
+            "ts": 1512496829259380,
+            "args": {
+                "op": "MEMCPYHtoD",
+                "name": "edge_171__arg_Placeholder_0_0"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 1,
+            "ph": "X",
+            "name": "MEMCPYDtoH",
+            "cat": "Op",
+            "pid": 9,
+            "ts": 1512496829280031,
+            "args": {
+                "op": "MEMCPYDtoH",
+                "name": "edge_27_dtcwt_fwd_512x512/Greater"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 541,
+            "ph": "X",
+            "name": "MEMCPYDtoH",
+            "cat": "Op",
+            "pid": 9,
+            "ts": 1512496829322279,
+            "args": {
+                "op": "MEMCPYDtoH",
+                "name": "edge_172_dtcwt_fwd_512x512/Reshape_8"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 20595,
+            "ph": "X",
+            "name": "MEMCPYHtoD",
+            "cat": "Op",
+            "pid": 11,
+            "ts": 1512496829259380,
+            "args": {
+                "op": "MEMCPYHtoD",
+                "name": "edge_171__arg_Placeholder_0_0"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 1,
+            "ph": "X",
+            "name": "MEMCPYDtoH",
+            "cat": "Op",
+            "pid": 13,
+            "ts": 1512496829280031,
+            "args": {
+                "op": "MEMCPYDtoH",
+                "name": "edge_27_dtcwt_fwd_512x512/Greater"
+            }
+        },
+        {
+            "tid": 0,
+            "dur": 541,
+            "ph": "X",
+            "name": "MEMCPYDtoH",
+            "cat": "Op",
+            "pid": 13,
+            "ts": 1512496829322279,
+            "args": {
+                "op": "MEMCPYDtoH",
+                "name": "edge_172_dtcwt_fwd_512x512/Reshape_8"
+            }
+        }
+    ]
+}

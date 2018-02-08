@@ -1,0 +1,6 @@
+# Testing-specific packages
+pytest
+pytest-capturelog
+pytest-cov
+coverage
+scipy

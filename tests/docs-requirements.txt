@@ -1,0 +1,6 @@
+# Extra requirements for building documentation
+docutils
+ipython
+matplotlib
+sphinx
+sphinx-rtd-theme
