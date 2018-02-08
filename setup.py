@@ -3,12 +3,14 @@ import re
 
 from setuptools import setup, find_packages
 
+
 # Utility function to read the README file.
 # Used for the long_description.  It's nice, because now 1) we have a top level
 # README file and 2) it's easier to type in the README file than to put a raw
 # string in below ...
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
+
 
 # Read metadata from version file
 metadata_file = open(os.path.join(os.path.dirname(__file__), 'dtcwt_slim', '_version.py')).read()
@@ -30,18 +32,15 @@ setup(
         "License :: Free To Use But Restricted",
         "Programming Language :: Python :: 3",
     ],
-    package_data={
-        'dtcwt_slim': ['data/*.npz',],
-    },
-
-    install_requires=[ 'numpy', 'six', ],
+    include_package_data=True,
+    install_requires=['numpy', 'six', ],
 
     extras_require={
-        'docs': [ 'sphinx', 'docutils', 'matplotlib', 'ipython', ],
-        'opencl': [ 'pyopencl', ],
+        'docs': ['sphinx', 'docutils', 'matplotlib', 'ipython', ],
+        'opencl': ['pyopencl', ],
     },
 
-    tests_require=[ 'coverage', 'py3nvml', 'dtcwt'],
+    tests_require=['coverage', 'py3nvml', 'dtcwt'],
 )
 
 # vim:sw=4:sts=4:et
