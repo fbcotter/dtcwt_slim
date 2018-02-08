@@ -31,7 +31,7 @@ setup(
         "Programming Language :: Python :: 3",
     ],
     package_data={
-        'dtcwt': ['data/*.npz',],
+        'dtcwt_slim': ['data/*.npz',],
     },
 
     install_requires=[ 'numpy', 'six', ],
