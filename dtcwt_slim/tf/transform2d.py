@@ -41,8 +41,14 @@ class Transform2d(object):
     """
     An implementation of the 2D DT-CWT via Tensorflow.
 
-    :param biort: The biorthogonal wavelet family to use.
-    :param qshift: The quarter shift wavelet family to use.
+    Parameters
+    ----------
+    biort: str or np.array
+        The biorthogonal wavelet family to use. If a string, will use this to
+        call dtcwt_slim.coeffs.biort. If an array, will use these as the values.
+    qshift: str or np.array
+        The quarter shift wavelet family to use. If a string, will use this to
+        call dtcwt_slim.coeffs.biort. If an array, will use these as the values.
 
     .. note::
 
@@ -79,10 +85,7 @@ class Transform2d(object):
         result from calling the inverse methods will also be a tensorflow
         variable.
 
-    .. codeauthor:: Fergal Cotter <fbc23@cam.ac.uk>, Feb 2017
-    .. codeauthor:: Rich Wareham <rjw57@cantab.net>, Aug 2013
-    .. codeauthor:: Nick Kingsbury, Cambridge University, Sept 2001
-    .. codeauthor:: Cian Shaffrey, Cambridge University, Sept 2001
+    .. codeauthor:: Fergal Cotter <fbc23@cam.ac.uk>, Feb 2018
     """
 
     def __init__(self, biort=DEFAULT_BIORT, qshift=DEFAULT_QSHIFT):
@@ -104,19 +107,33 @@ class Transform2d(object):
         the input must have the height and width as the last 2 dimensions.
         Data input must be a tensor, variable or placeholder.
 
-        :param X: Input image which you wish to transform.
-        :param int nlevels: Number of levels of the dtcwt transform to
-            calculate.
-        :param bool include_scale: Whether or not to return the lowpass results
-            at each scale of the transform, or only at the highest scale (as is
-            custom for multiresolution analysis)
+        Parameters
+        ----------
+        X: tf.Variable or np.array
+            Input image which you wish to transform. Can be 2, 3, or 4
+            dimensions, but height and width must be the last 2. If np.array is
+            given, it will be converted to an tensorflow variable.
+        nlevels: int
+            Number of levels of the dtcwt transform to calculate.
+        include_scale: bool
+            Whether or not to return the lowpass results at each scale of the
+            transform, or only at the highest scale (as is custom for
+            multiresolution analysis)
 
-        :returns: A tuple of Yl, Yh
+        Returns
+        -------
+            Yl: tf.Variable
+                Lowpass output
+            Yh: list(tf.Variable)
+                Highpass outputs. Will be complex and have one more dimension
+                than the input representing the 6 orientations of the wavelets.
+                This extra dimension will be the third last dimension. The first
+                entry in the list is the first scale.
+            Yscale: list(tf.Variable)
+                Only returns if include_scale was true. A list of lowpass
+                outputs at each scale.
 
-        .. codeauthor:: Fergal Cotter <fbc23@cam.ac.uk>, Feb 2017
-        .. codeauthor:: Rich Wareham <rjw57@cantab.net>, Aug 2013
-        .. codeauthor:: Nick Kingsbury, Cambridge University, Sept 2001
-        .. codeauthor:: Cian Shaffrey, Cambridge University, Sept 2001
+        .. codeauthor:: Fergal Cotter <fbc23@cam.ac.uk>, Feb 2018
         """
         if not (isinstance(X, tf.Tensor) or
                 isinstance(X, tf.Variable)):
@@ -159,31 +176,28 @@ class Transform2d(object):
         """
         Perform an inverse transform on an image with multiple channels.
 
-        Must provide with a tensorflow variable or placeholder (unlike the more
-        general :py:meth:`~dtcwt.tf.Transform2d.inverse`).
+        Parameters
+        ----------
+        Yl: tf.Variable
+            The lowpass coefficients. Can be 2, 3, or 4 dimensions
+        Yh: list(tf.Variable)
+            The complex high pass coefficients. Must be compatible with the
+            lowpass coefficients. Should have one more dimension. E.g if Yl
+            was of shape [batch, ch, h, w], then the Yh's should be each of
+            shape [batch, ch, 6, h', w'] (with h' and w' being dependent on the
+            scale).
 
-        This is designed to work after calling the
-        :py:meth:`~dtcwt.tf.Transform2d.forward_channels` method. You must use
-        the same data_format for the inverse_channels as the one used for the
-        forward_channels (unless you have explicitly reshaped the output).
-
-        :param pyramid: A :py:class:`dtcwt.tf.Pyramid` like class holding
-            the transform domain representation to invert
-
-        :returns: An array , X, compatible with the reconstruction. Will be a tf
-            Variable if the Pyramid was made with tf inputs, otherwise a numpy
-            array.
-
+        Returns
+        -------
+        X: tf.Variable
+            An array , X, compatible with the reconstruction.
 
         The (*d*, *l*)-th element of *gain_mask* is gain for subband with
         direction *d* at level *l*. If gain_mask[d,l] == 0, no computation is
         performed for band (d,l). Default *gain_mask* is all ones. Note that
         both *d* and *l* are zero-indexed.
 
-        .. codeauthor:: Fergal Cotter <fbc23@cam.ac.uk>, Feb 2017
-        .. codeauthor:: Rich Wareham <rjw57@cantab.net>, Aug 2013
-        .. codeauthor:: Nick Kingsbury, Cambridge University, Sept 2001
-        .. codeauthor:: Cian Shaffrey, Cambridge University, Sept 2001
+        .. codeauthor:: Fergal Cotter <fbc23@cam.ac.uk>, Feb 2018
         """
         J = len(Yh)
         inshape = Yl.get_shape().as_list()
@@ -215,12 +229,23 @@ class Transform2d(object):
     def _forward_ops(self, X, nlevels=3):
         """ Perform a *n*-level DTCWT-2D decompostion on a 2D matrix *X*.
 
-        :param X: 3D real array of size [batch, h, w]
-        :param nlevels: Number of levels of wavelet decomposition
-        :param extended: True if a singleton dimension was added at the
-            beginning of the input. Signal to remove afterwards.
+        Parameters
+        ----------
+        X: tf.Variable
+            4D real array of size [batch, ch, h, w]
+        nlevels: int
+            Number of levels of wavelet decomposition
 
-        :returns: A tuple of Yl, Yh, Yscale
+        Returns
+        -------
+        Yl: tf.Variable
+        Yh: list(tf.Variables)
+        Yscale: list(tf.Variables)
+
+        Note
+        ----
+        This is the lowlevel implementation. You should call the forward method
+        which will call this.
         """
 
         # If biort has 6 elements instead of 4, then it's a modified
@@ -325,12 +350,14 @@ class Transform2d(object):
             # If the row count of LoLo is not divisible by 4 (it will be
             # divisible by 2), add 2 extra rows to make it so
             if row_size % 4 != 0:
-                LoLo = tf.pad(LoLo, [[0,0], [0, 0], [1, 1], [0, 0]], 'SYMMETRIC')
+                LoLo = tf.pad(LoLo, [[0,0], [0, 0], [1, 1], [0, 0]],
+                              'SYMMETRIC')
 
             # If the col count of LoLo is not divisible by 4 (it will be
             # divisible by 2), add 2 extra cols to make it so
             if col_size % 4 != 0:
-                LoLo = tf.pad(LoLo, [[0,0], [0, 0], [0, 0], [1, 1]], 'SYMMETRIC')
+                LoLo = tf.pad(LoLo, [[0,0], [0, 0], [0, 0], [1, 1]],
+                              'SYMMETRIC')
 
             # Do even Qshift filters on cols.
             Lo = coldfilt(LoLo, h0b, h0a, name='l%d_col_low' % level)
@@ -392,24 +419,22 @@ class Transform2d(object):
         """Perform an *n*-level dual-tree complex wavelet (DTCWT) 2D
         reconstruction.
 
-        :param Yl: The lowpass output from a forward transform. Should be a
+        Parameters
+        ----------
+        Yl: The lowpass output from a forward transform. Should be a
             tensorflow variable.
-        :param Yh: The tuple of highpass outputs from a forward transform.
+        Yh: list(tf.Variable)
+            The list of highpass outputs from a forward transform.
             Should be tensorflow variables.
-        :param gain_mask: Gain to be applied to each subband.
 
-        :returns: A tf.Variable holding the output
+        Returns
+        -------
+        X: tf.Variable
 
-        The (*d*, *l*)-th element of *gain_mask* is gain for subband with
-        direction *d* at level *l*. If gain_mask[d,l] == 0, no computation is
-        performed for band (d,l). Default *gain_mask* is all ones. Note that
-        both *d* and *l* are zero-indexed.
-
-        .. codeauthor:: Fergal Cotter <fbc23@cam.ac.uk>, Feb 2017
-        .. codeauthor:: Rich Wareham <rjw57@cantab.net>, Aug 2013
-        .. codeauthor:: Nick Kingsbury, Cambridge University, May 2002
-        .. codeauthor:: Cian Shaffrey, Cambridge University, May 2002
-
+        Note
+        ----
+        This is the lowlevel implementation. You should call the inverse method
+        which will call this.
         """
         a = len(Yh)  # No of levels.
 
