@@ -6,8 +6,19 @@ try:
 except ImportError:
     _HAVE_TF = False
 
-from dtcwt.utils import as_column_vector, asfarray
 import numpy as np
+
+
+def as_column_vector(v):
+    """Return *v* as a column vector with shape (N,1).
+
+    """
+    v = np.atleast_2d(v)
+    if v.shape[0] == 1:
+        return v.T
+    else:
+        return v
+
 
 def _as_row_vector(v):
     """Return *v* as a row vector with shape (1, N).
@@ -17,6 +28,7 @@ def _as_row_vector(v):
         return v
     else:
         return v.T
+
 
 def _as_row_tensor(h):
     if isinstance(h, tf.Tensor):
@@ -35,6 +47,7 @@ def _as_col_vector(v):
         return v.T
     else:
         return v
+
 
 def _as_col_tensor(h):
     if isinstance(h, tf.Tensor):
@@ -200,25 +213,32 @@ def _tf_pad(x, szs, padding='SYMMETRIC'):
 
 def colfilter(X, h, align=False, name=None):
     """
-    Filter the columns of image *X* using filter vector *h*, without decimation.
+    Filter the cols of image *X* using filter vector *h*, without decimation.
 
-    :param X: an image whose columns are to be filtered
-    :param h: the filter coefficients.
-    :param bool align: If true, then will have Y keep the same output shape as
+    Parameters
+    ----------
+    X: tf.Variable
+        A tensor of images whose rows are to be filtered. Needs to be of shape
+        [batch, ch, h, w]
+    h: np.array
+        The filter coefficients.
+    align: bool
+        If true, then will have Y keep the same output shape as
         X, even if h has even length. Makes no difference if len(h) is odd.
-    :param str name: The name for the conv operation
+    name: str
+        The name for the conv operation
 
-    :returns Y: the filtered image.
+    Returns
+    -------
+    Y: tf.Variable
+        the filtered image.
 
     If len(h) is odd, each output sample is aligned with each input sample
     and *Y* is the same size as *X*.
-    If len(h) is even, each output sample is aligned with the mid point of
-    each pair of input samples, and Y.shape = X.shape + [1 0].
+    If len(h) is even, each output sample is aligned with the mid point of each
+    pair of input samples, and Y.shape = X.shape + [0 1].
 
-    .. codeauthor:: Fergal Cotter <fbc23@cam.ac.uk>, Feb 2017
-    .. codeauthor:: Rich Wareham <rjw57@cantab.net>, August 2013
-    .. codeauthor:: Cian Shaffrey, Cambridge University, August 2000
-    .. codeauthor:: Nick Kingsbury, Cambridge University, August 2000
+    .. codeauthor:: Fergal Cotter <fbc23@cam.ac.uk>, Feb 2018
     """
     # Make the function flexible to accepting h in multiple forms
     h = _as_col_vector(h)
@@ -242,23 +262,30 @@ def rowfilter(X, h, align=False, name=None):
     """
     Filter the rows of image *X* using filter vector *h*, without decimation.
 
-    :param X: a tensor of images whose rows are to be filtered
-    :param h: the filter coefficients.
-    :param bool align: If true, then will have Y keep the same output shape as
+    Parameters
+    ----------
+    X: tf.Variable
+        A tensor of images whose rows are to be filtered. Needs to be of shape
+        [batch, ch, h, w]
+    h: np.array
+        The filter coefficients.
+    align: bool
+        If true, then will have Y keep the same output shape as
         X, even if h has even length. Makes no difference if len(h) is odd.
-    :param str name: The name for the conv operation
+    name: str
+        The name for the conv operation
 
-    :returns Y: the filtered image.
+    Returns
+    -------
+    Y: tf.Variable
+        the filtered image.
 
     If len(h) is odd, each output sample is aligned with each input sample
     and *Y* is the same size as *X*.
     If len(h) is even, each output sample is aligned with the mid point of each
     pair of input samples, and Y.shape = X.shape + [0 1].
 
-    .. codeauthor:: Fergal Cotter <fbc23@cam.ac.uk>, Feb 2017
-    .. codeauthor:: Rich Wareham <rjw57@cantab.net>, August 2013
-    .. codeauthor:: Cian Shaffrey, Cambridge University, August 2000
-    .. codeauthor:: Nick Kingsbury, Cambridge University, August 2000
+    .. codeauthor:: Fergal Cotter <fbc23@cam.ac.uk>, Feb 2018
     """
     # Make the function flexible to accepting h in multiple forms
     h = _as_row_vector(h)
@@ -283,22 +310,25 @@ def coldfilt(X, ha, hb, name=None):
     Filter the columns of image X using the two filters ha and hb =
     reverse(ha).
 
-    :param X: The input, of size [batch, ch, h, w]
-    :param ha: Filter to be used on the odd samples of x.
-    :param hb: Filter to bue used on the even samples of x.
-    :param str name: The name for the conv operation
+    Parameters
+    ----------
+    X: tf.Variable
+        The input, of size [batch, ch, h, w]
+    ha: np.array
+        Filter to be used on the odd samples of x.
+    hb: np.array
+        Filter to bue used on the even samples of x.
+    name: str
+        The name for the conv operation
+
+    Returns
+    -------
+    Y: tf.Variable
+        Decimated result from convolving columns of X with ha and hb
 
     Both filters should be even length, and h should be approx linear
     phase with a quarter sample (i.e. an :math:`e^{j \pi/4}`) advance from
     its mid pt (i.e. :math:`|h(m/2)| > |h(m/2 + 1)|`)::
-
-                          ext        top edge                     bottom edge       ext
-        Level 1:        !               |               !               |               !
-        odd filt on .    b   b   b   b   a   a   a   a   a   a   a   a   b   b   b   b
-        odd filt on .      a   a   a   a   b   b   b   b   b   b   b   b   a   a   a   a
-        Level 2:        !               |               !               |               !
-        +q filt on x      b       b       a       a       a       a       b       b
-        -q filt on o          a       a       b       b       b       b       a       a
 
     The output is decimated by two from the input sample rate and the results
     from the two filters, Ya and Yb, are interleaved to give Y.
@@ -308,10 +338,7 @@ def coldfilt(X, ha, hb, name=None):
     :raises ValueError if the number of rows in X is not a multiple of 4, the
         length of ha does not match hb or the lengths of ha or hb are non-even.
 
-    .. codeauthor:: Fergal Cotter <fbc23@cam.ac.uk>, Feb 2017
-    .. codeauthor:: Rich Wareham <rjw57@cantab.net>, August 2013
-    .. codeauthor:: Cian Shaffrey, Cambridge University, August 2000
-    .. codeauthor:: Nick Kingsbury, Cambridge University, August 2000
+    .. codeauthor:: Fergal Cotter <fbc23@cam.ac.uk>, Feb 2018
     """
     ch, r, c = X.get_shape().as_list()[1:]
     r2 = r // 2
@@ -363,37 +390,38 @@ def coldfilt(X, ha, hb, name=None):
 
 def rowdfilt(X, ha, hb, name=None):
     """
-    Filter the rows of image X using the two filters ha and hb = reverse(ha).
+    Filter the rows of image X using the two filters ha and hb =
+    reverse(ha).
 
-    :param X: The input, of size [batch, h, w]
-    :param ha: Filter to be used on the odd samples of x.
-    :param hb: Filter to bue used on the even samples of x.
-    :param str name: The name for the conv operation
+    Parameters
+    ----------
+    X: tf.Variable
+        The input, of size [batch, ch, h, w]
+    ha: np.array
+        Filter to be used on the odd samples of x.
+    hb: np.array
+        Filter to bue used on the even samples of x.
+    name: str
+        The name for the conv operation
+
+    Returns
+    -------
+    Y: tf.Variable
+        Decimated result from convolving columns of X with ha and hb
 
     Both filters should be even length, and h should be approx linear
-    phase with a quarter sample advance from its mid pt (i.e. :math:`|h(m/2)| >
-    |h(m/2 + 1)|`)::
-
-                          ext        top edge                     bottom edge       ext
-        Level 1:        !               |               !               |               !
-        odd filt on .    b   b   b   b   a   a   a   a   a   a   a   a   b   b   b   b
-        odd filt on .      a   a   a   a   b   b   b   b   b   b   b   b   a   a   a   a
-        Level 2:        !               |               !               |               !
-        +q filt on x      b       b       a       a       a       a       b       b
-        -q filt on o          a       a       b       b       b       b       a       a
+    phase with a quarter sample (i.e. an :math:`e^{j \pi/4}`) advance from
+    its mid pt (i.e. :math:`|h(m/2)| > |h(m/2 + 1)|`)::
 
     The output is decimated by two from the input sample rate and the results
-    from the two filters, Ya and Yb, are interleaved to give Y.  Symmetric
-    extension with repeated end samples is used on the composite X rows
-    before each filter is applied.
+    from the two filters, Ya and Yb, are interleaved to give Y.
+    Symmetric extension with repeated end samples is used on the composite X
+    columns before each filter is applied.
 
-    :raises ValueError if the number of columns in X is not a multiple of 4, the
+    :raises ValueError if the number of rows in X is not a multiple of 4, the
         length of ha does not match hb or the lengths of ha or hb are non-even.
 
-    .. codeauthor:: Fergal Cotter <fbc23@cam.ac.uk>, Feb 2017
-    .. codeauthor:: Rich Wareham <rjw57@cantab.net>, August 2013
-    .. codeauthor:: Cian Shaffrey, Cambridge University, August 2000
-    .. codeauthor:: Nick Kingsbury, Cambridge University, August 2000
+    .. codeauthor:: Fergal Cotter <fbc23@cam.ac.uk>, Feb 2018
     """
     ch, r, c = X.get_shape().as_list()[1:]
     c2 = c // 2
@@ -450,34 +478,33 @@ def colifilt(X, ha, hb, name=None):
     Filter the columns of image X using the two filters ha and hb =
     reverse(ha).
 
-    :param X: The input, of size [batch, h, w]
-    :param ha: Filter to be used on the odd samples of x.
-    :param hb: Filter to bue used on the even samples of x.
-    :param str name: The name for the conv operation
+    Parameters
+    ----------
+    X: tf.Variable
+        The input, of size [batch, ch, h, w]
+    ha: np.array
+        Filter to be used on the odd samples of x.
+    hb: np.array
+        Filter to bue used on the even samples of x.
+    name: str
+        The name for the conv operation
+
+    Returns
+    -------
+    Y: tf.Variable
+        Bigger result from convolving columns of X with ha and hb. Will be of
+        shape [batch, ch, 2*h, w]
 
     Both filters should be even length, and h should be approx linear
-    phase with a quarter sample advance from its mid pt (i.e `:math:`|h(m/2)| >
-    |h(m/2 + 1)|`).
-
-    .. code-block:: text
-
-                          ext       left edge                      right edge       ext
-        Level 2:        !               |               !               |               !
-        +q filt on x      b       b       a       a       a       a       b       b
-        -q filt on o          a       a       b       b       b       b       a       a
-        Level 1:        !               |               !               |               !
-        odd filt on .    b   b   b   b   a   a   a   a   a   a   a   a   b   b   b   b
-        odd filt on .      a   a   a   a   b   b   b   b   b   b   b   b   a   a   a   a
+    phase with a quarter sample (i.e. an :math:`e^{j \pi/4}`) advance from
+    its mid pt (i.e. :math:`|h(m/2)| > |h(m/2 + 1)|`)::
 
     The output is interpolated by two from the input sample rate and the
     results from the two filters, Ya and Yb, are interleaved to give Y.
     Symmetric extension with repeated end samples is used on the composite X
     columns before each filter is applied.
 
-    .. codeauthor:: Fergal Cotter <fbc23@cam.ac.uk>, Feb 2017
-    .. codeauthor:: Rich Wareham <rjw57@cantab.net>, August 2013
-    .. codeauthor:: Cian Shaffrey, Cambridge University, August 2000
-    .. codeauthor:: Nick Kingsbury, Cambridge University, August 2000
+    .. codeauthor:: Fergal Cotter <fbc23@cam.ac.uk>, Feb 2018
     """
 
     ch, r, c = X.get_shape().as_list()[1:]
@@ -556,39 +583,37 @@ def colifilt(X, ha, hb, name=None):
 
 def rowifilt(X, ha, hb, name=None):
     """
-    Filter the rows of image X using the two filters ha and hb =
+    Filter the row of image X using the two filters ha and hb =
     reverse(ha).
 
-    :param X: The input, of size [batch, h, w]
-    :param ha: Filter to be used on the odd samples of x.
-    :param hb: Filter to bue used on the even samples of x.
-    :param str name: The name for the conv operation
+    Parameters
+    ----------
+    X: tf.Variable
+        The input, of size [batch, ch, h, w]
+    ha: np.array
+        Filter to be used on the odd samples of x.
+    hb: np.array
+        Filter to bue used on the even samples of x.
+    name: str
+        The name for the conv operation
+
+    Returns
+    -------
+    Y: tf.Variable
+        Bigger result from convolving columns of X with ha and hb. Will be of
+        shape [batch, ch, 2*h, w]
 
     Both filters should be even length, and h should be approx linear
-    phase with a quarter sample advance from its mid pt (i.e `:math:`|h(m/2)| >
-    |h(m/2 + 1)|`).
-
-    .. code-block:: text
-
-                          ext       left edge                      right edge       ext
-        Level 2:        !               |               !               |               !
-        +q filt on x      b       b       a       a       a       a       b       b
-        -q filt on o          a       a       b       b       b       b       a       a
-        Level 1:        !               |               !               |               !
-        odd filt on .    b   b   b   b   a   a   a   a   a   a   a   a   b   b   b   b
-        odd filt on .      a   a   a   a   b   b   b   b   b   b   b   b   a   a   a   a
+    phase with a quarter sample (i.e. an :math:`e^{j \pi/4}`) advance from
+    its mid pt (i.e. :math:`|h(m/2)| > |h(m/2 + 1)|`)::
 
     The output is interpolated by two from the input sample rate and the
     results from the two filters, Ya and Yb, are interleaved to give Y.
     Symmetric extension with repeated end samples is used on the composite X
     columns before each filter is applied.
 
-    .. codeauthor:: Fergal Cotter <fbc23@cam.ac.uk>, Feb 2017
-    .. codeauthor:: Rich Wareham <rjw57@cantab.net>, August 2013
-    .. codeauthor:: Cian Shaffrey, Cambridge University, August 2000
-    .. codeauthor:: Nick Kingsbury, Cambridge University, August 2000
+    .. codeauthor:: Fergal Cotter <fbc23@cam.ac.uk>, Feb 2018
     """
-
     ch, r, c = X.get_shape().as_list()[1:]
     if c % 2 != 0:
         raise ValueError('No. of cols in X must be a multiple of 2.\n' +
