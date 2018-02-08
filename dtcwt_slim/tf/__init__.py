@@ -5,10 +5,8 @@ improvements with a CPU.
 
 """
 
-from .transform1d import Transform1d
 from .transform2d import Transform2d
 
 __all__ = [
-    'Transform1d',
     'Transform2d',
 ]

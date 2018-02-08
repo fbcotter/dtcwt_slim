@@ -1,6 +1,6 @@
 import numpy as np
 from dtcwt_slim.coeffs import biort, qshift
-from dtcwt_slim.numpy.lowlevel import colfilter as np_colfilter
+from dtcwt.numpy.lowlevel import colfilter as np_colfilter
 
 import tests.datasets as datasets
 from dtcwt_slim.tf.lowlevel import colfilter

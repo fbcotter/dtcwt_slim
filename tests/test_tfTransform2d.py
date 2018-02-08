@@ -1,15 +1,9 @@
 import pytest
 
-from pytest import raises
-
 import numpy as np
-from dtcwt_slim.numpy import Transform2d as Transform2d_np
+from dtcwt.numpy import Transform2d as Transform2d_np
 from dtcwt_slim.tf import Transform2d
-from dtcwt_slim.coeffs import biort, qshift
-from dtcwt_slim.utils import unpack
-from scipy import stats
 import tests.datasets as datasets
-import time
 
 import tensorflow as tf
 import py3nvml
@@ -336,7 +330,7 @@ def test_results_match_inverse(test_input,biort,qshift):
     # Use a zero input and the fwd transform to get the shape of
     # the pyramid easily
     f_tf = Transform2d(biort=biort, qshift=qshift)
-    Yl, Yh= f_tf.forward(im, nlevels=4)
+    Yl, Yh = f_tf.forward(im, nlevels=4)
 
     # Create ops for the inverse transform
     X_tf = f_tf.inverse(Yl, Yh)

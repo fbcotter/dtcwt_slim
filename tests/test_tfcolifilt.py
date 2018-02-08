@@ -2,7 +2,7 @@ from pytest import raises
 
 import numpy as np
 from dtcwt_slim.coeffs import qshift
-from dtcwt_slim.numpy.lowlevel import colifilt as np_colifilt
+from dtcwt.numpy.lowlevel import colifilt as np_colifilt
 from dtcwt_slim.tf.lowlevel import colifilt
 
 import tests.datasets as datasets

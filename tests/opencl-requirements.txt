@@ -1,4 +1,0 @@
-# OpenCL specific requirements
-mako
-pyopencl
-
