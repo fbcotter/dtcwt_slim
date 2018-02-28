@@ -9,7 +9,7 @@ from dtcwt_slim.coeffs import biort as _biort, qshift as _qshift
 from dtcwt_slim.defaults import DEFAULT_BIORT, DEFAULT_QSHIFT
 
 from dtcwt_slim.tf.lowlevel import coldfilt, rowdfilt, rowfilter, colfilter
-from dtcwt_slim.tf.lowlevel import colifilt, rowifilt
+from dtcwt_slim.tf.lowlevel import colifilt, rowifilt, complex_stack
 
 _GAIN_FUNC = 'einsum'
 
@@ -49,6 +49,11 @@ class Transform2d(object):
     qshift: str or np.array
         The quarter shift wavelet family to use. If a string, will use this to
         call dtcwt_slim.coeffs.biort. If an array, will use these as the values.
+    complex: bool
+        If true, the highpass outputs will be returned as tensorflow complex
+        variables. These will have shape [batch, ch, 6, h, w]. If false, they
+        will be returned as pairs of real and imaginary outputs. These will have
+        shape [batch, ch, 12, h, w].
 
     .. note::
 
@@ -88,7 +93,7 @@ class Transform2d(object):
     .. codeauthor:: Fergal Cotter <fbc23@cam.ac.uk>, Feb 2018
     """
 
-    def __init__(self, biort=DEFAULT_BIORT, qshift=DEFAULT_QSHIFT):
+    def __init__(self, biort=DEFAULT_BIORT, qshift=DEFAULT_QSHIFT, complex=True):
         try:
             self.biort = _biort(biort)
         except TypeError:
@@ -99,6 +104,8 @@ class Transform2d(object):
             self.qshift = _qshift(qshift)
         except TypeError:
             self.qshift = qshift
+        self.complex = complex
+
 
     def forward(self, X, nlevels=3, include_scale=False):
         """ Perform a forward transform on an image with multiple channels.
@@ -147,7 +154,10 @@ class Transform2d(object):
         if len(X_shape) == 2:
             X = tf.reshape(X, [1,1, *X.get_shape().as_list()])
         elif len(X_shape) == 3:
-            X = tf.reshape(X, [1, *X.get_shape().as_list()])
+            if X_shape[0] is None:
+                X = tf.expand_dims(X, axis=1)
+            else:
+                X = tf.expand_dims(X, axis=0)
 
         s = X.get_shape().as_list()[2:]
         size = '{}x{}'.format(s[0], s[1])
@@ -160,12 +170,24 @@ class Transform2d(object):
         # Reshape it all again to match the input
         if len(X_shape) == 2:
             Yl = tf.squeeze(Yl, axis=[0,1])
-            Yh = [tf.squeeze(s, axis=[0,1]) for s in Yh]
+            if self.complex:
+                Yh = [tf.squeeze(s, axis=[0,1]) for s in Yh]
+            else:
+                Yh = [[tf.squeeze(s, axis=[0,1]) for s in scale]
+                      for scale in Yh]
             Yscale = [tf.squeeze(s, axis=[0,1]) for s in Yscale]
         elif len(X_shape) == 3:
-            Yl = tf.squeeze(Yl, axis=[0])
-            Yh = [tf.squeeze(s, axis=[0]) for s in Yh]
-            Yscale = [tf.squeeze(s, axis=[0]) for s in Yscale]
+            if X_shape[0] is None:
+                squeeze_ax = 1
+            else:
+                squeeze_ax = 0
+            Yl = tf.squeeze(Yl, axis=[squeeze_ax])
+            if self.complex:
+                Yh = [tf.squeeze(s, axis=[squeeze_ax]) for s in Yh]
+            else:
+                Yh = [[tf.squeeze(s, axis=[squeeze_ax]) for s in scale]
+                      for scale in Yh]
+            Yscale = [tf.squeeze(s, axis=[squeeze_ax]) for s in Yscale]
 
         if include_scale:
             return Yl, Yh, Yscale
@@ -205,10 +227,19 @@ class Transform2d(object):
         # Reshape the inputs to all be 3d inputs of shape (batch, h, w)
         if len(inshape) == 2:
             Yl = tf.reshape(Yl, [1,1, *Yl.get_shape().as_list()])
-            Yh = [tf.reshape(s, [1,1, *s.get_shape().as_list()]) for s in Yh]
+            if self.complex:
+                Yh = [tf.reshape(s, [1,1, *s.get_shape().as_list()])
+                      for s in Yh]
+            else:
+                Yh = [[tf.reshape(s, [1,1, *s.get_shape().as_list()])
+                       for s in scale] for scale in Yh]
         elif len(inshape) == 3:
             Yl = tf.reshape(Yl, [1, *Yl.get_shape().as_list()])
-            Yh = [tf.reshape(s, [1, *s.get_shape().as_list()]) for s in Yh]
+            if self.complex:
+                Yh = [tf.reshape(s, [1, *s.get_shape().as_list()]) for s in Yh]
+            else:
+                Yh = [[tf.reshape(s, [1, *s.get_shape().as_list()])
+                       for s in scale] for scale in Yh]
 
         s = Yl.get_shape().as_list()[2:]
         size = '{}x{}'.format(s[0], s[1])
@@ -314,79 +345,117 @@ class Transform2d(object):
         # ############################ Level 1 #################################
         # Uses the biorthogonal filters
         if nlevels >= 1:
-            # Do odd top-level filters on cols.
-            Lo = colfilter(X, h0o, name='l0_col_low')
-            Hi = colfilter(X, h1o, name='l0_col_high')
-            if len(self.biort) >= 6:
-                Ba = colfilter(X, h2o)
+            with tf.name_scope('scale0'):
+                with tf.name_scope('convs'):
+                    # Do odd top-level filters on cols.
+                    Lo = colfilter(X, h0o, name='l0_col_low')
+                    Hi = colfilter(X, h1o, name='l0_col_high')
+                    if len(self.biort) >= 6:
+                        Ba = colfilter(X, h2o)
 
-            # Do odd top-level filters on rows.
-            LoLo = rowfilter(Lo, h0o, name='l0_LoLo')
-            LoLo_shape = LoLo.get_shape().as_list()[-2:]
+                    # Do odd top-level filters on rows.
+                    LoLo = rowfilter(Lo, h0o, name='l0_LoLo')
+                    LoLo_shape = LoLo.get_shape().as_list()[-2:]
 
-            # Horizontal wavelet pair (15 & 165 degrees)
-            horiz = q2c(rowfilter(Hi, h0o, name='l0_LoHi'))
+                    # Horizontal wavelet pair (15 & 165 degrees)
+                    horiz = rowfilter(Hi, h0o, name='l0_LoHi')
 
-            # Vertical wavelet pair (75 & 105 degrees)
-            vertic = q2c(rowfilter(Lo, h1o, name='l0_HiLo'))
+                    # Vertical wavelet pair (75 & 105 degrees)
+                    vertic = rowfilter(Lo, h1o, name='l0_HiLo')
 
-            # Diagonal wavelet pair (45 & 135 degrees)
-            if len(self.biort) >= 6:
-                diag = q2c(rowfilter(Ba, h2o, name='l0_HiHi'))
-            else:
-                diag = q2c(rowfilter(Hi, h1o, name='l0_HiHi'))
+                    # Diagonal wavelet pair (45 & 135 degrees)
+                    if len(self.biort) >= 6:
+                        diag = rowfilter(Ba, h2o, name='l0_HiHi')
+                    else:
+                        diag = rowfilter(Hi, h1o, name='l0_HiHi')
 
-            # Pack all 6 tensors into one
-            Yh[0] = tf.stack(
-                [horiz[0], diag[0], vertic[0], vertic[1], diag[1], horiz[1]],
-                axis=2)
+                with tf.name_scope('packing'):
+                    if self.complex:
+                        deg15, deg165 = q2c(horiz)
+                        deg45, deg135 = q2c(diag)
+                        deg75, deg105 = q2c(vertic)
+                        # Pack all 6 tensors into one
+                        Yh[0] = complex_stack(
+                            [deg15, deg45, deg75, deg105, deg135, deg165],
+                            axis=2, name='Yh_0_stack')
+                    else:
+                        deg15r, deg15i, deg165r, deg165i = q2c(horiz, False)
+                        deg45r, deg45i, deg135r, deg135i = q2c(diag, False)
+                        deg75r, deg75i, deg105r, deg105i = q2c(vertic, False)
+                        Yh[0] = [
+                            tf.stack([deg15r, deg45r, deg75r, deg105r, deg135r,
+                                      deg165r], axis=2, name='Yh0_r_stack'),
+                            tf.stack([deg15i, deg45i, deg75i, deg105i, deg135i,
+                                      deg165i], axis=2, name='Yh0_i_stack')
+                        ]
 
-            Yscale[0] = LoLo
+                    Yscale[0] = LoLo
 
         # ############################ Level 2+ ################################
         # Uses the qshift filters
         for level in xrange(1, nlevels):
-            row_size, col_size = LoLo_shape[0], LoLo_shape[1]
-            # If the row count of LoLo is not divisible by 4 (it will be
-            # divisible by 2), add 2 extra rows to make it so
-            if row_size % 4 != 0:
-                LoLo = tf.pad(LoLo, [[0,0], [0, 0], [1, 1], [0, 0]],
-                              'SYMMETRIC')
+            with tf.name_scope('scale{}'.format(level)):
+                with tf.name_scope('padding'):
+                    row_size, col_size = LoLo_shape[0], LoLo_shape[1]
+                    # If the row count of LoLo is not divisible by 4 (it will be
+                    # divisible by 2), add 2 extra rows to make it so
+                    if row_size % 4 != 0:
+                        LoLo = tf.pad(LoLo, [[0,0], [0, 0], [1, 1], [0, 0]],
+                                      'SYMMETRIC')
 
-            # If the col count of LoLo is not divisible by 4 (it will be
-            # divisible by 2), add 2 extra cols to make it so
-            if col_size % 4 != 0:
-                LoLo = tf.pad(LoLo, [[0,0], [0, 0], [0, 0], [1, 1]],
-                              'SYMMETRIC')
+                    # If the col count of LoLo is not divisible by 4 (it will be
+                    # divisible by 2), add 2 extra cols to make it so
+                    if col_size % 4 != 0:
+                        LoLo = tf.pad(LoLo, [[0,0], [0, 0], [0, 0], [1, 1]],
+                                      'SYMMETRIC')
 
-            # Do even Qshift filters on cols.
-            Lo = coldfilt(LoLo, h0b, h0a, name='l%d_col_low' % level)
-            Hi = coldfilt(LoLo, h1b, h1a, name='l%d_col_hi' % level)
-            if len(self.qshift) >= 12:
-                Ba = coldfilt(LoLo, h2b, h2a)
+                with tf.name_scope('convs'):
+                    # Do even Qshift filters on cols.
+                    Lo = coldfilt(LoLo, h0b, h0a, name='l%d_col_low' % level)
+                    Hi = coldfilt(LoLo, h1b, h1a, name='l%d_col_hi' % level)
+                    if len(self.qshift) >= 12:
+                        Ba = coldfilt(LoLo, h2b, h2a)
 
-            # Do even Qshift filters on rows.
-            LoLo = rowdfilt(Lo, h0b, h0a, name='l%d_LoLo' % level)
-            LoLo_shape = LoLo.get_shape().as_list()[-2:]
+                    # Do even Qshift filters on rows.
+                    LoLo = rowdfilt(Lo, h0b, h0a, name='l%d_LoLo' % level)
+                    LoLo_shape = LoLo.get_shape().as_list()[-2:]
 
-            # Horizontal wavelet pair (15 & 165 degrees)
-            horiz = q2c(rowdfilt(Hi, h0b, h0a, name='l%d_LoHi' % level))
+                    # Horizontal wavelet pair (15 & 165 degrees)
+                    horiz = rowdfilt(Hi, h0b, h0a, name='l%d_LoHi' % level)
 
-            # Vertical wavelet pair (75 & 105 degrees)
-            vertic = q2c(rowdfilt(Lo, h1b, h1a, name='l%d_HiLo' % level))
+                    # Vertical wavelet pair (75 & 105 degrees)
+                    vertic = rowdfilt(Lo, h1b, h1a, name='l%d_HiLo' % level)
 
-            # Diagonal wavelet pair (45 & 135 degrees)
-            if len(self.qshift) >= 12:
-                diag = q2c(rowdfilt(Ba, h2b, h2a, name='l%d_HiHi' % level))
-            else:
-                diag = q2c(rowdfilt(Hi, h1b, h1a, name='l%d_HiHi' % level))
+                    # Diagonal wavelet pair (45 & 135 degrees)
+                    if len(self.qshift) >= 12:
+                        diag = rowdfilt(Ba, h2b, h2a, name='l%d_HiHi' % level)
+                    else:
+                        diag = rowdfilt(Hi, h1b, h1a, name='l%d_HiHi' % level)
 
-            # Pack all 6 tensors into one
-            Yh[level] = tf.stack(
-                [horiz[0], diag[0], vertic[0], vertic[1], diag[1], horiz[1]],
-                axis=2)
+                with tf.name_scope('packing'):
+                    if self.complex:
+                        deg15, deg165 = q2c(horiz, True)
+                        deg45, deg135 = q2c(diag, True)
+                        deg75, deg105 = q2c(vertic, True)
 
-            Yscale[level] = LoLo
+                        # Pack all 6 tensors into one
+                        Yh[level] = complex_stack(
+                            [deg15, deg45, deg75, deg105, deg135, deg165],
+                            axis=2, name='Yh_{}_stack'.format(level))
+                    else:
+                        deg15r, deg15i, deg165r, deg165i = q2c(horiz, False)
+                        deg45r, deg45i, deg135r, deg135i = q2c(diag, False)
+                        deg75r, deg75i, deg105r, deg105i = q2c(vertic, False)
+                        Yh[level] = [
+                            tf.stack([deg15r, deg45r, deg75r, deg105r, deg135r,
+                                      deg165r], axis=2,
+                                     name='Yh{}_r_stack'.format(level)),
+                            tf.stack([deg15i, deg45i, deg75i, deg105i, deg135i,
+                                      deg165i], axis=2,
+                                     name='Yh{}_i_stack'.format(level))
+                        ]
+
+                    Yscale[level] = LoLo
 
         Yl = LoLo
 
@@ -415,7 +484,7 @@ class Transform2d(object):
 
         return Yl, Yh, Yscale
 
-    def _inverse_ops(self, Yl, Yh, gain_mask=None):
+    def _inverse_ops(self, Yl, Yh):
         """Perform an *n*-level dual-tree complex wavelet (DTCWT) 2D
         reconstruction.
 
@@ -437,11 +506,6 @@ class Transform2d(object):
         which will call this.
         """
         a = len(Yh)  # No of levels.
-
-        if gain_mask is None:
-            gain_mask = np.ones((6, a))  # Default gain_mask.
-
-        gain_mask = np.array(gain_mask)
 
         # If biort has 6 elements instead of 4, then it's a modified
         # rotationally symmetric wavelet
@@ -469,9 +533,20 @@ class Transform2d(object):
 
         # This ensures that for level 1 we never do the following
         while level >= 1:
-            lh = c2q(Yh[level][:,:,0:6:5], gain_mask[[0, 5], level])
-            hl = c2q(Yh[level][:,:,2:4:1], gain_mask[[2, 3], level])
-            hh = c2q(Yh[level][:,:,1:5:3], gain_mask[[1, 4], level])
+            if self.complex:
+                lh = c2q(tf.real(Yh[level][:,:,0:6:5]),
+                         tf.imag(Yh[level][:,:,0:6:5]))
+                hl = c2q(tf.real(Yh[level][:,:,2:4:1]),
+                         tf.imag(Yh[level][:,:,2:4:1]))
+                hh = c2q(tf.real(Yh[level][:,:,1:5:3]),
+                         tf.imag(Yh[level][:,:,1:5:3]))
+            else:
+                lh = c2q(Yh[level][0][:,:,0:6:5],
+                         Yh[level][1][:,:,0:6:5])
+                hl = c2q(Yh[level][0][:,:,2:4:1],
+                         Yh[level][1][:,:,2:4:1])
+                hh = c2q(Yh[level][0][:,:,1:5:3],
+                         Yh[level][1][:,:,1:5:3])
 
             # Do even Qshift filters on columns.
             y1 = colifilt(Z, g0b, g0a, name='l%d_ll_col_low' % level) + \
@@ -495,7 +570,10 @@ class Transform2d(object):
 
             # Check size of Z and crop as required
             Z_r, Z_c = Z.get_shape().as_list()[-2:]
-            S_r, S_c = Yh[level-1].get_shape().as_list()[-2:]
+            if self.complex:
+                S_r, S_c = Yh[level-1].get_shape().as_list()[-2:]
+            else:
+                S_r, S_c = Yh[level-1][0].get_shape().as_list()[-2:]
             # check to see if this result needs to be cropped for the rows
             if Z_r != S_r * 2:
                 Z = Z[:,:, 1:-1, :]
@@ -513,9 +591,20 @@ class Transform2d(object):
             level = level - 1
 
         if level == 0:
-            lh = c2q(Yh[level][:,:,0:6:5], gain_mask[[0, 5], level])
-            hl = c2q(Yh[level][:,:,2:4:1], gain_mask[[2, 3], level])
-            hh = c2q(Yh[level][:,:,1:5:3], gain_mask[[1, 4], level])
+            if self.complex:
+                lh = c2q(tf.real(Yh[0][:,:,0:6:5]),
+                         tf.imag(Yh[0][:,:,0:6:5]))
+                hl = c2q(tf.real(Yh[0][:,:,2:4:1]),
+                         tf.imag(Yh[0][:,:,2:4:1]))
+                hh = c2q(tf.real(Yh[0][:,:,1:5:3]),
+                         tf.imag(Yh[0][:,:,1:5:3]))
+            else:
+                lh = c2q(Yh[0][0][:,:,0:6:5],
+                         Yh[0][1][:,:,0:6:5])
+                hl = c2q(Yh[0][0][:,:,2:4:1],
+                         Yh[0][1][:,:,2:4:1])
+                hh = c2q(Yh[0][0][:,:,1:5:3],
+                         Yh[0][1][:,:,1:5:3])
 
             # Do odd top-level filters on columns.
             y1 = colfilter(Z, g0o, name='l0_ll_col_low') + \
@@ -540,7 +629,7 @@ class Transform2d(object):
         return Z
 
 
-def q2c(y):
+def q2c(y, complex=True):
     """
     Convert from quads in y to complex numbers in z.
     """
@@ -552,17 +641,21 @@ def q2c(y):
     #  |    |
     #  c----d
     # Combine (a,b) and (d,c) to form two complex subimages.
+    y = y/np.sqrt(2)
     a, b = y[:,:, 0::2, 0::2], y[:,:, 0::2, 1::2]
     c, d = y[:,:, 1::2, 0::2], y[:,:, 1::2, 1::2]
 
-    p = tf.complex(a / np.sqrt(2), b / np.sqrt(2))    # p = (a + jb) / sqrt(2)
-    q = tf.complex(d / np.sqrt(2), -c / np.sqrt(2))   # q = (d - jc) / sqrt(2)
+    if complex:
+        p = tf.complex(a, b)    # p = (a + jb) / sqrt(2)
+        q = tf.complex(d, -c)   # q = (d - jc) / sqrt(2)
 
-    # Form the 2 highpasses in z.
-    return (p - q, p + q)
+        # Form the 2 highpasses in z.
+        return (p - q, p + q)
+    else:
+        return (a-d, b+c, a+d, b-c)
 
 
-def c2q(w, gain):
+def c2q(w_r, w_i, complex=True):
     """
     Scale by gain and convert from complex w(:,:,1:2) to real quad-numbers
     in z.
@@ -573,21 +666,16 @@ def c2q(w, gain):
      |    |
      |    |
      C----D     Re   Im of w(:,:,2)
-
     """
 
     # Input has shape [batch, ch, 2 r, c]
-    ch, _, r, c = w.get_shape().as_list()[1:]
-
-    sc = np.sqrt(0.5) * gain
-    P = w[:, :, 0] * sc[0] + w[:, :, 1] * sc[1]
-    Q = w[:, :, 0] * sc[0] - w[:, :, 1] * sc[1]
-
-    # Recover each of the 4 corners of the quads.
-    x1 = tf.real(P)
-    x2 = tf.imag(P)
-    x3 = tf.imag(Q)
-    x4 = -tf.real(Q)
+    ch, _, r, c = w_r.get_shape().as_list()[1:]
+    w_r = w_r/np.sqrt(2)
+    w_i = w_i/np.sqrt(2)
+    x1 = w_r[:,:,0] + w_r[:,:,1]
+    x2 = w_i[:,:,0] + w_i[:,:,1]
+    x3 = w_i[:,:,0] - w_i[:,:,1]
+    x4 = -w_r[:,:,0] + w_r[:,:,1]
 
     # Stack 2 inputs of shape [batch, ch, r, c] to [batch, ch, r, 2, c]
     x_rows1 = tf.stack([x1, x3], axis=-2)

@@ -123,9 +123,12 @@ def test_0_levels_w_scale():
     assert len(Yscale) == 0
 
 
-def test_numpy_in():
-    X = np.random.randn(100,100)
-    xfm = Transform2d()
+@pytest.mark.parametrize("complex", [
+    (False), (True)
+])
+def test_numpy_in(complex):
+    X = 100*np.random.randn(100,100)
+    xfm = Transform2d(complex=complex)
     Yl, Yh = xfm.forward(X)
     f1 = Transform2d_np()
     p1 = f1.forward(X)
@@ -136,9 +139,15 @@ def test_numpy_in():
 
     np.testing.assert_array_almost_equal(
         Yl, p1.lowpass, decimal=PRECISION_DECIMAL)
-    for x,y in zip(Yh, p1.highpasses):
-        np.testing.assert_array_almost_equal(
-            x,reshape_hp(y),decimal=PRECISION_DECIMAL)
+    if complex:
+        for x,y in zip(Yh, p1.highpasses):
+            np.testing.assert_array_almost_equal(
+                x,reshape_hp(y),decimal=PRECISION_DECIMAL)
+    else:
+        for x,y in zip(Yh, p1.highpasses):
+            np.testing.assert_array_almost_equal(
+                x[0]+1j*x[1],reshape_hp(y),decimal=PRECISION_DECIMAL)
+
 
     X = np.random.randn(100,100)
     Yl, Yh, Yscale = xfm.forward(X, include_scale=True)
@@ -151,18 +160,26 @@ def test_numpy_in():
 
     np.testing.assert_array_almost_equal(
         Yl, p1.lowpass, decimal=PRECISION_DECIMAL)
-    for x,y in zip(Yh, p1.highpasses):
-        np.testing.assert_array_almost_equal(
-            x,reshape_hp(y),decimal=PRECISION_DECIMAL)
+    if complex:
+        for x,y in zip(Yh, p1.highpasses):
+            np.testing.assert_array_almost_equal(
+                x,reshape_hp(y),decimal=PRECISION_DECIMAL)
+    else:
+        for x,y in zip(Yh, p1.highpasses):
+            np.testing.assert_array_almost_equal(
+                x[0]+1j*x[1],reshape_hp(y),decimal=PRECISION_DECIMAL)
     for x,y in zip(Yscale, p1.scales):
         np.testing.assert_array_almost_equal(
             x,y,decimal=PRECISION_DECIMAL)
 
 
-def test_numpy_in_batch():
+@pytest.mark.parametrize("complex", [
+    (False), (True)
+])
+def test_numpy_in_batch(complex):
     X = np.random.randn(5,100,100)
 
-    xfm = Transform2d()
+    xfm = Transform2d(complex=complex)
     Yl, Yh, Yscale = xfm.forward(X, include_scale=True)
     with tf.Session(config=config) as sess:
         sess.run(tf.global_variables_initializer())
@@ -175,18 +192,27 @@ def test_numpy_in_batch():
         p1 = f1.forward(X[i], include_scale=True)
         np.testing.assert_array_almost_equal(
             Yl[i], p1.lowpass, decimal=PRECISION_DECIMAL)
-        for x,y in zip(Yh, p1.highpasses):
-            np.testing.assert_array_almost_equal(
-                x[i], reshape_hp(y), decimal=PRECISION_DECIMAL)
+        if complex:
+            for x,y in zip(Yh, p1.highpasses):
+                np.testing.assert_array_almost_equal(
+                    x[i], reshape_hp(y), decimal=PRECISION_DECIMAL)
+        else:
+            for x,y in zip(Yh, p1.highpasses):
+                np.testing.assert_array_almost_equal(
+                    x[0][i] + 1j*x[1][i], reshape_hp(y),
+                    decimal=PRECISION_DECIMAL)
         for x,y in zip(Yscale, p1.scales):
             np.testing.assert_array_almost_equal(
                 x[i], y, decimal=PRECISION_DECIMAL)
 
 
-def test_numpy_batch_ch():
+@pytest.mark.parametrize("complex", [
+    (False), (True)
+])
+def test_numpy_batch_ch(complex):
     X = np.random.randn(5,4,100,100)
 
-    xfm = Transform2d()
+    xfm = Transform2d(complex=complex)
     Yl, Yh, Yscale = xfm.forward(X, include_scale=True)
     with tf.Session(config=config) as sess:
         sess.run(tf.global_variables_initializer())
@@ -200,18 +226,27 @@ def test_numpy_batch_ch():
             p1 = f1.forward(X[i,j], include_scale=True)
             np.testing.assert_array_almost_equal(
                 Yl[i,j], p1.lowpass, decimal=PRECISION_DECIMAL)
-            for x,y in zip(Yh, p1.highpasses):
-                np.testing.assert_array_almost_equal(
-                    x[i,j], reshape_hp(y), decimal=PRECISION_DECIMAL)
+            if complex:
+                for x,y in zip(Yh, p1.highpasses):
+                    np.testing.assert_array_almost_equal(
+                        x[i,j], reshape_hp(y), decimal=PRECISION_DECIMAL)
+            else:
+                for x,y in zip(Yh, p1.highpasses):
+                    np.testing.assert_array_almost_equal(
+                        x[0][i,j]+1j*x[1][i,j], reshape_hp(y),
+                        decimal=PRECISION_DECIMAL)
             for x,y in zip(Yscale, p1.scales):
                 np.testing.assert_array_almost_equal(
                     x[i,j], y, decimal=PRECISION_DECIMAL)
 
 
 # Test end to end with numpy inputs
-def test_2d_input():
+@pytest.mark.parametrize("complex", [
+    (False), (True)
+])
+def test_2d_input(complex):
     X = np.random.randn(100,100)
-    xfm = Transform2d()
+    xfm = Transform2d(complex=complex)
     Yl, Yh = xfm.forward(X)
     x = xfm.inverse(Yl, Yh)
     with tf.Session(config=config) as sess:
@@ -220,9 +255,12 @@ def test_2d_input():
     np.testing.assert_array_almost_equal(X,x_out,decimal=PRECISION_DECIMAL)
 
 
-def test_3d_input():
+@pytest.mark.parametrize("complex", [
+    (False), (True)
+])
+def test_3d_input(complex):
     X = np.random.randn(5,100,100)
-    xfm = Transform2d()
+    xfm = Transform2d(complex=complex)
     Yl, Yh = xfm.forward(X)
     x = xfm.inverse(Yl, Yh)
     with tf.Session(config=config) as sess:
@@ -231,9 +269,12 @@ def test_3d_input():
     np.testing.assert_array_almost_equal(X,x_out,decimal=PRECISION_DECIMAL)
 
 
-def test_4d_input():
-    X = np.random.randn(5,100,100,4)
-    xfm = Transform2d()
+@pytest.mark.parametrize("complex", [
+    (False), (True)
+])
+def test_4d_input(complex):
+    X = np.random.randn(5,4,100,100)
+    xfm = Transform2d(complex=complex)
     Yl, Yh = xfm.forward(X)
     x = xfm.inverse(Yl, Yh)
     with tf.Session(config=config) as sess:
@@ -243,9 +284,12 @@ def test_4d_input():
 
 
 # Test end to end with tf inputs
-def test_2d_input_ph():
+@pytest.mark.parametrize("complex", [
+    (False), (True)
+])
+def test_2d_input_ph(complex):
     X = tf.placeholder(tf.float32, [100,100])
-    xfm = Transform2d()
+    xfm = Transform2d(complex=complex)
     Yl, Yh = xfm.forward(X)
     x = xfm.inverse(Yl, Yh)
     with tf.Session(config=config) as sess:
@@ -256,9 +300,12 @@ def test_2d_input_ph():
 
 
 # Test end to end with tf inputs
-def test_3d_input_ph():
+@pytest.mark.parametrize("complex", [
+    (False), (True)
+])
+def test_3d_input_ph(complex):
     X = tf.placeholder(tf.float32, [5, 100,100])
-    xfm = Transform2d()
+    xfm = Transform2d(complex=complex)
     Yl, Yh = xfm.forward(X)
     x = xfm.inverse(Yl, Yh)
     with tf.Session(config=config) as sess:
@@ -268,9 +315,12 @@ def test_3d_input_ph():
     np.testing.assert_array_almost_equal(in_,x_out,decimal=PRECISION_DECIMAL)
 
 
-def test_4d_input_ph():
+@pytest.mark.parametrize("complex", [
+    (False), (True)
+])
+def test_4d_input_ph(complex):
     X = tf.placeholder(tf.float32, [None, 5, 100,100])
-    xfm = Transform2d()
+    xfm = Transform2d(complex=complex)
     Yl, Yh = xfm.forward(X)
     x = xfm.inverse(Yl, Yh)
     with tf.Session(config=config) as sess:
@@ -280,14 +330,14 @@ def test_4d_input_ph():
     np.testing.assert_array_almost_equal(in_,x_out,decimal=PRECISION_DECIMAL)
 
 
-@pytest.mark.parametrize("test_input,biort,qshift", [
-    (datasets.mandrill(),'antonini','qshift_a'),
-    (datasets.mandrill()[100:400,40:460],'legall','qshift_a'),
-    (datasets.mandrill(),'near_sym_a','qshift_c'),
-    (datasets.mandrill()[100:375,30:322],'near_sym_b','qshift_d'),
-    (datasets.mandrill(),'near_sym_b_bp', 'qshift_b_bp')
+@pytest.mark.parametrize("complex,test_input,biort,qshift", [
+    (True, datasets.mandrill(),'antonini','qshift_a'),
+    (False, datasets.mandrill()[100:400,40:460],'legall','qshift_a'),
+    (True, datasets.mandrill(),'near_sym_a','qshift_c'),
+    (False, datasets.mandrill()[100:375,30:322],'near_sym_b','qshift_d'),
+    (True, datasets.mandrill(),'near_sym_b_bp', 'qshift_b_bp')
 ])
-def test_results_match_2d(test_input, biort, qshift):
+def test_results_match_2d(complex, test_input, biort, qshift):
     """
     Compare forward transform with numpy forward transform for barbara image
     """
@@ -295,7 +345,7 @@ def test_results_match_2d(test_input, biort, qshift):
     f_np = Transform2d_np(biort=biort,qshift=qshift)
     p_np = f_np.forward(im, include_scale=True)
 
-    f_tf = Transform2d(biort=biort,qshift=qshift)
+    f_tf = Transform2d(biort=biort,qshift=qshift,complex=complex)
     Yl, Yh, Yscale = f_tf.forward(im, include_scale=True)
     with tf.Session(config=config) as sess:
         sess.run(tf.global_variables_initializer())
@@ -305,9 +355,14 @@ def test_results_match_2d(test_input, biort, qshift):
 
     np.testing.assert_array_almost_equal(
         p_np.lowpass, Yl, decimal=3)
-    [np.testing.assert_array_almost_equal(
-        reshape_hp(h_np), h_tf, decimal=3) for h_np, h_tf in
-        zip(p_np.highpasses, Yh)]
+    if complex:
+        [np.testing.assert_array_almost_equal(
+            reshape_hp(h_np), h_tf, decimal=3) for h_np, h_tf in
+            zip(p_np.highpasses, Yh)]
+    else:
+        [np.testing.assert_array_almost_equal(
+            reshape_hp(h_np), h_tf[0]+1j*h_tf[1], decimal=3) for h_np, h_tf in
+            zip(p_np.highpasses, Yh)]
     [np.testing.assert_array_almost_equal(
         s_np, s_tf, decimal=3) for s_np, s_tf in
         zip(p_np.scales, Yscale)]
