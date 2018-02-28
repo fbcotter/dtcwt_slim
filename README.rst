@@ -60,6 +60,15 @@ The key differences between `dtcwt_slim` and `dtcwt` are:
   they will be returned as [6, H, W]. If there are multiple channels, then the
   orientations dimension still comes in the third last position - i.e. the
   output will be [C, 6, H, W].
+- `dtcwt_slim` can return real highpass outputs instead of complex ones. This
+  saves overhead on having to constantly go back to real operations to do things
+  that aren't supported in the complex domain (like convolutions). To return
+  real highpasses, pass the `complex=False` parameter to the class initializer::
+
+      import dtcwt_slim
+      xfm = dtcwt_slim.Transform2d(complex=False)
+
+  The highpass outputs then are a list of length 2.
 
 __ https://github.com/rjw57/dtcwt
 
