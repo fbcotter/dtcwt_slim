@@ -10,8 +10,8 @@ from dtcwt_slim.defaults import DEFAULT_BIORT, DEFAULT_QSHIFT
 
 from dtcwt_slim.tf.lowlevel import coldfilt, rowdfilt, rowfilter, colfilter
 from dtcwt_slim.tf.lowlevel import colifilt, rowifilt, complex_stack
+from dtcwt_slim.tf.common import ComplexTensor
 
-_GAIN_FUNC = 'einsum'
 
 try:
     import tensorflow as tf
@@ -92,8 +92,8 @@ class Transform2d(object):
 
     .. codeauthor:: Fergal Cotter <fbc23@cam.ac.uk>, Feb 2018
     """
-
-    def __init__(self, biort=DEFAULT_BIORT, qshift=DEFAULT_QSHIFT, complex=True):
+    def __init__(self, biort=DEFAULT_BIORT, qshift=DEFAULT_QSHIFT,
+                 complex=True):
         try:
             self.biort = _biort(biort)
         except TypeError:
@@ -105,7 +105,6 @@ class Transform2d(object):
         except TypeError:
             self.qshift = qshift
         self.complex = complex
-
 
     def forward(self, X, nlevels=3, include_scale=False):
         """ Perform a forward transform on an image with multiple channels.
@@ -173,8 +172,8 @@ class Transform2d(object):
             if self.complex:
                 Yh = [tf.squeeze(s, axis=[0,1]) for s in Yh]
             else:
-                Yh = [[tf.squeeze(s, axis=[0,1]) for s in scale]
-                      for scale in Yh]
+                fn = lambda x: tf.squeeze(x, axis=[0,1])
+                Yh = [s.apply_func(fn) for s in Yh]
             Yscale = [tf.squeeze(s, axis=[0,1]) for s in Yscale]
         elif len(X_shape) == 3:
             if X_shape[0] is None:
@@ -185,8 +184,8 @@ class Transform2d(object):
             if self.complex:
                 Yh = [tf.squeeze(s, axis=[squeeze_ax]) for s in Yh]
             else:
-                Yh = [[tf.squeeze(s, axis=[squeeze_ax]) for s in scale]
-                      for scale in Yh]
+                fn = lambda x: tf.squeeze(x, axis=[squeeze_ax])
+                Yh = [s.apply_func(fn) for s in Yh]
             Yscale = [tf.squeeze(s, axis=[squeeze_ax]) for s in Yscale]
 
         if include_scale:
@@ -231,15 +230,15 @@ class Transform2d(object):
                 Yh = [tf.reshape(s, [1,1, *s.get_shape().as_list()])
                       for s in Yh]
             else:
-                Yh = [[tf.reshape(s, [1,1, *s.get_shape().as_list()])
-                       for s in scale] for scale in Yh]
+                fn = lambda x: tf.reshape(x, [1,1, *x.get_shape().as_list()])
+                Yh = [s.apply_func(fn) for s in Yh]
         elif len(inshape) == 3:
             Yl = tf.reshape(Yl, [1, *Yl.get_shape().as_list()])
             if self.complex:
                 Yh = [tf.reshape(s, [1, *s.get_shape().as_list()]) for s in Yh]
             else:
-                Yh = [[tf.reshape(s, [1, *s.get_shape().as_list()])
-                       for s in scale] for scale in Yh]
+                fn = lambda x: tf.reshape(x, [1, *x.get_shape().as_list()])
+                Yh = [s.apply_func(fn) for s in Yh]
 
         s = Yl.get_shape().as_list()[2:]
         size = '{}x{}'.format(s[0], s[1])
@@ -382,12 +381,12 @@ class Transform2d(object):
                         deg15r, deg15i, deg165r, deg165i = q2c(horiz, False)
                         deg45r, deg45i, deg135r, deg135i = q2c(diag, False)
                         deg75r, deg75i, deg105r, deg105i = q2c(vertic, False)
-                        Yh[0] = [
+                        Yh[0] = ComplexTensor([
                             tf.stack([deg15r, deg45r, deg75r, deg105r, deg135r,
                                       deg165r], axis=2, name='Yh0_r_stack'),
                             tf.stack([deg15i, deg45i, deg75i, deg105i, deg135i,
                                       deg165i], axis=2, name='Yh0_i_stack')
-                        ]
+                        ])
 
                     Yscale[0] = LoLo
 
@@ -446,14 +445,14 @@ class Transform2d(object):
                         deg15r, deg15i, deg165r, deg165i = q2c(horiz, False)
                         deg45r, deg45i, deg135r, deg135i = q2c(diag, False)
                         deg75r, deg75i, deg105r, deg105i = q2c(vertic, False)
-                        Yh[level] = [
+                        Yh[level] = ComplexTensor([
                             tf.stack([deg15r, deg45r, deg75r, deg105r, deg135r,
                                       deg165r], axis=2,
                                      name='Yh{}_r_stack'.format(level)),
                             tf.stack([deg15i, deg45i, deg75i, deg105i, deg135i,
                                       deg165i], axis=2,
                                      name='Yh{}_i_stack'.format(level))
-                        ]
+                        ])
 
                     Yscale[level] = LoLo
 
@@ -541,12 +540,12 @@ class Transform2d(object):
                 hh = c2q(tf.real(Yh[level][:,:,1:5:3]),
                          tf.imag(Yh[level][:,:,1:5:3]))
             else:
-                lh = c2q(Yh[level][0][:,:,0:6:5],
-                         Yh[level][1][:,:,0:6:5])
-                hl = c2q(Yh[level][0][:,:,2:4:1],
-                         Yh[level][1][:,:,2:4:1])
-                hh = c2q(Yh[level][0][:,:,1:5:3],
-                         Yh[level][1][:,:,1:5:3])
+                lh = c2q(Yh[level].real[:,:,0:6:5],
+                         Yh[level].imag[:,:,0:6:5])
+                hl = c2q(Yh[level].real[:,:,2:4:1],
+                         Yh[level].imag[:,:,2:4:1])
+                hh = c2q(Yh[level].real[:,:,1:5:3],
+                         Yh[level].imag[:,:,1:5:3])
 
             # Do even Qshift filters on columns.
             y1 = colifilt(Z, g0b, g0a, name='l%d_ll_col_low' % level) + \
@@ -570,10 +569,7 @@ class Transform2d(object):
 
             # Check size of Z and crop as required
             Z_r, Z_c = Z.get_shape().as_list()[-2:]
-            if self.complex:
-                S_r, S_c = Yh[level-1].get_shape().as_list()[-2:]
-            else:
-                S_r, S_c = Yh[level-1][0].get_shape().as_list()[-2:]
+            S_r, S_c = Yh[level-1].get_shape().as_list()[-2:]
             # check to see if this result needs to be cropped for the rows
             if Z_r != S_r * 2:
                 Z = Z[:,:, 1:-1, :]
@@ -599,12 +595,12 @@ class Transform2d(object):
                 hh = c2q(tf.real(Yh[0][:,:,1:5:3]),
                          tf.imag(Yh[0][:,:,1:5:3]))
             else:
-                lh = c2q(Yh[0][0][:,:,0:6:5],
-                         Yh[0][1][:,:,0:6:5])
-                hl = c2q(Yh[0][0][:,:,2:4:1],
-                         Yh[0][1][:,:,2:4:1])
-                hh = c2q(Yh[0][0][:,:,1:5:3],
-                         Yh[0][1][:,:,1:5:3])
+                lh = c2q(Yh[0].real[:,:,0:6:5],
+                         Yh[0].imag[:,:,0:6:5])
+                hl = c2q(Yh[0].real[:,:,2:4:1],
+                         Yh[0].imag[:,:,2:4:1])
+                hh = c2q(Yh[0].real[:,:,1:5:3],
+                         Yh[0].imag[:,:,1:5:3])
 
             # Do odd top-level filters on columns.
             y1 = colfilter(Z, g0o, name='l0_ll_col_low') + \

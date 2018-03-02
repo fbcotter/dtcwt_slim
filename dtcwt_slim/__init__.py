@@ -26,6 +26,7 @@ _BACKEND_STACK = []
 _AVAILABLE_BACKENDS = {
     'tf': {
         'Transform2d': dtcwt_slim.tf.Transform2d,
+        'ComplexTensor': dtcwt_slim.tf.ComplexTensor
     },
 }
 

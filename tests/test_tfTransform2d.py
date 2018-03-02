@@ -135,19 +135,16 @@ def test_numpy_in(complex):
     with tf.Session(config=config) as sess:
         sess.run(tf.global_variables_initializer())
         Yl = sess.run(Yl)
-        Yh = sess.run(Yh)
+        if complex:
+            Yh = sess.run(Yh)
+        else:
+            Yh = sess.run([s.complex for s in Yh])
 
     np.testing.assert_array_almost_equal(
         Yl, p1.lowpass, decimal=PRECISION_DECIMAL)
-    if complex:
-        for x,y in zip(Yh, p1.highpasses):
-            np.testing.assert_array_almost_equal(
-                x,reshape_hp(y),decimal=PRECISION_DECIMAL)
-    else:
-        for x,y in zip(Yh, p1.highpasses):
-            np.testing.assert_array_almost_equal(
-                x[0]+1j*x[1],reshape_hp(y),decimal=PRECISION_DECIMAL)
-
+    for x,y in zip(Yh, p1.highpasses):
+        np.testing.assert_array_almost_equal(
+            x,reshape_hp(y),decimal=PRECISION_DECIMAL)
 
     X = np.random.randn(100,100)
     Yl, Yh, Yscale = xfm.forward(X, include_scale=True)
@@ -155,19 +152,17 @@ def test_numpy_in(complex):
     with tf.Session(config=config) as sess:
         sess.run(tf.global_variables_initializer())
         Yl = sess.run(Yl)
-        Yh = sess.run(Yh)
+        if complex:
+            Yh = sess.run(Yh)
+        else:
+            Yh = sess.run([s.complex for s in Yh])
         Yscale = sess.run(Yscale)
 
     np.testing.assert_array_almost_equal(
         Yl, p1.lowpass, decimal=PRECISION_DECIMAL)
-    if complex:
-        for x,y in zip(Yh, p1.highpasses):
-            np.testing.assert_array_almost_equal(
-                x,reshape_hp(y),decimal=PRECISION_DECIMAL)
-    else:
-        for x,y in zip(Yh, p1.highpasses):
-            np.testing.assert_array_almost_equal(
-                x[0]+1j*x[1],reshape_hp(y),decimal=PRECISION_DECIMAL)
+    for x,y in zip(Yh, p1.highpasses):
+        np.testing.assert_array_almost_equal(
+            x,reshape_hp(y),decimal=PRECISION_DECIMAL)
     for x,y in zip(Yscale, p1.scales):
         np.testing.assert_array_almost_equal(
             x,y,decimal=PRECISION_DECIMAL)
@@ -184,7 +179,10 @@ def test_numpy_in_batch(complex):
     with tf.Session(config=config) as sess:
         sess.run(tf.global_variables_initializer())
         Yl = sess.run(Yl)
-        Yh = sess.run(Yh)
+        if complex:
+            Yh = sess.run(Yh)
+        else:
+            Yh = sess.run([s.complex for s in Yh])
         Yscale = sess.run(Yscale)
 
     f1 = Transform2d_np()
@@ -192,15 +190,9 @@ def test_numpy_in_batch(complex):
         p1 = f1.forward(X[i], include_scale=True)
         np.testing.assert_array_almost_equal(
             Yl[i], p1.lowpass, decimal=PRECISION_DECIMAL)
-        if complex:
-            for x,y in zip(Yh, p1.highpasses):
-                np.testing.assert_array_almost_equal(
-                    x[i], reshape_hp(y), decimal=PRECISION_DECIMAL)
-        else:
-            for x,y in zip(Yh, p1.highpasses):
-                np.testing.assert_array_almost_equal(
-                    x[0][i] + 1j*x[1][i], reshape_hp(y),
-                    decimal=PRECISION_DECIMAL)
+        for x,y in zip(Yh, p1.highpasses):
+            np.testing.assert_array_almost_equal(
+                x[i], reshape_hp(y), decimal=PRECISION_DECIMAL)
         for x,y in zip(Yscale, p1.scales):
             np.testing.assert_array_almost_equal(
                 x[i], y, decimal=PRECISION_DECIMAL)
@@ -217,7 +209,10 @@ def test_numpy_batch_ch(complex):
     with tf.Session(config=config) as sess:
         sess.run(tf.global_variables_initializer())
         Yl = sess.run(Yl)
-        Yh = sess.run(Yh)
+        if complex:
+            Yh = sess.run(Yh)
+        else:
+            Yh = sess.run([s.complex for s in Yh])
         Yscale = sess.run(Yscale)
 
     f1 = Transform2d_np()
@@ -226,15 +221,9 @@ def test_numpy_batch_ch(complex):
             p1 = f1.forward(X[i,j], include_scale=True)
             np.testing.assert_array_almost_equal(
                 Yl[i,j], p1.lowpass, decimal=PRECISION_DECIMAL)
-            if complex:
-                for x,y in zip(Yh, p1.highpasses):
-                    np.testing.assert_array_almost_equal(
-                        x[i,j], reshape_hp(y), decimal=PRECISION_DECIMAL)
-            else:
-                for x,y in zip(Yh, p1.highpasses):
-                    np.testing.assert_array_almost_equal(
-                        x[0][i,j]+1j*x[1][i,j], reshape_hp(y),
-                        decimal=PRECISION_DECIMAL)
+            for x,y in zip(Yh, p1.highpasses):
+                np.testing.assert_array_almost_equal(
+                    x[i,j], reshape_hp(y), decimal=PRECISION_DECIMAL)
             for x,y in zip(Yscale, p1.scales):
                 np.testing.assert_array_almost_equal(
                     x[i,j], y, decimal=PRECISION_DECIMAL)
@@ -350,19 +339,17 @@ def test_results_match_2d(complex, test_input, biort, qshift):
     with tf.Session(config=config) as sess:
         sess.run(tf.global_variables_initializer())
         Yl = sess.run(Yl)
-        Yh = sess.run(Yh)
+        if complex:
+            Yh = sess.run(Yh)
+        else:
+            Yh = sess.run([s.complex for s in Yh])
         Yscale = sess.run(Yscale)
 
     np.testing.assert_array_almost_equal(
         p_np.lowpass, Yl, decimal=3)
-    if complex:
-        [np.testing.assert_array_almost_equal(
-            reshape_hp(h_np), h_tf, decimal=3) for h_np, h_tf in
-            zip(p_np.highpasses, Yh)]
-    else:
-        [np.testing.assert_array_almost_equal(
-            reshape_hp(h_np), h_tf[0]+1j*h_tf[1], decimal=3) for h_np, h_tf in
-            zip(p_np.highpasses, Yh)]
+    [np.testing.assert_array_almost_equal(
+        reshape_hp(h_np), h_tf, decimal=3) for h_np, h_tf in
+        zip(p_np.highpasses, Yh)]
     [np.testing.assert_array_almost_equal(
         s_np, s_tf, decimal=3) for s_np, s_tf in
         zip(p_np.scales, Yscale)]
@@ -384,7 +371,10 @@ def test_results_match_3d(test_input, biort, qshift):
     Yl, Yh, Yscale = f_tf.forward(im, include_scale=True)
     with tf.Session(config=config) as sess:
         sess.run(tf.global_variables_initializer())
-        Yl, Yh, Yscale = sess.run([Yl, Yh, Yscale])
+        if complex:
+            Yl, Yh, Yscale = sess.run([Yl, Yh, Yscale])
+        else:
+            Yl, Yh, Yscale = sess.run([Yl, [s.complex for s in Yh], Yscale])
 
     f_np = Transform2d_np(biort=biort,qshift=qshift)
     for i, ch in enumerate(im):
@@ -416,7 +406,10 @@ def test_results_match_4d(biort, qshift):
     Yl, Yh, Yscale = f_tf.forward(im, include_scale=True)
     with tf.Session(config=config) as sess:
         sess.run(tf.global_variables_initializer())
-        Yl, Yh, Yscale = sess.run([Yl, Yh, Yscale])
+        if complex:
+            Yl, Yh, Yscale = sess.run([Yl, Yh, Yscale])
+        else:
+            Yl, Yh, Yscale = sess.run([Yl, [s.complex for s in Yh], Yscale])
 
     f_np = Transform2d_np(biort=biort,qshift=qshift)
     for i, n in enumerate(im):
