@@ -93,7 +93,7 @@ class Transform2d(object):
     .. codeauthor:: Fergal Cotter <fbc23@cam.ac.uk>, Feb 2018
     """
     def __init__(self, biort=DEFAULT_BIORT, qshift=DEFAULT_QSHIFT,
-                 complex=True):
+                 complex=True, device='GPU'):
         try:
             self.biort = _biort(biort)
         except TypeError:
@@ -105,6 +105,7 @@ class Transform2d(object):
         except TypeError:
             self.qshift = qshift
         self.complex = complex
+        self.device = device
 
     def forward(self, X, nlevels=3, include_scale=False):
         """ Perform a forward transform on an image with multiple channels.
@@ -277,6 +278,7 @@ class Transform2d(object):
         This is the lowlevel implementation. You should call the forward method
         which will call this.
         """
+        device = self.device
 
         # If biort has 6 elements instead of 4, then it's a modified
         # rotationally symmetric wavelet
@@ -347,26 +349,26 @@ class Transform2d(object):
             with tf.name_scope('scale0'):
                 with tf.name_scope('convs'):
                     # Do odd top-level filters on cols.
-                    Lo = colfilter(X, h0o, name='l0_col_low')
-                    Hi = colfilter(X, h1o, name='l0_col_high')
+                    Lo = colfilter(X, h0o, device=device, name='l0_col_low')
+                    Hi = colfilter(X, h1o, device=device, name='l0_col_high')
                     if len(self.biort) >= 6:
                         Ba = colfilter(X, h2o)
 
                     # Do odd top-level filters on rows.
-                    LoLo = rowfilter(Lo, h0o, name='l0_LoLo')
+                    LoLo = rowfilter(Lo, h0o, device=device, name='l0_LoLo')
                     LoLo_shape = LoLo.get_shape().as_list()[-2:]
 
                     # Horizontal wavelet pair (15 & 165 degrees)
-                    horiz = rowfilter(Hi, h0o, name='l0_LoHi')
+                    horiz = rowfilter(Hi, h0o, device=device, name='l0_LoHi')
 
                     # Vertical wavelet pair (75 & 105 degrees)
-                    vertic = rowfilter(Lo, h1o, name='l0_HiLo')
+                    vertic = rowfilter(Lo, h1o, device=device, name='l0_HiLo')
 
                     # Diagonal wavelet pair (45 & 135 degrees)
                     if len(self.biort) >= 6:
-                        diag = rowfilter(Ba, h2o, name='l0_HiHi')
+                        diag = rowfilter(Ba, h2o, device=device, name='l0_HiHi')
                     else:
-                        diag = rowfilter(Hi, h1o, name='l0_HiHi')
+                        diag = rowfilter(Hi, h1o, device=device, name='l0_HiHi')
 
                 with tf.name_scope('packing'):
                     if self.complex:
@@ -410,26 +412,26 @@ class Transform2d(object):
 
                 with tf.name_scope('convs'):
                     # Do even Qshift filters on cols.
-                    Lo = coldfilt(LoLo, h0b, h0a, name='l%d_col_low' % level)
-                    Hi = coldfilt(LoLo, h1b, h1a, name='l%d_col_hi' % level)
+                    Lo = coldfilt(LoLo, h0b, h0a, device=device, name='l%d_col_low' % level)
+                    Hi = coldfilt(LoLo, h1b, h1a, device=device, name='l%d_col_hi' % level)
                     if len(self.qshift) >= 12:
                         Ba = coldfilt(LoLo, h2b, h2a)
 
                     # Do even Qshift filters on rows.
-                    LoLo = rowdfilt(Lo, h0b, h0a, name='l%d_LoLo' % level)
+                    LoLo = rowdfilt(Lo, h0b, h0a, device=device, name='l%d_LoLo' % level)
                     LoLo_shape = LoLo.get_shape().as_list()[-2:]
 
                     # Horizontal wavelet pair (15 & 165 degrees)
-                    horiz = rowdfilt(Hi, h0b, h0a, name='l%d_LoHi' % level)
+                    horiz = rowdfilt(Hi, h0b, h0a, device=device, name='l%d_LoHi' % level)
 
                     # Vertical wavelet pair (75 & 105 degrees)
-                    vertic = rowdfilt(Lo, h1b, h1a, name='l%d_HiLo' % level)
+                    vertic = rowdfilt(Lo, h1b, h1a, device=device, name='l%d_HiLo' % level)
 
                     # Diagonal wavelet pair (45 & 135 degrees)
                     if len(self.qshift) >= 12:
-                        diag = rowdfilt(Ba, h2b, h2a, name='l%d_HiHi' % level)
+                        diag = rowdfilt(Ba, h2b, h2a, device=device, name='l%d_HiHi' % level)
                     else:
-                        diag = rowdfilt(Hi, h1b, h1a, name='l%d_HiHi' % level)
+                        diag = rowdfilt(Hi, h1b, h1a, device=device, name='l%d_HiHi' % level)
 
                 with tf.name_scope('packing'):
                     if self.complex:
@@ -505,6 +507,7 @@ class Transform2d(object):
         which will call this.
         """
         a = len(Yh)  # No of levels.
+        device = self.device
 
         # If biort has 6 elements instead of 4, then it's a modified
         # rotationally symmetric wavelet
@@ -548,24 +551,24 @@ class Transform2d(object):
                          Yh[level].imag[:,:,1:5:3])
 
             # Do even Qshift filters on columns.
-            y1 = colifilt(Z, g0b, g0a, name='l%d_ll_col_low' % level) + \
-                colifilt(lh, g1b, g1a, name='l%d_lh_col_high' % level)
+            y1 = colifilt(Z, g0b, g0a, device=device, name='l%d_ll_col_low' % level) + \
+                colifilt(lh, g1b, g1a, device=device, name='l%d_lh_col_high' % level)
 
             if len(self.qshift) >= 12:
-                y2 = colifilt(hl, g0b, g0a, name='l%d_hl_col_low' % level)
-                y2bp = colifilt(hh, g2b, g2a, name='l%d_hh_col_bp' % level)
+                y2 = colifilt(hl, g0b, g0a, device=device, name='l%d_hl_col_low' % level)
+                y2bp = colifilt(hh, g2b, g2a, device=device, name='l%d_hh_col_bp' % level)
 
                 # Do even Qshift filters on rows.
-                Z = rowifilt(y1, g0b, g0a, name='l%d_ll_row_low' % level) + \
-                    rowifilt(y2, g1b, g1a, name='l%d_hl_row_high' % level) + \
-                    rowifilt(y2bp, g2b, g2a, name='l%d_hh_row_bp' % level)
+                Z = rowifilt(y1, g0b, g0a, device=device, name='l%d_ll_row_low' % level) + \
+                    rowifilt(y2, g1b, g1a, device=device, name='l%d_hl_row_high' % level) + \
+                    rowifilt(y2bp, g2b, g2a, device=device, name='l%d_hh_row_bp' % level)
             else:
-                y2 = colifilt(hl, g0b, g0a, name='l%d_hl_col_low' % level) + \
-                    colifilt(hh, g1b, g1a, name='l%d_hh_col_high' % level)
+                y2 = colifilt(hl, g0b, g0a, device=device, name='l%d_hl_col_low' % level) + \
+                    colifilt(hh, g1b, g1a, device=device, name='l%d_hh_col_high' % level)
 
                 # Do even Qshift filters on rows.
-                Z = rowifilt(y1, g0b, g0a, name='l%d_ll_row_low' % level) + \
-                    rowifilt(y2, g1b, g1a, name='l%d_hl_row_high' % level)
+                Z = rowifilt(y1, g0b, g0a, device=device, name='l%d_ll_row_low' % level) + \
+                    rowifilt(y2, g1b, g1a, device=device, name='l%d_hl_row_high' % level)
 
             # Check size of Z and crop as required
             Z_r, Z_c = Z.get_shape().as_list()[-2:]
@@ -603,24 +606,24 @@ class Transform2d(object):
                          Yh[0].imag[:,:,1:5:3])
 
             # Do odd top-level filters on columns.
-            y1 = colfilter(Z, g0o, name='l0_ll_col_low') + \
-                colfilter(lh, g1o, name='l0_lh_col_high')
+            y1 = colfilter(Z, g0o, device=device, name='l0_ll_col_low') + \
+                colfilter(lh, g1o, device=device, name='l0_lh_col_high')
 
             if len(self.biort) >= 6:
-                y2 = colfilter(hl, g0o, name='l0_hl_col_low')
-                y2bp = colfilter(hh, g2o, name='l0_hh_col_bp')
+                y2 = colfilter(hl, g0o, device=device, name='l0_hl_col_low')
+                y2bp = colfilter(hh, g2o, device=device, name='l0_hh_col_bp')
 
                 # Do odd top-level filters on rows.
-                Z = rowfilter(y1, g0o, name='l0_ll_row_low') + \
-                    rowfilter(y2, g1o, name='l0_hl_row_high') + \
-                    rowfilter(y2bp, g2o, name='l0_hh_row_bp')
+                Z = rowfilter(y1, g0o, device=device, name='l0_ll_row_low') + \
+                    rowfilter(y2, g1o, device=device, name='l0_hl_row_high') + \
+                    rowfilter(y2bp, g2o, device=device, name='l0_hh_row_bp')
             else:
-                y2 = colfilter(hl, g0o, name='l0_hl_col_low') + \
-                    colfilter(hh, g1o, name='l0_hh_col_high')
+                y2 = colfilter(hl, g0o, device=device, name='l0_hl_col_low') + \
+                    colfilter(hh, g1o, device=device, name='l0_hh_col_high')
 
                 # Do odd top-level filters on rows.
-                Z = rowfilter(y1, g0o, name='l0_ll_row_low') + \
-                    rowfilter(y2, g1o, name='l0_hl_row_high')
+                Z = rowfilter(y1, g0o, device=device, name='l0_ll_row_low') + \
+                    rowfilter(y2, g1o, device=device, name='l0_hl_row_high')
 
         return Z
 

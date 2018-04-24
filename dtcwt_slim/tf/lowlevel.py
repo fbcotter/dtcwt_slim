@@ -211,7 +211,7 @@ def _tf_pad(x, szs, padding='SYMMETRIC'):
     return x
 
 
-def colfilter(X, h, align=False, name=None):
+def colfilter(X, h, align=False, device='GPU', name=None):
     """
     Filter the cols of image *X* using filter vector *h*, without decimation.
 
@@ -225,6 +225,8 @@ def colfilter(X, h, align=False, name=None):
     align: bool
         If true, then will have Y keep the same output shape as
         X, even if h has even length. Makes no difference if len(h) is odd.
+    device: str
+        should be GPU or CPU. Uses the best kernels for each device.
     name: str
         The name for the conv operation
 
@@ -253,12 +255,15 @@ def colfilter(X, h, align=False, name=None):
         X = _tf_pad(X, [[0, 0], [0, 0], [m2, m2], [0, 0]], 'SYMMETRIC')
 
     h_t = _prepare_filter(h)
-    Y = _conv_2d(X, h_t, strides=[1,1,1,1], name=name)
+    if device.lower() == 'gpu':
+        Y = _conv_2d(X, h_t, strides=[1,1,1,1], name=name)
+    else:
+        Y = _conv_2d_batch(X, h_t, strides=[1,1,1,1], name=name)
 
     return Y
 
 
-def rowfilter(X, h, align=False, name=None):
+def rowfilter(X, h, align=False, device='GPU', name=None):
     """
     Filter the rows of image *X* using filter vector *h*, without decimation.
 
@@ -272,6 +277,8 @@ def rowfilter(X, h, align=False, name=None):
     align: bool
         If true, then will have Y keep the same output shape as
         X, even if h has even length. Makes no difference if len(h) is odd.
+    device: str
+        should be GPU or CPU. Uses the best kernels for each device.
     name: str
         The name for the conv operation
 
@@ -300,12 +307,15 @@ def rowfilter(X, h, align=False, name=None):
         X = _tf_pad(X, [[0, 0], [0, 0], [0, 0], [m2, m2]], 'SYMMETRIC')
 
     h_t = _prepare_filter(h)
-    Y = _conv_2d(X, h_t, strides=[1,1,1,1], name=name)
+    if device.lower() == 'gpu':
+        Y = _conv_2d(X, h_t, strides=[1,1,1,1], name=name)
+    else:
+        Y = _conv_2d_batch(X, h_t, strides=[1,1,1,1], name=name)
 
     return Y
 
 
-def coldfilt(X, ha, hb, name=None):
+def coldfilt(X, ha, hb, device='GPU', name=None):
     """
     Filter the columns of image X using the two filters ha and hb =
     reverse(ha).
@@ -318,6 +328,8 @@ def coldfilt(X, ha, hb, name=None):
         Filter to be used on the odd samples of x.
     hb: np.array
         Filter to bue used on the even samples of x.
+    device: str
+        should be GPU or CPU. Uses the best kernels for each device.
     name: str
         The name for the conv operation
 
@@ -388,7 +400,7 @@ def coldfilt(X, ha, hb, name=None):
     return Y
 
 
-def rowdfilt(X, ha, hb, name=None):
+def rowdfilt(X, ha, hb, device='GPU', name=None):
     """
     Filter the rows of image X using the two filters ha and hb =
     reverse(ha).
@@ -401,6 +413,8 @@ def rowdfilt(X, ha, hb, name=None):
         Filter to be used on the odd samples of x.
     hb: np.array
         Filter to bue used on the even samples of x.
+    device: str
+        should be GPU or CPU. Uses the best kernels for each device.
     name: str
         The name for the conv operation
 
@@ -473,7 +487,7 @@ def rowdfilt(X, ha, hb, name=None):
     return Y
 
 
-def colifilt(X, ha, hb, name=None):
+def colifilt(X, ha, hb, device='GPU', name=None):
     """
     Filter the columns of image X using the two filters ha and hb =
     reverse(ha).
@@ -486,6 +500,8 @@ def colifilt(X, ha, hb, name=None):
         Filter to be used on the odd samples of x.
     hb: np.array
         Filter to bue used on the even samples of x.
+    device: str
+        should be GPU or CPU. Uses the best kernels for each device.
     name: str
         The name for the conv operation
 
@@ -542,8 +558,12 @@ def colifilt(X, ha, hb, name=None):
         # Stack along the filter dimension
         ha_t = tf.concat([ha_even_t, ha_odd_t], axis=-1)
         hb_t = tf.concat([hb_even_t, hb_odd_t], axis=-1)
-        ya = _conv_2d(X1, hb_t)
-        yb = _conv_2d(X2, ha_t)
+        if device.lower() == 'gpu':
+            ya = _conv_2d(X1, hb_t)
+            yb = _conv_2d(X2, ha_t)
+        else:
+            ya = _conv_2d_batch(X1, hb_t)
+            yb = _conv_2d_batch(X2, ha_t)
         y1 = yb[:,::2,:-1]
         y2 = ya[:,::2,:-1]
         y3 = yb[:,1::2,1:]
@@ -564,8 +584,12 @@ def colifilt(X, ha, hb, name=None):
         hb_t = tf.concat([hb_odd_t, hb_even_t], axis=-1)
 
         # y1 has shape [batch, c*2 r2, c2]
-        ya = _conv_2d(X2, ha_t, name=name)
-        yb = _conv_2d(X1, hb_t, name=name)
+        if device.lower() == 'gpu':
+            ya = _conv_2d(X2, ha_t)
+            yb = _conv_2d(X1, hb_t)
+        else:
+            ya = _conv_2d_batch(X2, ha_t)
+            yb = _conv_2d_batch(X1, hb_t)
         y1 = ya[:,::2]
         y2 = yb[:,::2]
         y3 = ya[:,1::2]
@@ -581,7 +605,7 @@ def colifilt(X, ha, hb, name=None):
     return Y
 
 
-def rowifilt(X, ha, hb, name=None):
+def rowifilt(X, ha, hb, device='GPU', name=None):
     """
     Filter the row of image X using the two filters ha and hb =
     reverse(ha).
@@ -594,6 +618,8 @@ def rowifilt(X, ha, hb, name=None):
         Filter to be used on the odd samples of x.
     hb: np.array
         Filter to bue used on the even samples of x.
+    device: str
+        should be GPU or CPU. Uses the best kernels for each device.
     name: str
         The name for the conv operation
 
@@ -651,8 +677,12 @@ def rowifilt(X, ha, hb, name=None):
         # Stack along the filter dimension
         ha_t = tf.concat([ha_even_t, ha_odd_t], axis=-1)
         hb_t = tf.concat([hb_even_t, hb_odd_t], axis=-1)
-        ya = _conv_2d(X1, hb_t)
-        yb = _conv_2d(X2, ha_t)
+        if device.lower() == 'gpu':
+            ya = _conv_2d(X1, hb_t)
+            yb = _conv_2d(X2, ha_t)
+        else:
+            ya = _conv_2d_batch(X1, hb_t)
+            yb = _conv_2d_batch(X2, ha_t)
         y1 = yb[:,::2,:,:-1]
         y2 = ya[:,::2,:,:-1]
         y3 = yb[:,1::2,:,1:]
@@ -673,8 +703,12 @@ def rowifilt(X, ha, hb, name=None):
         hb_t = tf.concat([hb_odd_t, hb_even_t], axis=-1)
 
         # y1 has shape [batch, c*2 r2, c2]
-        ya = _conv_2d(X2, ha_t, name=name)
-        yb = _conv_2d(X1, hb_t, name=name)
+        if device.lower() == 'gpu':
+            ya = _conv_2d(X2, ha_t)
+            yb = _conv_2d(X1, hb_t)
+        else:
+            ya = _conv_2d_batch(X2, ha_t)
+            yb = _conv_2d_batch(X1, hb_t)
         y1 = ya[:,::2]
         y2 = yb[:,::2]
         y3 = ya[:,1::2]
