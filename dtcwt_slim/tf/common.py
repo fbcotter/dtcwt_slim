@@ -94,6 +94,10 @@ class ComplexTensor(tf.Tensor):
             self._phase = tf.angle(self.complex)
         return self._phase
 
+    @property
+    def shape(self):
+        return tuple(self.real.get_shape().as_list())
+
     def apply_func(self, f):
         """ Applies the functions independently on real and imaginary components
         then returns a complex tensor instance.
@@ -157,9 +161,6 @@ class ComplexTensor(tf.Tensor):
                 return ComplexTensor([self.real/other, self.imag/other])
             else:
                 return ComplexTensor(self.complex/other)
-
-    def get_shape(self):
-        return self.real.get_shape()
 
     def __repr__(self):
         return "<ComplexTensor shape={}>".format(self.shape)
