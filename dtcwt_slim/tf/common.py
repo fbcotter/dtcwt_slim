@@ -98,6 +98,10 @@ class ComplexTensor(tf.Tensor):
     def shape(self):
         return tuple(self.real.get_shape().as_list())
 
+    def get_shape(self):
+        return self.real.get_shape()
+        #  return super(ComplexTensor, self).get_shape()
+
     def apply_func(self, f):
         """ Applies the functions independently on real and imaginary components
         then returns a complex tensor instance.
