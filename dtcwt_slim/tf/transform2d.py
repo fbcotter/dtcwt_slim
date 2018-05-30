@@ -296,7 +296,7 @@ class Transform2d(object):
         if len(self.qshift) == 8:
             h0a, h0b, g0a, g0b, h1a, h1b, g1a, g1b = self.qshift
         elif len(self.qshift) == 12:
-            h0a, h0b, g0a, g0b, h1a, h1b, g1a, g1b, h2a, h2b = self.qshift[:10]
+            h0a, h0b, g0a, g0b, h1a, h1b, g1a, g1b, h2a, h2b, g2a, g2b = self.qshift
         else:
             raise ValueError('Qshift wavelet must have 12 or 8 components.')
 
