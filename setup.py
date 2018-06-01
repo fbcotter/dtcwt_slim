@@ -33,7 +33,7 @@ setup(
         "Programming Language :: Python :: 3",
     ],
     include_package_data=True,
-    install_requires=['numpy', 'six', ],
+    install_requires=['numpy', 'six', 'dtcwt'],
 
     extras_require={
         'docs': ['sphinx', 'docutils', 'matplotlib', 'ipython', ],

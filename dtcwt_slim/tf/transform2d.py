@@ -224,7 +224,7 @@ class Transform2d(object):
         J = len(Yh)
         inshape = Yl.get_shape().as_list()
 
-        # Reshape the inputs to all be 3d inputs of shape (batch, h, w)
+        # Reshape the inputs to all be 4d inputs of shape (batch, c, h, w)
         if len(inshape) == 2:
             Yl = tf.reshape(Yl, [1,1, *Yl.get_shape().as_list()])
             if self.complex:

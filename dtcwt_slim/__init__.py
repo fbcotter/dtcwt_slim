@@ -17,6 +17,7 @@ __all__ = [
 from dtcwt_slim._version import __version__
 
 import dtcwt_slim.tf
+import dtcwt_slim.numpy
 
 # An array of dictionaries. Each dictionary stores the top-level module
 # variables for that backend.
@@ -28,6 +29,9 @@ _AVAILABLE_BACKENDS = {
         'Transform2d': dtcwt_slim.tf.Transform2d,
         'ComplexTensor': dtcwt_slim.tf.ComplexTensor
     },
+    'numpy': {
+        'Transform2d': dtcwt_slim.numpy.Transform2d,
+    }
 }
 
 
