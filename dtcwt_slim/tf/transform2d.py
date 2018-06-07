@@ -65,31 +65,6 @@ class Transform2d(object):
         g1o). In the *qshift* case, this should be (h0a, h0b, g0a, g0b, h1a,
         h1b, g1a, g1b).
 
-    .. note::
-
-        Calling the methods in this class with different inputs will slightly
-        vary the results. If you call the
-        :py:meth:`~dtcwt.tf.Transform2d.forward` or
-        :py:meth:`~dtcwt.tf.Transform2d.forward_channels` methods with a numpy
-        array, they load this array into a :py:class:`tf.Variable` and create
-        the graph. Subsequent calls to :py:attr:`dtcwt.tf.Pyramid.lowpass` or
-        other attributes in the pyramid will create a session and evaluate these
-        parameters.  If the above methods are called with a tensorflow variable
-        or placeholder, these will be used to create the graph. As such, to
-        evaluate the results, you will need to look at the
-        :py:attr:`dtcwt.tf.Pyramid.lowpass_op` attribute (calling the `lowpass`
-        attribute will try to evaluate the graph with no initialized variables
-        and likely result in a runtime error).
-
-        The behaviour is similar for the inverse methods, except these return an
-        array, rather than a Pyramid style class. If a
-        :py:class:`dtcwt.tf.Pyramid` was created by calling the forward methods
-        with a numpy array, providing this pyramid to the inverse methods will
-        return a numpy array. If however a :py:class:`dtcwt.tf.Pyramid` was
-        created by calling the forward methods with a tensorflow variable, the
-        result from calling the inverse methods will also be a tensorflow
-        variable.
-
     .. codeauthor:: Fergal Cotter <fbc23@cam.ac.uk>, Feb 2018
     """
     def __init__(self, biort=DEFAULT_BIORT, qshift=DEFAULT_QSHIFT,
@@ -129,16 +104,16 @@ class Transform2d(object):
 
         Returns
         -------
-            Yl: tf.Variable
-                Lowpass output
-            Yh: list(tf.Variable)
-                Highpass outputs. Will be complex and have one more dimension
-                than the input representing the 6 orientations of the wavelets.
-                This extra dimension will be the third last dimension. The first
-                entry in the list is the first scale.
-            Yscale: list(tf.Variable)
-                Only returns if include_scale was true. A list of lowpass
-                outputs at each scale.
+        Yl: tf.Variable
+            Lowpass output
+        Yh: list(tf.Variable)
+            Highpass outputs. Will be complex and have one more dimension
+            than the input representing the 6 orientations of the wavelets.
+            This extra dimension will be the third last dimension. The first
+            entry in the list is the first scale.
+        Yscale: list(tf.Variable)
+            Only returns if include_scale was true. A list of lowpass
+            outputs at each scale.
 
         .. codeauthor:: Fergal Cotter <fbc23@cam.ac.uk>, Feb 2018
         """
@@ -213,11 +188,6 @@ class Transform2d(object):
         -------
         X: tf.Variable
             An array , X, compatible with the reconstruction.
-
-        The (*d*, *l*)-th element of *gain_mask* is gain for subband with
-        direction *d* at level *l*. If gain_mask[d,l] == 0, no computation is
-        performed for band (d,l). Default *gain_mask* is all ones. Note that
-        both *d* and *l* are zero-indexed.
 
         .. codeauthor:: Fergal Cotter <fbc23@cam.ac.uk>, Feb 2018
         """

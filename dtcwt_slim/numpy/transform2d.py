@@ -72,14 +72,12 @@ class Transform2d(object):
 
         Will perform the DTCWT independently on each channel. Data format for
         the input must have the height and width as the last 2 dimensions.
-        Data input must be a tensor, variable or placeholder.
 
         Parameters
         ----------
         X: np.array
             Input image which you wish to transform. Can be 2, 3, or 4
-            dimensions, but height and width must be the last 2. If np.array is
-            given, it will be converted to an tensorflow variable.
+            dimensions, but height and width must be the last 2.
         nlevels: int
             Number of levels of the dtcwt transform to calculate.
         include_scale: bool
@@ -89,14 +87,14 @@ class Transform2d(object):
 
         Returns
         -------
-            Yl: tf.Variable
+            Yl: ndarray
                 Lowpass output
-            Yh: list(tf.Variable)
+            Yh: list(ndarray)
                 Highpass outputs. Will be complex and have one more dimension
                 than the input representing the 6 orientations of the wavelets.
                 This extra dimension will be the third last dimension. The first
                 entry in the list is the first scale.
-            Yscale: list(tf.Variable)
+            Yscale: list(ndarray)
                 Only returns if include_scale was true. A list of lowpass
                 outputs at each scale.
 
@@ -154,6 +152,31 @@ class Transform2d(object):
             return Yl, Yh
 
     def inverse(self, Yl, Yh, gain_mask=None):
+        """
+        Perform an inverse transform on an image with multiple channels.
+
+        Parameters
+        ----------
+        Yl: ndarray
+            The lowpass coefficients. Can be 2, 3, or 4 dimensions
+        Yh: list(ndarray)
+            The complex high pass coefficients. Must be compatible with the
+            lowpass coefficients. Should have one more dimension. E.g if Yl
+            was of shape [batch, ch, h, w], then the Yh's should be each of
+            shape [batch, ch, 6, h', w'] (with h' and w' being dependent on the
+            scale).
+        gain_mask: None or ndarray
+            Can use this to set subbands to have non-unit gain. Should be
+            anarray of size [nlevels, 6] and can be complex or real. Useful for
+            masking out subbands.
+
+        Returns
+        -------
+        X: ndarray
+            An array , X, compatible with the reconstruction.
+
+        .. codeauthor:: Fergal Cotter <fbc23@cam.ac.uk>, Feb 2018
+        """
         J = len(Yh)
         s = Yl.shape
 
