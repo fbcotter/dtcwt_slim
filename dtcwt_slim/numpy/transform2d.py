@@ -103,6 +103,7 @@ class Transform2d(object):
         .. codeauthor:: Fergal Cotter <fbc23@cam.ac.uk>, Feb 2018
         """
         # Reshape the inputs to all be 3d inputs of shape (batch, h, w)
+        X = asfarray(X)
         s = X.shape
         if len(s) == 2:
             X = np.reshape(X, (1, *s))
@@ -152,7 +153,7 @@ class Transform2d(object):
         else:
             return Yl, Yh
 
-    def inverse(self, Yl, Yh):
+    def inverse(self, Yl, Yh, gain_mask=None):
         J = len(Yh)
         s = Yl.shape
 
@@ -167,7 +168,9 @@ class Transform2d(object):
 
         # Do the inverse dtcwt now with a 3 dimensional input
         X = self.xfm.inverse(
-            Pyramid(Yl[0], [np.transpose(Yh[i][0], (1,2,0)) for i in range(J)]))
+            Pyramid(Yl[0], [np.transpose(Yh[i][0], (1,2,0)) for i in range(J)]),
+            gain_mask=gain_mask)
+
         x = np.zeros((Yl.shape[0], *X.shape), dtype=X.dtype)
         x[0] = X
         for n in range(1, Yl.shape[0]):
