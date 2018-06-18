@@ -11,5 +11,5 @@ def mandrill():
     return np.load(os.path.join(os.path.dirname(__file__), 'mandrill.npz'))['mandrill']
 
 def barbara():
-    """Return the "mandrill" test image."""
+    """Return the "barbara" test image."""
     return np.load(os.path.join(os.path.dirname(__file__), 'barbara.npz'))['barbara']
