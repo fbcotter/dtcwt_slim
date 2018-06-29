@@ -107,12 +107,10 @@ def test_gradients():
     im_t2 = tf.expand_dims(tf.constant(barbara, tf.float32), axis=0)
     y_t2 = tf_coldfilt(im_t2, ha, hb)
     with tf.Session() as sess:
-        dx2 = tf.gradients(y_t2, im_t2, grad_ys=dy)
+        dx2_t = tf.gradients(y_t2, im_t2, grad_ys=dy)
         sess.run(tf.global_variables_initializer())
-        dx2 = sess.run(dx2[0])
+        dx2 = sess.run(dx2_t[0])
 
-    np.testing.assert_array_almost_equal(dx2, dx, decimal=4)
-
-
+    np.testing.assert_array_almost_equal(dx2, dx[0].numpy(), decimal=4)
 
 # vim:sw=4:sts=4:et

@@ -11,6 +11,7 @@ except ImportError:
 import numpy as np
 from collections import Iterable
 from dtcwt_slim.utils import reflect
+from dtcwt_slim.coeffs import biort as _biort
 
 
 def as_column_vector(v):
@@ -180,17 +181,82 @@ def _pad(x, szs):
     return x
 
 
+def prep_filt(h, c):
+    h = _as_col_vector(h)[::-1]
+    h = np.reshape(h, [1, 1, *h.shape])
+    h = np.repeat(h, repeats=c, axis=0)
+    h = np.copy(h)
+    return torch.tensor(h, dtype=torch.float32)
+
+
+class DTCWTFirstLayer(nn.Module):
+    def __init__(self, in_channels, biort='near_sym_a'):
+        super().__init__()
+        self.biort = biort
+        self.in_channels = in_channels
+
+        # nn.Parameter is a special kind of Variable, that will get
+        # automatically registered as Module's parameter once it's assigned
+        # as an attribute. Parameters and buffers need to be registered, or
+        # they won't appear in .parameters() (doesn't apply to buffers), and
+        # won't be converted when e.g. .cuda() is called. You can use
+        # .register_buffer() to register buffers.
+        # nn.Parameters require gradients by default.
+        filts = _biort(biort)
+
+        if len(filts) == 4:
+            self.h0o = torch.nn.Parameter(prep_filt(filts[0], in_channels),
+                                          requires_grad=False)
+            self.g0o = torch.nn.Parameter(prep_filt(filts[1], in_channels),
+                                          requires_grad=False)
+            self.h1o = torch.nn.Parameter(prep_filt(filts[2], in_channels),
+                                          requires_grad=False)
+            self.g1o = torch.nn.Parameter(prep_filt(filts[3], in_channels),
+                                          requires_grad=False)
+            self.register_parameter('h2o', None)
+            self.register_parameter('g2o', None)
+        elif len(filts) == 6:
+            self.h0o = torch.nn.Parameter(prep_filt(filts[0], in_channels),
+                                          requires_grad=False)
+            self.g0o = torch.nn.Parameter(prep_filt(filts[1], in_channels),
+                                          requires_grad=False)
+            self.h1o = torch.nn.Parameter(prep_filt(filts[2], in_channels),
+                                          requires_grad=False)
+            self.g1o = torch.nn.Parameter(prep_filt(filts[3], in_channels),
+                                          requires_grad=False)
+            self.h2o = torch.nn.Parameter(prep_filt(filts[4], in_channels),
+                                          requires_grad=False)
+            self.g2o = torch.nn.Parameter(prep_filt(filts[5], in_channels),
+                                          requires_grad=False)
+
+    def forward(self, input):
+        xe = reflect(np.arange(-m2, r+m2, dtype=np.int), -0.5, r-0.5)
+        X = X[:,:,xe]
+        #  if m % 2 == 0 and align:
+            #  X = _pad(X, [m2 - 1, m2, 0, 0])
+        #  else:
+            #  X = _pad(X, [m2, m2, 0, 0])
+
+        h_t = _prepare_filter(h, nchannels)
+        Y = F.conv2d(X, h_t, stride=(1,1), groups=nchannels)
+
+    def extra_repr(self):
+        return
+
+
+
+
 def colfilter(X, h, align=False):
     """
     Filter the cols of image *X* using filter vector *h*, without decimation.
 
     Parameters
     ----------
-    X: tf.Variable
+    X: torch.tensor
         A tensor of images whose rows are to be filtered. Needs to be of shape
         [batch, ch, h, w]
-    h: np.array
-        The filter coefficients.
+    h: torch.tensor
+        The filter coefficients as a col tensor
     align: bool
         If true, then will have Y keep the same output shape as
         X, even if h has even length. Makes no difference if len(h) is odd.
@@ -201,7 +267,7 @@ def colfilter(X, h, align=False):
 
     Returns
     -------
-    Y: tf.Variable
+    Y: torch.tensor
         the filtered image.
 
     If len(h) is odd, each output sample is aligned with each input sample
@@ -211,9 +277,7 @@ def colfilter(X, h, align=False):
 
     .. codeauthor:: Fergal Cotter <fbc23@cam.ac.uk>, Feb 2018
     """
-    # Make the function flexible to accepting h in multiple forms
-    h = _as_col_vector(h)
-    m = h.shape[0]
+    m = h.shape[2]
     m2 = m // 2
     nchannels, r, c = X.shape[1:]
 
@@ -221,13 +285,7 @@ def colfilter(X, h, align=False):
     # Pad only the second dimension of the tensor X (the columns)
     xe = reflect(np.arange(-m2, r+m2, dtype=np.int), -0.5, r-0.5)
     X = X[:,:,xe]
-    #  if m % 2 == 0 and align:
-        #  X = _pad(X, [m2 - 1, m2, 0, 0])
-    #  else:
-        #  X = _pad(X, [m2, m2, 0, 0])
-
-    h_t = _prepare_filter(h, nchannels)
-    Y = F.conv2d(X, h_t, stride=(1,1), groups=nchannels)
+    Y = F.conv2d(X, h, stride=(1,1), groups=nchannels)
 
     return Y
 
@@ -238,11 +296,11 @@ def rowfilter(X, h, align=False):
 
     Parameters
     ----------
-    X: tf.Variable
+    X: torch.tensor
         A tensor of images whose rows are to be filtered. Needs to be of shape
         [batch, ch, h, w]
-    h: np.array
-        The filter coefficients.
+    h: torch.tensor
+        The filter coefficients as a col tensor
     align: bool
         If true, then will have Y keep the same output shape as
         X, even if h has even length. Makes no difference if len(h) is odd.
@@ -260,22 +318,13 @@ def rowfilter(X, h, align=False):
     .. codeauthor:: Fergal Cotter <fbc23@cam.ac.uk>, Feb 2018
     """
     # Make the function flexible to accepting h in multiple forms
-    h = _as_row_vector(h)
-    m = h.shape[1]
+    m = h.shape[2]
     m2 = m // 2
     nchannels, r, c = X.shape[1:]
-
-    # Symmetrically extend with repeat of end samples.
-    # Pad only the column dimension of the tensor X (the columns)
-    #  if m % 2 == 0 and align:
-        #  X = _pad(X, [0, 0, m2 - 1, m2])
-    #  else:
-        #  X = _pad(X, [0, 0, m2, m2])
     xe = reflect(np.arange(-m2, c+m2, dtype=np.int), -0.5, c-0.5)
     X = X[:,:,:,xe]
-
-    h_t = _prepare_filter(h, nchannels)
-    Y = F.conv2d(X, h_t, strides=(1,1), groups=nchannels)
+    print(X)
+    Y = F.conv2d(X, h.transpose(3,2), stride=(1,1), groups=nchannels)
     return Y
 
 
