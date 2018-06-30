@@ -244,9 +244,7 @@ class DTCWTFirstLayer(nn.Module):
         return
 
 
-
-
-def colfilter(X, h, align=False):
+def colfilter(X, h):
     """
     Filter the cols of image *X* using filter vector *h*, without decimation.
 
@@ -256,19 +254,17 @@ def colfilter(X, h, align=False):
         A tensor of images whose rows are to be filtered. Needs to be of shape
         [batch, ch, h, w]
     h: torch.tensor
-        The filter coefficients as a col tensor
-    align: bool
-        If true, then will have Y keep the same output shape as
-        X, even if h has even length. Makes no difference if len(h) is odd.
-    device: str
-        should be GPU or CPU. Uses the best kernels for each device.
-    name: str
-        The name for the conv operation
+        The filter coefficients as a col tensor of shape (ch, 1, m, 1),
+        where ch matches the ch dimension of X.
+
 
     Returns
     -------
     Y: torch.tensor
         the filtered image.
+
+    Call prep_filt on a numpy array to ensure the ha and hb terms are of the
+    correct form.
 
     If len(h) is odd, each output sample is aligned with each input sample
     and *Y* is the same size as *X*.
@@ -290,7 +286,7 @@ def colfilter(X, h, align=False):
     return Y
 
 
-def rowfilter(X, h, align=False):
+def rowfilter(X, h):
     """
     Filter the rows of image *X* using filter vector *h*, without decimation.
 
@@ -300,15 +296,16 @@ def rowfilter(X, h, align=False):
         A tensor of images whose rows are to be filtered. Needs to be of shape
         [batch, ch, h, w]
     h: torch.tensor
-        The filter coefficients as a col tensor
-    align: bool
-        If true, then will have Y keep the same output shape as
-        X, even if h has even length. Makes no difference if len(h) is odd.
+        The filter coefficients as a col tensor of shape (ch, 1, m, 1),
+        where ch matches the ch dimension of X.
 
     Returns
     -------
-    Y: tf.Variable
+    Y: torch.tensor
         the filtered image.
+
+    Call prep_filt on a numpy array to ensure the ha and hb terms are of the
+    correct form.
 
     If len(h) is odd, each output sample is aligned with each input sample
     and *Y* is the same size as *X*.
@@ -317,39 +314,42 @@ def rowfilter(X, h, align=False):
 
     .. codeauthor:: Fergal Cotter <fbc23@cam.ac.uk>, Feb 2018
     """
-    # Make the function flexible to accepting h in multiple forms
+    # Do symmetric padding on the input
     m = h.shape[2]
     m2 = m // 2
     nchannels, r, c = X.shape[1:]
     xe = reflect(np.arange(-m2, c+m2, dtype=np.int), -0.5, c-0.5)
     X = X[:,:,:,xe]
-    print(X)
+
     Y = F.conv2d(X, h.transpose(3,2), stride=(1,1), groups=nchannels)
     return Y
 
 
-def coldfilt(X, ha, hb):
+def coldfilt(X, ha, hb, hahb_pos=True):
     """
     Filter the columns of image X using the two filters ha and hb =
     reverse(ha).
 
     Parameters
     ----------
-    X: tf.Variable
+    X: torch.tensor
         The input, of size [batch, ch, h, w]
-    ha: np.array
-        Filter to be used on the odd samples of x.
-    hb: np.array
-        Filter to bue used on the even samples of x.
-    device: str
-        should be GPU or CPU. Uses the best kernels for each device.
-    name: str
-        The name for the conv operation
+    ha: torch.tensor
+        Filter to be used on the odd samples of x. Should be a a column tensor
+        of shape (ch, 1, m, 1), where ch matches the ch dimension of X.
+    hb: torch.tensor
+        Filter to be used on the even samples of x. Should be a a column tensor
+        of shape (ch, 1, m, 1), where ch matches the ch dimension of X.
+    hahb_pos: bool
+        True if np.sum(ha*hb) > 0
 
     Returns
     -------
-    Y: tf.Variable
+    Y: torch.tensor
         Decimated result from convolving columns of X with ha and hb
+
+    Call prep_filt on a numpy array to ensure the ha and hb terms are of the
+    correct form.
 
     Both filters should be even length, and h should be approx linear
     phase with a quarter sample (i.e. an :math:`e^{j \pi/4}`) advance from
@@ -370,14 +370,10 @@ def coldfilt(X, ha, hb):
     if r % 4 != 0:
         raise ValueError('No. of rows in X must be a multiple of 4\n' +
                          'X was {}'.format(X.shape))
-
-    ha = _as_col_vector(ha)
-    hb = _as_col_vector(hb)
     if ha.shape != hb.shape:
         raise ValueError('Shapes of ha and hb must be the same\n' +
                          'ha was {}, hb was {}'.format(ha.shape, hb.shape))
-
-    m = ha.shape[0]
+    m = ha.shape[2]
     if m % 2 != 0:
         raise ValueError('Lengths of ha and hb must be even\n' +
                          'ha was {}, hb was {}'.format(ha.shape, hb.shape))
@@ -390,22 +386,16 @@ def coldfilt(X, ha, hb):
     # Pad only the rows of X
     xe = reflect(np.arange(-m, r+m), -0.5, r-0.5)
     X = X[:,:,xe]
-    #  X = _pad(X, [m, m, 0, 0])
 
     # Take the odd and even rows of X
     X_odd = X[:,:, 2:r + 2 * m - 2:2, :]
     X_even = X[:,:, 3:r + 2 * m - 1:2, :]
-
-    ha_t = _prepare_filter(ha, ch)
-    hb_t = _prepare_filter(hb, ch)
-    a_rows = F.conv2d(X_odd, ha_t, stride=(2,1), groups=ch)
-    b_rows = F.conv2d(X_even, hb_t, stride=(2,1), groups=ch)
-    #  a_rows = _conv_2d(X_odd, ha_t, strides=(2,1))
-    #  b_rows = _conv_2d(X_even, hb_t, strides=(2,1))
+    a_rows = F.conv2d(X_odd, ha, stride=(2,1), groups=ch)
+    b_rows = F.conv2d(X_even, hb, stride=(2,1), groups=ch)
 
     # Stack a_rows and b_rows (both of shape [Batch, ch, r/4, c]) along the
     # third dimension to make a tensor of shape [Batch, ch, r/4, 2, c].
-    if np.sum(ha * hb) > 0:
+    if hahb_pos:
         Y = torch.stack((a_rows, b_rows), dim=-2)
     else:
         Y = torch.stack((b_rows, a_rows), dim=-2)
@@ -417,27 +407,27 @@ def coldfilt(X, ha, hb):
     return Y
 
 
-def rowdfilt(X, ha, hb, device='GPU', name=None):
+def rowdfilt(X, ha, hb, hahb_pos=True):
     """
     Filter the rows of image X using the two filters ha and hb =
     reverse(ha).
 
     Parameters
     ----------
-    X: tf.Variable
+    X: torch.tensor
         The input, of size [batch, ch, h, w]
-    ha: np.array
-        Filter to be used on the odd samples of x.
-    hb: np.array
-        Filter to bue used on the even samples of x.
-    device: str
-        should be GPU or CPU. Uses the best kernels for each device.
-    name: str
-        The name for the conv operation
+    ha: torch.tensor
+        Filter to be used on the odd samples of x. Should be a a column tensor
+        of shape (ch, 1, m, 1), where ch matches the ch dimension of X.
+    hb: torch.tensor
+        Filter to be used on the even samples of x. Should be a a column tensor
+        of shape (ch, 1, m, 1), where ch matches the ch dimension of X.
+    hahb_pos: bool
+        True if np.sum(ha*hb) > 0
 
     Returns
     -------
-    Y: tf.Variable
+    Y: torch.tensor
         Decimated result from convolving columns of X with ha and hb
 
     Both filters should be even length, and h should be approx linear
@@ -460,13 +450,11 @@ def rowdfilt(X, ha, hb, device='GPU', name=None):
         raise ValueError('No. of rows in X must be a multiple of 4\n' +
                          'X was {}'.format(X.shape))
 
-    ha = _as_row_vector(ha)
-    hb = _as_row_vector(hb)
     if ha.shape != hb.shape:
         raise ValueError('Shapes of ha and hb must be the same\n' +
                          'ha was {}, hb was {}'.format(ha.shape, hb.shape))
 
-    m = ha.shape[1]
+    m = ha.shape[2]
     if m % 2 != 0:
         raise ValueError('Lengths of ha and hb must be even\n' +
                          'ha was {}, hb was {}'.format(ha.shape, hb.shape))
@@ -477,24 +465,18 @@ def rowdfilt(X, ha, hb, device='GPU', name=None):
 
     # Symmetrically extend with repeat of end samples.
     # Pad only the second dimension of the tensor X (the rows).
-    # SYMMETRIC extension means the edge sample is repeated twice, whereas
-    # REFLECT only has the edge sample once
-    #  X = _pad(X, (0, 0, m, m))
     xe = reflect(np.arange(-m, c+m), -0.5, c-0.5)
     X = X[:,:,:,xe]
 
     # Take the odd and even columns of X
     X_odd = X[:,:,:,2:c + 2 * m - 2:2]
     X_even = X[:,:,:,3:c + 2 * m - 2:2]
-
-    ha_t = _prepare_filter(ha, ch)
-    hb_t = _prepare_filter(hb, ch)
-    a_cols = F.conv2d(X_odd, ha_t, stride=(1,2), groups=ch)
-    b_cols = F.conv2d(X_even, hb_t, stride=(1,2), groups=ch)
+    a_cols = F.conv2d(X_odd, ha.transpose(2,3), stride=(1,2), groups=ch)
+    b_cols = F.conv2d(X_even, hb.transpose(2,3), stride=(1,2), groups=ch)
 
     # Stack a_cols and b_cols (both of shape [Batch, ch, r, c/4]) along the
     # fourth dimension to make a tensor of shape [Batch, ch, r, c/4, 2].
-    if np.sum(ha * hb) > 0:
+    if hahb_pos:
         Y = torch.stack((a_cols, b_cols), dim=-1)
     else:
         Y = torch.stack((b_cols, a_cols), dim=-1)
@@ -506,27 +488,27 @@ def rowdfilt(X, ha, hb, device='GPU', name=None):
     return Y
 
 
-def colifilt(X, ha, hb):
+def colifilt(X, ha, hb, hahb_pos=True):
     """
     Filter the columns of image X using the two filters ha and hb =
     reverse(ha).
 
     Parameters
     ----------
-    X: tf.Variable
+    X: torch.tensor
         The input, of size [batch, ch, h, w]
-    ha: np.array
-        Filter to be used on the odd samples of x.
-    hb: np.array
-        Filter to bue used on the even samples of x.
-    device: str
-        should be GPU or CPU. Uses the best kernels for each device.
-    name: str
-        The name for the conv operation
+    ha: torch.tensor
+        Filter to be used on the odd samples of x. Should be a a column tensor
+        of shape (ch, 1, m, 1), where ch matches the ch dimension of X.
+    hb: torch.tensor
+        Filter to be used on the even samples of x. Should be a a column tensor
+        of shape (ch, 1, m, 1), where ch matches the ch dimension of X.
+    hahb_pos: bool
+        True if np.sum(ha*hb) > 0
 
     Returns
     -------
-    Y: tf.Variable
+    Y: torch.tensor
         Bigger result from convolving columns of X with ha and hb. Will be of
         shape [batch, ch, 2*h, w]
 
@@ -547,8 +529,6 @@ def colifilt(X, ha, hb):
         raise ValueError('No. of rows in X must be a multiple of 2.\n' +
                          'X was {}'.format(X.shape))
 
-    ha = _as_col_vector(ha)
-    hb = _as_col_vector(hb)
     if ha.shape != hb.shape:
         raise ValueError('Shapes of ha and hb must be the same.\n' +
                          'ha was {}, hb was {}'.format(ha.shape, hb.shape))
@@ -559,14 +539,13 @@ def colifilt(X, ha, hb):
         raise ValueError('Lengths of ha and hb must be even.\n' +
                          'ha was {}, hb was {}'.format(ha.shape, hb.shape))
 
-    #  X = _pad(X, (m2, m2, 0, 0))
     xe = reflect(np.arange(-m2, r+m2, dtype=np.int), -0.5, r-0.5)
     X = X[:,:,xe]
 
-    ha_odd_t = _prepare_filter(ha[::2,:])
-    ha_even_t = _prepare_filter(ha[1::2,:])
-    hb_odd_t = _prepare_filter(hb[::2,:])
-    hb_even_t = _prepare_filter(hb[1::2,:])
+    ha_odd = ha[:, :, ::2]
+    ha_even = ha[:, :, 1::2]
+    hb_even = hb[:, :, ::2]
+    hb_odd = hb[:, :, 1::2]
 
     if m2 % 2 == 0:
         # m/2 is even, so set up t to start on d samples.
