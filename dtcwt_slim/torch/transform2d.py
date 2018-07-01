@@ -11,30 +11,29 @@ from dtcwt_slim.torch.lowlevel import ColFilter, RowFilter, prep_filt
 from dtcwt_slim.torch.lowlevel import ColDFilt, RowDFilt, ColIFilt, RowIFilt
 
 
-class DTCWTForward(nn.Module):
+class DTCWTForward2(nn.Module):
     """ Module to perform a DTCWT forward transform
     """
     def __init__(self, in_channels, biort='near_sym_a', qshift='qshift_a',
-                 nlevels=2, skip_hps=None):
+                 skip_hps=None):
         super().__init__()
         self.in_channels = in_channels
         self.biort = biort
         self.qshift = qshift
-        self.nlevels = nlevels
         self.skip_hps = skip_hps
 
         if skip_hps is None:
-            skip_hps = [False,] * nlevels
+            skip_hps = [False,] * 2
 
         # Use the bandpass layers if the filters are bandpasses
         if biort.endswith('_bp') and qshift.endswith('_bp'):
             self.Layer1 = DTCWTLayerBiort_bp(in_channels, biort, skip_hps[0])
-            self.Layer2plus = [DTCWTLayerQshift_bp(
-                in_channels, qshift, skip_hps[i]) for i in range(1,nlevels)]
+            self.Layer2 = DTCWTLayerQshift_bp(
+                in_channels, qshift, skip_hps[1])
         else:
             self.Layer1 = DTCWTLayerBiort(in_channels, biort, skip_hps[0])
-            self.Layer2plus = [DTCWTLayerQshift(
-                in_channels, qshift, skip_hps[i]) for i in range(1,nlevels)]
+            self.Layer2 = DTCWTLayerQshift(
+                in_channels, qshift, skip_hps[1])
 
     def forward(self, X):
         # Need to make sure the image is even in size
@@ -55,8 +54,73 @@ class DTCWTForward(nn.Module):
         Yl, a, b = self.Layer1(X)
         Yhr.append(a)
         Yhi.append(b)
+        # Need to make sure the image is divisible by 4
+        r, c = Yl.shape[2:]
+        if r % 4 != 0:
+            # Repeat the bottom row
+            xe = np.arange(-1,r+1)
+            xe[0], xe[-1] = xe[1], xe[-2]
+            Yl = Yl[:,:,xe]
+        if c % 4 != 0:
+            # Repeat the last col
+            xe = np.arange(-1,c+1)
+            xe[0], xe[-1] = xe[1], xe[-2]
+            Yl = Yl[:,:,:,xe]
+        Yl, a, b = self.Layer2(Yl)
+        Yhr.append(a)
+        Yhi.append(b)
+
+        return Yl, Yhr, Yhi
+
+
+class DTCWTForward(nn.Module):
+    """ Module to perform a DTCWT forward transform
+    """
+    def __init__(self, in_channels, biort='near_sym_a', qshift='qshift_a',
+                 nlevels=3, skip_hps=None):
+        super().__init__()
+        self.in_channels = in_channels
+        self.biort = biort
+        self.qshift = qshift
+        self.skip_hps = skip_hps
+        self.nlevels = nlevels
+
+        if skip_hps is None:
+            skip_hps = [False,] * 3
+
+        # Use the bandpass layers if the filters are bandpasses
+        if biort.endswith('_bp') and qshift.endswith('_bp'):
+            self.Layer0 = DTCWTLayerBiort_bp(in_channels)
+            for i in range(1,nlevels):
+                setattr(self, 'Layer{}'.format(i), DTCWTLayerQshift_bp(
+                    in_channels))
+        else:
+            self.Layer0 = DTCWTLayerBiort(in_channels, biort, skip_hps[0])
+            for i in range(1,nlevels):
+                setattr(self, 'Layer{}'.format(i), DTCWTLayerQshift(
+                    in_channels, qshift, skip_hps[i]))
+
+    def forward(self, X):
+        # Need to make sure the image is even in size
+        r, c = X.shape[2:]
+        if r % 2 != 0:
+            # Repeat the bottom row
+            xe = np.arange(0,r+1)
+            xe[-1] = xe[-2]
+            X = X[:,:,xe]
+        if c % 2 != 0:
+            # Repeat the last col
+            xe = np.arange(0,c+1)
+            xe[-1] = xe[-2]
+            X = X[:,:,:,xe]
+
+        Yhr = []
+        Yhi = []
+        Yl, a, b = self.Layer1(X)
+        Yhr.append(a)
+        Yhi.append(b)
+        # Need to make sure the image is divisible by 4
         for i in range(1, self.nlevels):
-            # Need to make sure the image is divisible by 4
             r, c = Yl.shape[2:]
             if r % 4 != 0:
                 # Repeat the bottom row
@@ -68,7 +132,8 @@ class DTCWTForward(nn.Module):
                 xe = np.arange(-1,c+1)
                 xe[0], xe[-1] = xe[1], xe[-2]
                 Yl = Yl[:,:,:,xe]
-            Yl, a, b = self.Layer2plus[i-1](Yl)
+            Layer = getattr(self, 'Layer{}'.format(i))
+            Yl, a, b = Layer(Yl)
             Yhr.append(a)
             Yhi.append(b)
 
