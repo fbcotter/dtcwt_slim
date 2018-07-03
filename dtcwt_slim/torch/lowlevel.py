@@ -142,6 +142,18 @@ def prep_filt(h, c, transpose=False):
     h = np.copy(h)
     return torch.tensor(h, dtype=torch.float32)
 
+def colfilter(X, h):
+    ch, r = X.shape[1:3]
+    m = h.shape[2] // 2
+    xe = reflect(np.arange(-m, r+m, dtype='int32'), -0.5, r-0.5)
+    return F.conv2d(X[:,:,xe], h, groups=ch)
+
+def rowfilter(X, h):
+    ch, _, c = X.shape[1:]
+    m = h.shape[2] // 2
+    xe = reflect(np.arange(-m, c+m, dtype='int32'), -0.5, c-0.5)
+    h = h.transpose(2,3).contiguous()
+    return F.conv2d(X[:,:,:,xe], h, groups=ch)
 
 class ColFilter(nn.Module):
     def __init__(self, h, in_channels=None):
@@ -193,6 +205,164 @@ class RowFilter(nn.Module):
         Y = F.conv2d(X[:,:,:,self.xe(c)], self.h.transpose(2,3), groups=ch)
         return Y
 
+
+def coldfilt(X, ha, hb, highpass=False):
+    batch, ch, r, c = X.shape
+    r2 = r // 2
+    if r % 4 != 0:
+        raise ValueError('No. of rows in X must be a multiple of 4\n' +
+                         'X was {}'.format(X.shape))
+    m = ha.shape[2]
+    xe = reflect(np.arange(-m, r+m, dtype='int32'), -0.5, r-0.5)
+    t1 = xe[2:r + 2 * m - 2:2]
+    t2 = xe[3:r + 2 * m - 1:2]
+    if highpass:
+        hb, ha = ha, hb
+        t1, t2 = t2, t1
+    Y1 = F.conv2d(X[:,:,t1], ha, stride=(2,1), groups=ch)
+    Y2 = F.conv2d(X[:,:,t2], hb, stride=(2,1), groups=ch)
+
+    # Stack a_rows and b_rows (both of shape [Batch, ch, r/4, c]) along the
+    # third dimension to make a tensor of shape [Batch, ch, r/4, 2, c].
+    Y = torch.stack((Y1, Y2), dim=3)
+
+    # Reshape result to be shape [Batch, ch, r/2, c]. This reshaping
+    # interleaves the columns
+    Y = Y.view(batch, ch, r2, c)
+
+    return Y
+
+
+def rowdfilt(X, ha, hb, highpass=False):
+    batch, ch, r, c = X.shape
+    c2 = c // 2
+    if c % 4 != 0:
+        raise ValueError('No. of cols in X must be a multiple of 4\n' +
+                         'X was {}'.format(X.shape))
+    m = ha.shape[2]
+    xe = reflect(np.arange(-m, c+m, dtype='int32'), -0.5, c-0.5)
+    t1 = xe[2:r + 2 * m - 2:2]
+    t2 = xe[3:r + 2 * m - 1:2]
+    if highpass:
+        hb, ha = ha, hb
+        t1, t2 = t2, t1
+
+    ha = ha.transpose(2,3).contiguous()
+    hb = hb.transpose(2,3).contiguous()
+    Y1 = F.conv2d(X[:,:,:,t1], ha, stride=(1,2), groups=ch)
+    Y2 = F.conv2d(X[:,:,:,t2], hb, stride=(1,2), groups=ch)
+
+    # Stack a_rows and b_rows (both of shape [Batch, ch, r, c/4]) along the
+    # fourth dimension to make a tensor of shape [Batch, ch, r, c/4, 2].
+    Y = torch.stack((Y1, Y2), dim=4)
+
+    # Reshape result to be shape [Batch, ch, r, c/2]. This reshaping
+    # interleaves the columns
+    Y = Y.view(batch, ch, r, c2)
+
+    return Y
+
+
+def colifilt(X, ha, hb, highpass=False):
+        m = ha.shape[2]
+        m2 = m // 2
+        hao = ha[:,:,1::2]
+        hae = ha[:,:,::2]
+        hbo = hb[:,:,1::2]
+        hbe = hb[:,:,::2]
+        batch, ch, r, c = X.shape
+        if r % 2 != 0:
+            raise ValueError('No. of rows in X must be a multiple of 2.\n' +
+                             'X was {}'.format(X.shape))
+        xe = reflect(np.arange(-m2, r+m2, dtype=np.int), -0.5, r-0.5)
+        if m2 % 2 == 0:
+            h1 = hae
+            h2 = hbe
+            h3 = hao
+            h4 = hbo
+            t1 = xe[:-2:2]
+            t2 = xe[1:-2:2]
+            t3 = xe[2::2]
+            t4 = xe[3::2]
+        else:
+            h1 = hao
+            h2 = hbo
+            h3 = hae
+            h4 = hbe
+            t1 = xe[1:-1:2]
+            t2 = xe[2:-1:2]
+            t3 = t1
+            t4 = t2
+        if highpass:
+            t1, t2 = t2, t1
+            t3, t4 = t4, t3
+        h1 = h1.contiguous()
+        h2 = h2.contiguous()
+        h3 = h3.contiguous()
+        h4 = h4.contiguous()
+
+        Y1 = F.conv2d(X[:,:,t1], h1, groups=ch)
+        Y2 = F.conv2d(X[:,:,t2], h2, groups=ch)
+        Y3 = F.conv2d(X[:,:,t3], h3, groups=ch)
+        Y4 = F.conv2d(X[:,:,t4], h4, groups=ch)
+        # Stack 4 tensors of shape [batch, ch, r2, c] into one tensor
+        # [batch, ch, r2, 4, c]
+        Y = torch.stack((Y1, Y2, Y3, Y4), dim=3)
+
+        # Reshape to be [batch, ch,r * 2, c]. This interleaves the rows
+        Y = Y.view(batch, ch, r*2, c)
+        return Y
+
+
+def rowifilt(X, ha, hb, highpass=False):
+        m = ha.shape[2]
+        m2 = m // 2
+        hao = ha[:,:,1::2]
+        hae = ha[:,:,::2]
+        hbo = hb[:,:,1::2]
+        hbe = hb[:,:,::2]
+        batch, ch, r, c = X.shape
+        if c % 2 != 0:
+            raise ValueError('No. of cols in X must be a multiple of 2.\n' +
+                             'X was {}'.format(X.shape))
+        xe = reflect(np.arange(-m2, c+m2, dtype=np.int), -0.5, c-0.5)
+        if m2 % 2 == 0:
+            h1 = hae
+            h2 = hbe
+            h3 = hao
+            h4 = hbo
+            t1 = xe[:-2:2]
+            t2 = xe[1:-2:2]
+            t3 = xe[2::2]
+            t4 = xe[3::2]
+        else:
+            h1 = hao
+            h2 = hbo
+            h3 = hae
+            h4 = hbe
+            t1 = xe[1:-1:2]
+            t2 = xe[2:-1:2]
+            t3 = t1
+            t4 = t2
+        if highpass:
+            t1, t2 = t2, t1
+            t3, t4 = t4, t3
+
+        h1 = h1.transpose(2,3).contiguous()
+        h2 = h2.transpose(2,3).contiguous()
+        h3 = h3.transpose(2,3).contiguous()
+        h4 = h4.transpose(2,3).contiguous()
+        Y1 = F.conv2d(X[:,:,:,t1], h1, groups=ch)
+        Y2 = F.conv2d(X[:,:,:,t2], h2, groups=ch)
+        Y3 = F.conv2d(X[:,:,:,t3], h3, groups=ch)
+        Y4 = F.conv2d(X[:,:,:,t4], h4, groups=ch)
+        # Stack 4 tensors of shape [batch, ch, r, c2] into one tensor
+        # [batch, ch, r, c2, 4]
+        Y = torch.stack((Y1, Y2, Y3, Y4), dim=4)
+
+        # Reshape to be [batch, ch, r, c*2]. This interleaves the rows
+        Y = Y.view(batch, ch, r, c*2)
+        return Y
 
 class ColDFilt(nn.Module):
     """ Decimated Column Filter """
@@ -543,7 +713,7 @@ class RowIFilt(nn.Module):
         return Y
 
 
-def coldfilt(X, ha, hb, hahb_pos=True):
+def coldfilt_old(X, ha, hb, hahb_pos=True):
     """
     Filter the columns of image X using the two filters ha and hb =
     reverse(ha).
@@ -625,7 +795,7 @@ def coldfilt(X, ha, hb, hahb_pos=True):
     return Y
 
 
-def rowdfilt(X, ha, hb, hahb_pos=True):
+def rowdfilt_old(X, ha, hb, hahb_pos=True):
     """
     Filter the rows of image X using the two filters ha and hb =
     reverse(ha).
@@ -708,7 +878,7 @@ def rowdfilt(X, ha, hb, hahb_pos=True):
 
 
 
-def colifilt(X, ha, hb, hahb_pos=True):
+def colifilt_old(X, ha, hb, hahb_pos=True):
     """
     Filter the columns of image X using the two filters ha and hb =
     reverse(ha).
@@ -819,7 +989,7 @@ def colifilt(X, ha, hb, hahb_pos=True):
     return Y
 
 
-def rowifilt(X, ha, hb):
+def rowifilt_old(X, ha, hb):
     """
     Filter the row of image X using the two filters ha and hb =
     reverse(ha).
