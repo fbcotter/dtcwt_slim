@@ -3,15 +3,23 @@ from __future__ import absolute_import
 try:
     import torch
     import torch.nn.functional as F
-    import torch.nn as nn
     _HAVE_TORCH = True
 except ImportError:
     _HAVE_TORCH = False
 
 import numpy as np
-from collections import Iterable
 from dtcwt_slim.utils import reflect
 from dtcwt_slim.coeffs import biort as _biort, qshift as _qshift
+from string import Template
+from torch.autograd import Function
+import cupy
+from collections import namedtuple
+import pkg_resources
+Stream = namedtuple('Stream', ['ptr'])
+
+CUDA_NUM_THREADS = 1024
+cuda_source = pkg_resources.resource_string(__name__, 'filters.cu')
+cuda_source = cuda_source.decode('utf-8')
 
 
 def as_column_vector(v):
@@ -142,11 +150,13 @@ def prep_filt(h, c, transpose=False):
     h = np.copy(h)
     return torch.tensor(h, dtype=torch.float32)
 
+
 def colfilter(X, h):
     ch, r = X.shape[1:3]
     m = h.shape[2] // 2
     xe = reflect(np.arange(-m, r+m, dtype='int32'), -0.5, r-0.5)
     return F.conv2d(X[:,:,xe], h, groups=ch)
+
 
 def rowfilter(X, h):
     ch, _, c = X.shape[1:]
@@ -155,55 +165,114 @@ def rowfilter(X, h):
     h = h.transpose(2,3).contiguous()
     return F.conv2d(X[:,:,:,xe], h, groups=ch)
 
-class ColFilter(nn.Module):
-    def __init__(self, h, in_channels=None):
-        super().__init__()
-        self.in_channels = in_channels
 
-        if not isinstance(h, torch.Tensor):
-            h = prep_filt(h, in_channels)
-
-        # Register it as a parameter if it is not already
-        if not isinstance(h, nn.Parameter):
-            self.h = nn.Parameter(h, requires_grad=False)
-        else:
-            self.h = h
-
-        m = h.shape[2]
-        m2 = m // 2
-        self.xe = lambda r: \
-            reflect(np.arange(-m2, r+m2, dtype=np.int), -0.5, r-0.5)
-
-    def forward(self, X):
-        ch, r = X.shape[1:3]
-        Y = F.conv2d(X[:,:,self.xe(r)], self.h, groups=ch)
-        return Y
+@cupy.util.memoize(for_each_device=True)
+def load_kernel(kernel_name, code, **kwargs):
+    code = Template(code).substitute(**kwargs)
+    kernel_code = cupy.cuda.compile_with_cache(code)
+    return kernel_code.get_function(kernel_name)
 
 
-class RowFilter(nn.Module):
-    def __init__(self, h, in_channels=None):
-        super().__init__()
-        self.in_channels = in_channels
+class RowFilter(Function):
 
-        if not isinstance(h, torch.Tensor):
-            h = prep_filt(h, in_channels)
+    def __init__(self, weight, klow=None, khigh=None):
+        super(RowFilter, self).__init__()
+        self.weight = weight
+        if klow is None:
+            klow = -np.floor((weight.shape[0] - 1) / 2)
+            khigh = np.ceil((weight.shape[0] - 1) / 2)
+        assert abs(klow) == khigh, "can only do odd filters for the moment"
+        self.klow = klow
+        self.khigh = khigh
+        assert abs(klow) == khigh
+        self.f = load_kernel('rowfilter', cuda_source)
+        self.fbwd = load_kernel('rowfilter_bwd', cuda_source)
 
-        # Register it as a parameter if it is not already
-        if not isinstance(h, nn.Parameter):
-            self.h = nn.Parameter(h, requires_grad=False)
-        else:
-            self.h = h
+    #  @staticmethod
+    def forward(ctx, input):
+        assert input.dim() == 4 and input.is_cuda and ctx.weight.is_cuda
+        n, ch, h, w = input.shape
+        ctx.in_shape = (n, ch, h, w)
+        pad_end = 0
+        output = torch.zeros((n, ch, h, w + pad_end),
+                             dtype=torch.float32,
+                             requires_grad=input.requires_grad).cuda()
 
-        m = h.shape[2]
-        m2 = m // 2
-        self.h = nn.Parameter(h, requires_grad=False)
-        self.xe = lambda c: \
-            reflect(np.arange(-m2, c+m2, dtype=np.int), -0.5, c-0.5)
+        with torch.cuda.device_of(input):
+            ctx.f(block=(CUDA_NUM_THREADS,1,1),
+                  grid=(128,1,1),
+                  args=[output.data_ptr(), input.data_ptr(),
+                        ctx.weight.data_ptr(), np.int32(n), np.int32(ch),
+                        np.int32(h), np.int32(w+pad_end), np.int32(w),
+                        np.int32(ctx.klow), np.int32(ctx.khigh), np.int32(1)],
+                  stream=Stream(ptr=torch.cuda.current_stream().cuda_stream))
+        return output
 
-    def forward(self, X):
-        ch, _, c = X.shape[1:]
-        Y = F.conv2d(X[:,:,:,self.xe(c)], self.h.transpose(2,3), groups=ch)
-        return Y
+    #  @staticmethod
+    def backward(ctx, grad_out):
+        in_shape = ctx.in_shape
+        n, ch, h, w = grad_out.shape
+        grad_input = torch.zeros(in_shape, dtype=torch.float32).cuda()
+
+        with torch.cuda.device_of(grad_out):
+            ctx.f(block=(CUDA_NUM_THREADS,1,1),
+                  grid=(128,1,1),
+                  args=[grad_input.data_ptr(), grad_out.data_ptr(),
+                        ctx.weight.data_ptr(), np.int32(n), np.int32(ch),
+                        np.int32(h), np.int32(w), np.int32(w),
+                        np.int32(ctx.klow), np.int32(ctx.khigh), np.int32(1)],
+                  stream=Stream(ptr=torch.cuda.current_stream().cuda_stream))
+        return grad_input
+
+
+class ColFilter(Function):
+    def __init__(self, weight, klow=None, khigh=None):
+        super(ColFilter, self).__init__()
+        self.weight = weight
+        if klow is None:
+            klow = -np.floor((weight.shape[0] - 1) / 2)
+            khigh = np.ceil((weight.shape[0] - 1) / 2)
+        assert abs(klow) == khigh, "can only do odd filters for the moment"
+        self.klow = klow
+        self.khigh = khigh
+        self.f = load_kernel('colfilter', cuda_source)
+        self.fbwd = load_kernel('colfilter_bwd', cuda_source)
+
+    #  @staticmethod
+    def forward(ctx, input):
+        assert input.dim() == 4 and input.is_cuda and ctx.weight.is_cuda
+        n, ch, h, w = input.shape
+        ctx.in_shape = (n, ch, h, w)
+        pad_end = 0
+        output = torch.zeros((n, ch, h + pad_end, w),
+                             dtype=torch.float32,
+                             requires_grad=input.requires_grad).cuda()
+
+        with torch.cuda.device_of(input):
+            ctx.f(block=(CUDA_NUM_THREADS,1,1),
+                  grid=(128,1,1),
+                  args=[output.data_ptr(), input.data_ptr(),
+                        ctx.weight.data_ptr(), np.int32(n), np.int32(ch),
+                        np.int32(h), np.int32(w), np.int32(h+pad_end),
+                        np.int32(ctx.klow), np.int32(ctx.khigh), np.int32(1)],
+                  stream=Stream(ptr=torch.cuda.current_stream().cuda_stream))
+        return output
+
+    #  @staticmethod
+    def backward(ctx, grad_out):
+        in_shape = ctx.in_shape
+        n, ch, h, w = grad_out.shape
+        grad_input = torch.zeros(in_shape, dtype=torch.float32).cuda()
+
+        with torch.cuda.device_of(grad_out):
+            ctx.f(block=(CUDA_NUM_THREADS,1,1),
+                  grid=(128,1,1),
+                  args=[grad_input.data_ptr(), grad_out.data_ptr(),
+                        ctx.weight.data_ptr(), np.int32(n), np.int32(ch),
+                        np.int32(h), np.int32(w), np.int32(h),
+                        np.int32(ctx.klow), np.int32(ctx.khigh), np.int32(1)],
+                  stream=Stream(ptr=torch.cuda.current_stream().cuda_stream))
+        return grad_input
 
 
 def coldfilt(X, ha, hb, highpass=False):
@@ -362,354 +431,6 @@ def rowifilt(X, ha, hb, highpass=False):
 
         # Reshape to be [batch, ch, r, c*2]. This interleaves the rows
         Y = Y.view(batch, ch, r, c*2)
-        return Y
-
-class ColDFilt(nn.Module):
-    """ Decimated Column Filter """
-    def __init__(self, ha, hb, in_channels=None):
-        super().__init__()
-        self.in_channels = in_channels
-
-        if not isinstance(ha, torch.Tensor):
-            ha = prep_filt(ha, in_channels)
-        if not isinstance(hb, torch.Tensor):
-            hb = prep_filt(hb, in_channels)
-
-        # Register filters as parameters if they are not already
-        if not isinstance(ha, nn.Parameter):
-            self.ha = nn.Parameter(ha, requires_grad=False)
-        else:
-            self.ha = ha
-        if not isinstance(hb, nn.Parameter):
-            self.hb = nn.Parameter(hb, requires_grad=False)
-        else:
-            self.hb = hb
-
-        if self.ha.shape != self.hb.shape:
-            raise ValueError('Shapes of ha and hb must be the same.\n' +
-                             'ha: {}, hb: {}'.format(
-                                 self.ha.shape, self.hb.shape))
-
-        m = self.ha.shape[2]
-        if m % 2 != 0:
-            raise ValueError('Lengths of ha and hb must be even.\n' +
-                             'ha was {}, hb was {}'.format(
-                                 self.ha.shape, self.hb.shape))
-
-        # This logic below is complicated but ensures that the sample positions
-        # align up nicely for the convolution. h1 will be the filter for every
-        # 4th output sample, and t1 will be the indices into X for this filter
-        # to convolve with. h2 and t2 will be for the 2nd of every 4 output
-        # samples and so on.
-        # The t's are simply indexes into the original array. I.e. the odd
-        # indices would look something like this (vertical bars indicate image
-        # edges):
-        #    ... 5 3 1 | 0 2 4 6 8 | 9 7 5 ..
-        xe = lambda r: \
-            reflect(np.arange(-m, r+m, dtype=np.int), -0.5, r-0.5)
-        if torch.sum(self.ha*self.hb) > 0:
-            self.t1 = lambda r: xe(r)[2:r + 2 * m - 2:2]
-            self.t2 = lambda r: xe(r)[3:r + 2 * m - 1:2]
-            self.h1 = self.ha
-            self.h2 = self.hb
-        else:
-            self.t1 = lambda r: xe(r)[3:r + 2 * m - 1:2]
-            self.t2 = lambda r: xe(r)[2:r + 2 * m - 2:2]
-            self.h1 = self.hb
-            self.h2 = self.ha
-
-    def forward(self, X):
-        batch, ch, r, c = X.shape
-        r2 = r // 2
-        if r % 4 != 0:
-            raise ValueError('No. of rows in X must be a multiple of 4\n' +
-                             'X was {}'.format(X.shape))
-        Y1 = F.conv2d(X[:,:,self.t1(r)], self.h1, stride=(2,1), groups=ch)
-        Y2 = F.conv2d(X[:,:,self.t2(r)], self.h2, stride=(2,1), groups=ch)
-
-        # Stack a_rows and b_rows (both of shape [Batch, ch, r/4, c]) along the
-        # third dimension to make a tensor of shape [Batch, ch, r/4, 2, c].
-        Y = torch.stack((Y1, Y2), dim=3)
-
-        # Reshape result to be shape [Batch, ch, r/2, c]. This reshaping
-        # interleaves the columns
-        Y = Y.view(batch, ch, r2, c)
-
-        return Y
-
-
-class RowDFilt(nn.Module):
-    def __init__(self, ha, hb, in_channels=None):
-        super().__init__()
-        self.in_channels = in_channels
-
-        if not isinstance(ha, torch.Tensor):
-            ha = prep_filt(ha, in_channels)
-        if not isinstance(hb, torch.Tensor):
-            hb = prep_filt(hb, in_channels)
-
-        # Register filters as parameters if they are not already
-        if not isinstance(ha, nn.Parameter):
-            self.ha = nn.Parameter(ha, requires_grad=False)
-        else:
-            self.ha = ha
-        if not isinstance(hb, nn.Parameter):
-            self.hb = nn.Parameter(hb, requires_grad=False)
-        else:
-            self.hb = hb
-
-        if self.ha.shape != self.hb.shape:
-            raise ValueError('Shapes of ha and hb must be the same.\n' +
-                             'ha: {}, hb: {}'.format(
-                                 self.ha.shape, self.hb.shape))
-
-        m = self.ha.shape[2]
-        if m % 2 != 0:
-            raise ValueError('Lengths of ha and hb must be even.\n' +
-                             'ha was {}, hb was {}'.format(
-                                 self.ha.shape, self.hb.shape))
-
-        # This logic below is complicated but ensures that the sample positions
-        # align up nicely for the convolution. h1 will be the filter for every
-        # 4th output sample, and t1 will be the indices into X for this filter
-        # to convolve with. h2 and t2 will be for the 2nd of every 4 output
-        # samples and so on.
-        # The t's are simply indexes into the original array. I.e. the odd
-        # indices would look something like this (vertical bars indicate image
-        # edges):
-        #    ... 5 3 1 | 0 2 4 6 8 | 9 7 5 ..
-        xe = lambda c: \
-            reflect(np.arange(-m, c+m, dtype=np.int), -0.5, c-0.5)
-        if torch.sum(self.ha*self.hb) > 0:
-            self.t1 = lambda c: xe(c)[2:c + 2 * m - 2:2]
-            self.t2 = lambda c: xe(c)[3:c + 2 * m - 1:2]
-            self.h1 = self.ha
-            self.h2 = self.hb
-        else:
-            self.t1 = lambda c: xe(c)[3:c + 2 * m - 1:2]
-            self.t2 = lambda c: xe(c)[2:c + 2 * m - 2:2]
-            self.h1 = self.hb
-            self.h2 = self.ha
-
-    def forward(self, X):
-        batch, ch, r, c = X.shape
-        c2 = c // 2
-        if c % 4 != 0:
-            raise ValueError('No. of cols in X must be a multiple of 4\n' +
-                             'X was {}'.format(X.shape))
-        Y1 = F.conv2d(X[:,:,:,self.t1(r)], self.h1.transpose(2,3),
-                      stride=(1,2), groups=ch)
-        Y2 = F.conv2d(X[:,:,:,self.t2(r)], self.h2.transpose(2,3),
-                      stride=(1,2), groups=ch)
-
-        # Stack a_rows and b_rows (both of shape [Batch, ch, r, c/4]) along the
-        # fourth dimension to make a tensor of shape [Batch, ch, r, c/4, 2].
-        Y = torch.stack((Y1, Y2), dim=4)
-
-        # Reshape result to be shape [Batch, ch, r, c/2]. This reshaping
-        # interleaves the columns
-        Y = Y.view(batch, ch, r, c2)
-
-        return Y
-
-
-class ColIFilt(nn.Module):
-    def __init__(self, ha, hb, in_channels=None):
-        super().__init__()
-        self.in_channels = in_channels
-
-        if not isinstance(ha, torch.Tensor):
-            ha = prep_filt(ha, in_channels)
-        if not isinstance(hb, torch.Tensor):
-            hb = prep_filt(hb, in_channels)
-
-        # Register filters as parameters if they are not already
-        if not isinstance(ha, nn.Parameter):
-            self.ha = nn.Parameter(ha, requires_grad=False)
-        else:
-            self.ha = ha
-        if not isinstance(hb, nn.Parameter):
-            self.hb = nn.Parameter(hb, requires_grad=False)
-        else:
-            self.hb = hb
-
-        # Check the filter sizes
-        if self.ha.shape != self.hb.shape:
-            raise ValueError('Shapes of ha and hb must be the same.\n' +
-                             'ha: {}, hb: {}'.format(
-                                 self.ha.shape, self.hb.shape))
-
-        m = self.ha.shape[2]
-        m2 = m // 2
-        if m % 2 != 0:
-            raise ValueError('Lengths of ha and hb must be even.\n' +
-                             'ha was {}, hb was {}'.format(
-                                 self.ha.shape, self.hb.shape))
-
-        hao = self.ha[:,:,1::2]
-        hae = self.ha[:,:,::2]
-        hbo = self.hb[:,:,1::2]
-        hbe = self.hb[:,:,::2]
-
-        # Set the parameters for the module
-
-        # This logic below is complicated but ensures that the sample positions
-        # align up nicely for the convolution. h1 will be the filter for every
-        # 4th output sample, and t1 will be the indices into X for this filter
-        # to convolve with. h2 and t2 will be for the 2nd of every 4 output
-        # samples and so on.
-        # The t's are simply indexes into the original array. I.e. the odd
-        # indices would look something like this (vertical bars indicate image
-        # edges):
-        #    ... 5 3 1 | 0 2 4 6 8 | 9 7 5 ..
-        self.xe = lambda r: \
-            reflect(np.arange(-m2, r+m2, dtype=np.int), -0.5, r-0.5)
-        if m2 % 2 == 0:
-            self.h1 = hae
-            self.h2 = hbe
-            self.h3 = hao
-            self.h4 = hbo
-            if torch.sum(self.ha*self.hb) > 0:
-                self.idx1 = lambda r: np.arange(0, r+m-3, 2)
-                self.idx2 = lambda r: np.arange(1, r+m-2, 2)
-                self.idx3 = lambda r: np.arange(2, r+m-1, 2)
-                self.idx4 = lambda r: np.arange(3, r+m, 2)
-            else:
-                self.idx1 = lambda r: np.arange(1, r+m-2, 2)
-                self.idx2 = lambda r: np.arange(0, r+m-3, 2)
-                self.idx3 = lambda r: np.arange(3, r+m, 2)
-                self.idx4 = lambda r: np.arange(2, r+m-1, 2)
-        else:
-            self.h1 = hao
-            self.h2 = hbo
-            self.h3 = hae
-            self.h4 = hbe
-            if torch.sum(self.ha*self.hb) > 0:
-                self.idx1 = lambda r: np.arange(1, r+m-2, 2)
-                self.idx2 = lambda r: np.arange(2, r+m-1, 2)
-                self.idx3 = lambda r: np.arange(1, r+m-2, 2)
-                self.idx4 = lambda r: np.arange(2, r+m-1, 2)
-            else:
-                self.idx1 = lambda r: np.arange(2, r+m-1, 2)
-                self.idx2 = lambda r: np.arange(1, r+m-2, 2)
-                self.idx3 = lambda r: np.arange(2, r+m-1, 2)
-                self.idx4 = lambda r: np.arange(1, r+m-2, 2)
-
-    def forward(self, X):
-        batch, ch, r, c = X.shape
-        if r % 2 != 0:
-            raise ValueError('No. of rows in X must be a multiple of 2.\n' +
-                             'X was {}'.format(X.shape))
-        xe = self.xe(r)
-        Y1 = F.conv2d(X[:,:,xe[self.idx1(r)]], self.h1, groups=ch)
-        Y2 = F.conv2d(X[:,:,xe[self.idx2(r)]], self.h2, groups=ch)
-        Y3 = F.conv2d(X[:,:,xe[self.idx3(r)]], self.h3, groups=ch)
-        Y4 = F.conv2d(X[:,:,xe[self.idx4(r)]], self.h4, groups=ch)
-        # Stack 4 tensors of shape [batch, ch, r2, c] into one tensor
-        # [batch, ch, r2, 4, c]
-        Y = torch.stack((Y1, Y2, Y3, Y4), dim=3)
-
-        # Reshape to be [batch, ch,r * 2, c]. This interleaves the rows
-        Y = Y.view(batch, ch, r*2, c).contiguous()
-        return Y
-
-
-class RowIFilt(nn.Module):
-    def __init__(self, ha, hb, in_channels=None):
-        super().__init__()
-        self.in_channels = in_channels
-
-        if not isinstance(ha, torch.Tensor):
-            ha = prep_filt(ha, in_channels)
-        if not isinstance(hb, torch.Tensor):
-            hb = prep_filt(hb, in_channels)
-
-        # Register filters as parameters if they are not already
-        if not isinstance(ha, nn.Parameter):
-            self.ha = nn.Parameter(ha, requires_grad=False)
-        else:
-            self.ha = ha
-        if not isinstance(hb, nn.Parameter):
-            self.hb = nn.Parameter(hb, requires_grad=False)
-        else:
-            self.hb = hb
-
-        # Check the filter sizes
-        if self.ha.shape != self.hb.shape:
-            raise ValueError('Shapes of ha and hb must be the same.\n' +
-                             'ha: {}, hb: {}'.format(
-                                 self.ha.shape, self.hb.shape))
-
-        m = self.ha.shape[2]
-        m2 = m // 2
-        if m % 2 != 0:
-            raise ValueError('Lengths of ha and hb must be even.\n' +
-                             'ha was {}, hb was {}'.format(
-                                 self.ha.shape, self.hb.shape))
-
-        hao = self.ha[:,:,1::2]
-        hae = self.ha[:,:,::2]
-        hbo = self.hb[:,:,1::2]
-        hbe = self.hb[:,:,::2]
-
-        # This logic below is complicated but ensures that the sample positions
-        # align up nicely for the convolution. h1 will be the filter for every
-        # 4th output sample, and t1 will be the indices into X for this filter
-        # to convolve with. h2 and t2 will be for the 2nd of every 4 output
-        # samples and so on.
-        # The t's are simply indexes into the original array. I.e. the odd
-        # indices would look something like this (vertical bars indicate image
-        # edges):
-        #    ... 5 3 1 | 0 2 4 6 8 | 9 7 5 ..
-        self.xe = lambda c: \
-            reflect(np.arange(-m2, c+m2, dtype=np.int), -0.5, c-0.5)
-        if m2 % 2 == 0:
-            self.h1 = hae
-            self.h2 = hbe
-            self.h3 = hao
-            self.h4 = hbo
-            if torch.sum(self.ha*self.hb) > 0:
-                self.idx1 = lambda c: np.arange(0, c+m-3, 2)
-                self.idx2 = lambda c: np.arange(1, c+m-2, 2)
-                self.idx3 = lambda c: np.arange(2, c+m-1, 2)
-                self.idx4 = lambda c: np.arange(3, c+m, 2)
-            else:
-                self.idx1 = lambda c: np.arange(1, c+m-2, 2)
-                self.idx2 = lambda c: np.arange(0, c+m-3, 2)
-                self.idx3 = lambda c: np.arange(3, c+m, 2)
-                self.idx4 = lambda c: np.arange(2, c+m-1, 2)
-        else:
-            self.h1 = hao
-            self.h2 = hbo
-            self.h3 = hae
-            self.h4 = hbe
-            if torch.sum(self.ha*self.hb) > 0:
-                self.idx1 = lambda c: np.arange(1, c+m-2, 2)
-                self.idx2 = lambda c: np.arange(2, c+m-1, 2)
-                self.idx3 = lambda c: np.arange(1, c+m-2, 2)
-                self.idx4 = lambda c: np.arange(2, c+m-1, 2)
-            else:
-                self.idx1 = lambda c: np.arange(2, c+m-1, 2)
-                self.idx2 = lambda c: np.arange(1, c+m-2, 2)
-                self.idx3 = lambda c: np.arange(2, c+m-1, 2)
-                self.idx4 = lambda c: np.arange(1, c+m-2, 2)
-
-    def forward(self, X):
-        batch, ch, r, c = X.shape
-        if c % 2 != 0:
-            raise ValueError('No. of cols in X must be a multiple of 2.\n' +
-                             'X was {}'.format(X.shape))
-        xe = self.xe(c)
-        Y1 = F.conv2d(X[:,:,:,xe[self.idx1(c)]], self.h1.transpose(2,3), groups=ch)
-        Y2 = F.conv2d(X[:,:,:,xe[self.idx2(c)]], self.h2.transpose(2,3), groups=ch)
-        Y3 = F.conv2d(X[:,:,:,xe[self.idx3(c)]], self.h3.transpose(2,3), groups=ch)
-        Y4 = F.conv2d(X[:,:,:,xe[self.idx4(c)]], self.h4.transpose(2,3), groups=ch)
-        # Stack 4 tensors of shape [batch, ch, r, c2] into one tensor
-        # [batch, ch, r, c, 4]
-        Y = torch.stack((Y1, Y2, Y3, Y4), dim=4)
-
-        # Reshape to be [batch, ch, r, c*2]. This interleaves the rows
-        Y = Y.view(batch, ch, r, c*2).contiguous()
         return Y
 
 
@@ -1096,3 +817,63 @@ def rowifilt_old(X, ha, hb):
     Y = torch.reshape(Y, (-1, ch, r, 2*c))
 
     return Y
+
+
+def q2c(y):
+    """
+    Convert from quads in y to complex numbers in z.
+    """
+
+    # Arrange pixels from the corners of the quads into
+    # 2 subimages of alternate real and imag pixels.
+    #  a----b
+    #  |    |
+    #  |    |
+    #  c----d
+    # Combine (a,b) and (d,c) to form two complex subimages.
+    y = y/np.sqrt(2)
+    a, b = y[:,:, 0::2, 0::2], y[:,:, 0::2, 1::2]
+    c, d = y[:,:, 1::2, 0::2], y[:,:, 1::2, 1::2]
+
+    return (a-d, b+c, a+d, b-c)
+
+
+def c2q(w_r, w_i):
+    """
+    Scale by gain and convert from complex w(:,:,1:2) to real quad-numbers
+    in z.
+
+    Arrange pixels from the real and imag parts of the 2 highpasses
+    into 4 separate subimages .
+     A----B     Re   Im of w(:,:,1)
+     |    |
+     |    |
+     C----D     Re   Im of w(:,:,2)
+
+    """
+
+    # Input has shape [batch, ch, 2 r, c]
+    ch, _, r, c = w_r.shape[1:]
+    w_r = w_r/np.sqrt(2)
+    w_i = w_i/np.sqrt(2)
+    # shape will be:
+    #   x1   x2
+    #   x3   x4
+    x1 = w_r[:,:,0] + w_r[:,:,1]
+    x2 = w_i[:,:,0] + w_i[:,:,1]
+    x3 = w_i[:,:,0] - w_i[:,:,1]
+    x4 = -w_r[:,:,0] + w_r[:,:,1]
+
+    # Stack 2 inputs of shape [batch, ch, r, c] to [batch, ch, r, 2, c]
+    x_rows1 = torch.stack((x1, x3), dim=-2)
+    # Reshaping interleaves the results
+    x_rows1 = x_rows1.view(-1, ch, 2*r, c)
+    # Do the same for the even columns
+    x_rows2 = torch.stack((x2, x4), dim=-2)
+    x_rows2 = x_rows2.view(-1, ch, 2*r, c)
+
+    # Stack the two [batch, ch, 2*r, c] tensors to [batch, ch, 2*r, c, 2]
+    x_cols = torch.stack((x_rows1, x_rows2), dim=-1)
+    y = x_cols.view(-1, ch, 2*r, 2*c)
+
+    return y

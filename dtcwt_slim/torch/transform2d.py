@@ -7,18 +7,117 @@ except ImportError:
 
 import numpy as np
 from dtcwt_slim.coeffs import biort as _biort, qshift as _qshift
+#  from dtcwt_slim.torch.lowlevel import ColFilter, RowFilter, prep_filt
+#  from dtcwt_slim.torch.lowlevel import ColDFilt, RowDFilt, ColIFilt, RowIFilt
 from dtcwt_slim.torch.lowlevel import ColFilter, RowFilter, prep_filt
-from dtcwt_slim.torch.lowlevel import ColDFilt, RowDFilt, ColIFilt, RowIFilt
 from dtcwt_slim.torch.lowlevel import colfilter, rowfilter, coldfilt, rowdfilt
 from dtcwt_slim.torch.lowlevel import colifilt, rowifilt
+#  from dtcwt_slim.torch import transform_templates as tt
+from dtcwt_slim.torch import transform_funcs as tf
 from torch.autograd import Function
 
+
+class DTCWTForward(nn.Module):
+    def __init__(self, C, biort='near_sym_a', qshift='qshift_a',
+                 J=3, skip_hps=None):
+        super().__init__()
+        self.C = C
+        self.biort = biort
+        self.qshift = qshift
+        self.skip_hps = skip_hps
+        self.J = J
+        h0o, g0o, h1o, g1o = _biort(biort)
+        self.h0o = torch.nn.Parameter(prep_filt(h0o, C), False)
+        self.h1o = torch.nn.Parameter(prep_filt(h1o, C), False)
+        h0a, h0b, g0a, g0b, h1a, h1b, g1a, g1b = _qshift(qshift)
+        self.h0a = torch.nn.Parameter(prep_filt(h0a, C), False)
+        self.h0b = torch.nn.Parameter(prep_filt(h0b, C), False)
+        self.h1a = torch.nn.Parameter(prep_filt(h1a, C), False)
+        self.h1b = torch.nn.Parameter(prep_filt(h1b, C), False)
+
+        # Create the function to do the DTCWT
+        self.dtcwt_func = getattr(tf, 'xfm{J}{suff}'.format(
+            J=J, suff='no_l1' if skip_hps else ''))
+
+    def forward(self, input):
+        y = self.dtcwt_func.apply(input, self.h0o, self.h1o, self.h0a,
+                                  self.h0b, self.h1a, self.h1b)
+        return y[0], y[1::2], y[2::2]
+
+class DTCWTInverse(nn.Module):
+    def __init__(self, C, biort='near_sym_a', qshift='qshift_a',
+                 J=3, skip_hps=None):
+        super().__init__()
+        self.C = C
+        self.biort = biort
+        self.qshift = qshift
+        self.skip_hps = skip_hps
+        self.J = J
+        h0o, g0o, h1o, g1o = _biort(biort)
+        self.g0o = torch.nn.Parameter(prep_filt(g0o, C), False)
+        self.g1o = torch.nn.Parameter(prep_filt(g1o, C), False)
+        h0a, h0b, g0a, g0b, h1a, h1b, g1a, g1b = _qshift(qshift)
+        self.g0a = torch.nn.Parameter(prep_filt(g0a, C), False)
+        self.g0b = torch.nn.Parameter(prep_filt(g0b, C), False)
+        self.g1a = torch.nn.Parameter(prep_filt(g1a, C), False)
+        self.g1b = torch.nn.Parameter(prep_filt(g1b, C), False)
+
+        # Create the function to do the DTCWT
+        self.dtcwt_func = getattr(tf, 'ifm{J}{suff}'.format(
+            J=J, suff='no_l1' if skip_hps else ''))
+
+    def forward(self, yl, yhr, yhi):
+        #  inputs = [yl,] + [val for pair in zip(yhr, yhi) for val in pair]
+        inputs = (yl,) + yhr + yhi
+        y = self.dtcwt_func.apply(*inputs, self.g0o, self.g1o, self.g0a,
+                                  self.g0b, self.g1a, self.g1b)
+        return y
+
+
+class InvDTCWT2(Function):
+
+    @staticmethod
+    def forward(ctx, yl, yhr1, yhr2, yhi1, yhi2, g0o, g1o, g0a, g0b, g1a, g1b, low_only=False):
+        ctx.save_for_backward(g0o, g1o, g0a, g0b, g1a, g1b)
+
+        # Level 2
+        ll = yl
+        lh = c2q(yhr2[:,:,0:6:5], yhi2[:,:,0:6:5])
+        hl = c2q(yhr2[:,:,2:4:1], yhi2[:,:,2:4:1])
+        hh = c2q(yhr2[:,:,1:5:3], yhi2[:,:,1:5:3])
+        Hi = colifilt(hh, h1b_t, h1a_t, True) + colifilt(hl, h0b_t, h0a_t)
+        Lo = colifilt(lh, h1b_t, h1a_t, True) + colifilt(ll, h0b_t, h0a_t)
+        ll = rowifilt(Hi, h1b_t, h1a_t, True) + rowifilt(Lo, h0b_t, h0a_t)
+
+        if not low_only:
+            lh = c2q(yhr1[:,:,0:6:5], yhi1[:,:,0:6:5])
+            hl = c2q(yhr1[:,:,2:4:1], yhi1[:,:,2:4:1])
+            hh = c2q(yhr1[:,:,1:5:3], yhi1[:,:,1:5:3])
+            Hi = colfilter(hh, h1o_t) + colfilter(hl, h0o_t)
+            Lo = colfilter(lh, h1o_t) + colfilter(ll, h0o_t)
+            Y = rowfilter(Hi, h1o_t) + rowfilter(Lo, h0o_t)
+        else:
+            Y = rowfilter(colfilter(ll, h0o_t), h0o_t)
+        return Y
+
+    @staticmethod
+    def backward(ctx, grad_Y):
+        g0o, g1o, g0a, g0b, g1a, g1b = ctx.saved_tensors
+        low_only = ctx.low_only
+        grad_input = None
+        # Use the special properties of the filters to get the time reverse
+        h0o_t = h0o
+        h1o_t = h1o
+        h0a_t = h0b
+        h0b_t = h0a
+        h1a_t = h1b
+        h1b_t = h1a
 
 class MyDTCWT2(Function):
 
     @staticmethod
     def forward(ctx, input, h0o, h1o, h0a, h0b, h1a, h1b, low_only=False):
-        ctx.save_for_backward(input, h0o, h1o, h0a, h0b, h1a, h1b)
+        ctx.save_for_backward(h0o, h1o, h0a, h0b, h1a, h1b)
         ctx.low_only = low_only
         batch, ch, r, c = input.shape
         Lo = rowfilter(input, h0o)
@@ -58,10 +157,9 @@ class MyDTCWT2(Function):
 
         return LoLo, Yhr, Yhi, Yhr2, Yhi2
 
-
     @staticmethod
     def backward(ctx, grad_LoLo, grad_Yhr, grad_Yhi, grad_Yhr2, grad_Yhi2):
-        input, h0o, h1o, h0a, h0b, h1a, h1b = ctx.saved_tensors
+        h0o, h1o, h0a, h0b, h1a, h1b = ctx.saved_tensors
         low_only = ctx.low_only
         grad_input = None
         # Use the special properties of the filters to get the time reverse
@@ -212,7 +310,7 @@ class DTCWTFwd1(nn.Module):
                               self.h1b)
 
 
-class DTCWTForward(nn.Module):
+class DTCWTForward_old(nn.Module):
     """ Module to perform a DTCWT forward transform
     """
     def __init__(self, in_channels, biort='near_sym_a', qshift='qshift_a',
@@ -279,7 +377,7 @@ class DTCWTForward(nn.Module):
         return Yl, Yhr[0], Yhi[0]
 
 
-class DTCWTInverse(nn.Module):
+class DTCWTInverse_old(nn.Module):
     """ Module to perform a DTCWT forward transform
     """
     def __init__(self, in_channels, biort='near_sym_a', qshift='qshift_a',
@@ -587,61 +685,3 @@ class DTCWTLayerQshift_bpInv(nn.Module):
         return y
 
 
-def q2c(y):
-    """
-    Convert from quads in y to complex numbers in z.
-    """
-
-    # Arrange pixels from the corners of the quads into
-    # 2 subimages of alternate real and imag pixels.
-    #  a----b
-    #  |    |
-    #  |    |
-    #  c----d
-    # Combine (a,b) and (d,c) to form two complex subimages.
-    y = y/np.sqrt(2)
-    a, b = y[:,:, 0::2, 0::2], y[:,:, 0::2, 1::2]
-    c, d = y[:,:, 1::2, 0::2], y[:,:, 1::2, 1::2]
-
-    return (a-d, b+c, a+d, b-c)
-
-
-def c2q(w_r, w_i):
-    """
-    Scale by gain and convert from complex w(:,:,1:2) to real quad-numbers
-    in z.
-
-    Arrange pixels from the real and imag parts of the 2 highpasses
-    into 4 separate subimages .
-     A----B     Re   Im of w(:,:,1)
-     |    |
-     |    |
-     C----D     Re   Im of w(:,:,2)
-
-    """
-
-    # Input has shape [batch, ch, 2 r, c]
-    ch, _, r, c = w_r.shape[1:]
-    w_r = w_r/np.sqrt(2)
-    w_i = w_i/np.sqrt(2)
-    # shape will be:
-    #   x1   x2
-    #   x3   x4
-    x1 = w_r[:,:,0] + w_r[:,:,1]
-    x2 = w_i[:,:,0] + w_i[:,:,1]
-    x3 = w_i[:,:,0] - w_i[:,:,1]
-    x4 = -w_r[:,:,0] + w_r[:,:,1]
-
-    # Stack 2 inputs of shape [batch, ch, r, c] to [batch, ch, r, 2, c]
-    x_rows1 = torch.stack((x1, x3), dim=-2)
-    # Reshaping interleaves the results
-    x_rows1 = x_rows1.view(-1, ch, 2*r, c)
-    # Do the same for the even columns
-    x_rows2 = torch.stack((x2, x4), dim=-2)
-    x_rows2 = x_rows2.view(-1, ch, 2*r, c)
-
-    # Stack the two [batch, ch, 2*r, c] tensors to [batch, ch, 2*r, c, 2]
-    x_cols = torch.stack((x_rows1, x_rows2), dim=-1)
-    y = x_cols.view(-1, ch, 2*r, 2*c)
-
-    return y
