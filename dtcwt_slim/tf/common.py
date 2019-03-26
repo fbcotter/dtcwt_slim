@@ -1,9 +1,15 @@
 from __future__ import absolute_import
 
-import tensorflow as tf
+try:
+    import tensorflow as tf
+    Tensor = tf.Tensor
+except ImportError:
+    Tensor = object
+    # The lack of tensorflow will be caught by the low-level routines.
+    pass
 
 
-class ComplexTensor(tf.Tensor):
+class ComplexTensor(Tensor):
     """ A wrapper to handle complex tensor as a pair of real and imaginary
     numbers.
     """
